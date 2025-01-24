@@ -6,7 +6,7 @@ print(os.getcwd())
 from Backend.py_utils import *
 
 
-aircraft_grossweight = 130
+aircraft_grossweight = 120
 takeoff_factor = 2
 
 
@@ -27,15 +27,17 @@ for c in  chart.curveNames():
     }
 
 def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
-    scales_available = list(data.keys())
+        
+    x_values = []
+    y_values = []
     
-    if gross_wt not in scales_available:
-        print(f"Gross weight of {gross_wt} is not in data supplied!")
-        print(f"Scales available are {scales_available}")
-        return -1.0
+    for this_gross_weight, this_scales_data in data.items():
+        
+        x_values.append(this_gross_weight)
+        y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2))       
+        
+    return round(np.interp(gross_wt, x_values, y_values), 2)
     
-    this_scales_data = data[gross_wt]
-    
-    return round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2)
+
     
     
