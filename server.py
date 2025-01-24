@@ -10,9 +10,9 @@ def read_root(request: Request):
     respo = templates.TemplateResponse(
         "index.html", 
         {"request": request,
-          "message": "Hello, FastAPI!",
-            "test": "Test test test",
-            "random_number": perf_calc.try_get_uncorrected_max_eff_field_length(perf_calc.aircraft_grossweight, perf_calc.takeoff_factor, perf_calc.data)}
+          "title": "TOLD TEST",
+            "uncorrected_max_eff_TO_dist_text": "Uncorrected maximum effort takeoff distance: ",
+            "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(perf_calc.aircraft_grossweight, perf_calc.takeoff_factor, perf_calc.data)}
         )
         
 
