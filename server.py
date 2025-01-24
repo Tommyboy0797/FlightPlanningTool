@@ -14,7 +14,9 @@ def read_root(request: Request):
         {"request": request,
           "title": "TOLD TEST",
             "uncorrected_max_eff_TO_dist_text": "Uncorrected maximum effort takeoff distance: ",
-            "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(perf_calc.aircraft_grossweight, perf_calc.takeoff_factor, perf_calc.data)}
+            "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(perf_calc.aircraft_grossweight, perf_calc.takeoff_factor, perf_calc.data),
+            "gross_weight_text": perf_calc.aircraft_grossweight,
+            "takeoff_factor_text": perf_calc.takeoff_factor}
     )
         
     
@@ -29,9 +31,7 @@ def handle_gwt(query):
     print(query)
     return RedirectResponse("/")
 
-
 @app.get("/get_takeoff_factor")
-def handle_to_factor(get_to_factor):
-    get_to_factor = float(get_to_factor)
+def handle_to_factor(get_to_factor: float):
     perf_calc.takeoff_factor = get_to_factor
     return RedirectResponse("/")
