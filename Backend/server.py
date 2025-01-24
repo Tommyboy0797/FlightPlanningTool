@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
-import perf_calc
+import Backend.perf_calc as perf_calc
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
