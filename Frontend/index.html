@@ -7,8 +7,6 @@
 </head>
 <body>
     <h1>{{ title }}</h1>
-    <b1>{{ uncorrected_max_eff_TO_dist_text }}</b1>
-    <b2>{{uncorrected_max_eff_TO_dist}}</b2>
     <form action="/get_gwt" method="GET">
         <label for="query">Enter Gross Weight: </label>
         <input type="text" id="query" name="query" required>
@@ -20,4 +18,14 @@
         <input type="text" id="get_to_factor" name="get_to_factor" required>
         <button type="submit">Send</button>
     </form>
+
+    <h1> RESULTS: </h1>
+    <b1> Gross Weight :</b1>
+    <b2> {{gross_weight_text}}</b2>
+    <br>
+    <b1> Takeoff Factor: </b1>
+    <b2> {{takeoff_factor_text}} </b2>
+    <br>
+    <b1>{{ uncorrected_max_eff_TO_dist_text }}</b1>
+    <b2>{{uncorrected_max_eff_TO_dist}}</b2>
 </html>
