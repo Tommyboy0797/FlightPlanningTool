@@ -15,7 +15,7 @@ def read_root(request: Request):
             "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(perf_calc.aircraft_grossweight, perf_calc.takeoff_factor, perf_calc.data)}
         )
         
-
+    
     return respo
 
 @app.get("home")
