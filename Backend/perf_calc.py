@@ -6,7 +6,7 @@ print(os.getcwd())
 from Backend.py_utils import *
 
 
-aircraft_grossweight = 140
+aircraft_grossweight = 130
 takeoff_factor = 2
 
 
