@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
-import Backend.perf_calc as perf_calc
+import perf_calc as perf_calc
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
@@ -12,7 +12,7 @@ def read_root(request: Request):
         {"request": request,
           "message": "Hello, FastAPI!",
             "test": "Test test test",
-            "random_number": perf_calc.get_random_number()}
+            "random_number": perf_calc.try_get_uncorrected_max_eff_field_length()}
         )
         
 
