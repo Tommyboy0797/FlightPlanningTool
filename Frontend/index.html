@@ -9,6 +9,9 @@
     <h1>{{ title }}</h1>
     <b1>{{ uncorrected_max_eff_TO_dist_text }}</b1>
     <b2>{{uncorrected_max_eff_TO_dist}}</b2>
-    <input type = "number" id="enter_maxefftodist" name="Text"/> 
-</body>
+    <form action="/get_data" method="GET">
+        <label for="query">Enter Gross Weight: </label>
+        <input type="text" id="query" name="query" required>
+        <button type="submit">Send</button>
+    </form>
 </html>
