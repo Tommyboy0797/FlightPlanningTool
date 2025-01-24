@@ -6,8 +6,8 @@ print(os.getcwd())
 from Backend.py_utils import *
 
 
-aircraft_grossweight = 120
-takeoff_factor = 2
+aircraft_grossweight = 1
+takeoff_factor = 5
 
 
 TOP_FOLDER = "Backend/chart_dig/completed-takeoff/min-field-length-for-max-effort-to"
