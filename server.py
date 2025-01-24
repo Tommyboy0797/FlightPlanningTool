@@ -21,14 +21,17 @@ def read_root(request: Request):
     return respo
 
 
-# endpoint to recieve value
-@app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
-def handle_value(query):
+# endpoint to recieve value for gross weight
+@app.get("/get_gwt") # mailbox (what we are listening on), get is request type -> serving get 
+def handle_gwt(query):
     query = float(query)
     perf_calc.aircraft_grossweight = query
     print(query)
     return RedirectResponse("/")
 
 
-
-
+@app.get("/get_takeoff_factor")
+def handle_to_factor(get_to_factor):
+    get_to_factor = float(get_to_factor)
+    perf_calc.takeoff_factor = get_to_factor
+    return RedirectResponse("/")
