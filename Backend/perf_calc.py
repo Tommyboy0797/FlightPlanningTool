@@ -3,10 +3,13 @@ import os
 import re
 import numpy as np
 print(os.getcwd())
-from py_utils import *
+from Backend.py_utils import *
 
-aircraft_grossweight = int(input("Enter aircraft gross weight. IE, 90 = 90,000lbs : "))
+
+aircraft_grossweight = 140
 takeoff_factor = 2
+
+
 TOP_FOLDER = "Backend/chart_dig/completed-takeoff/min-field-length-for-max-effort-to"
 DIG_FILE_NAME = "amax-eff-uncorr-field-length.dig"
 
@@ -35,5 +38,4 @@ def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
     
     return round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2)
     
-uncorrected_max_effort_min_field_length = try_get_uncorrected_max_eff_field_length(aircraft_grossweight, takeoff_factor, data)
-print(uncorrected_max_effort_min_field_length)
+    
