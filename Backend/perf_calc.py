@@ -39,5 +39,5 @@ def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
     return round(np.interp(gross_wt, x_values, y_values), 2)
     
 
-    
+
     
