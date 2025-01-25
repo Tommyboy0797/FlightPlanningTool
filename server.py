@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from Backend import perf_calc as perf_calc
+from Backend import rotation_calc as rotation_calc
 
 app = FastAPI()
 
@@ -16,7 +17,8 @@ def read_root(request: Request):
             "uncorrected_max_eff_TO_dist_text": "Uncorrected maximum effort takeoff distance: ",
             "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(perf_calc.aircraft_grossweight, perf_calc.takeoff_factor, perf_calc.data),
             "gross_weight_text": perf_calc.aircraft_grossweight,
-            "takeoff_factor_text": perf_calc.takeoff_factor}
+            "takeoff_factor_text": perf_calc.takeoff_factor,
+            "rotation_speed_calculated": rotation_calc.get_rotation_speed(perf_calc.aircraft_grossweight, perf_calc.takeoff_factor, perf_calc.data)}
     )
         
     

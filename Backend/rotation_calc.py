@@ -4,10 +4,10 @@ import re
 import numpy as np
 print(os.getcwd())
 from Backend.py_utils import *
+from Backend import perf_calc as perf_calc
 
-
-aircraft_grossweight = 1
-takeoff_factor = 5
+aircraft_grossweight = perf_calc.aircraft_grossweight
+takeoff_factor = perf_calc.takeoff_factor
 
 
 TOP_FOLDER = "Backend/chart_dig/completed-takeoff/amax-takeoff"
@@ -36,7 +36,7 @@ def get_rotation_speed(gross_wt, takeoff_factor, data):
         x_values.append(this_gross_weight)
         y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2))       
         print("Takeoff factor: ", takeoff_factor)
-    return round(np.interp(gross_wt, x_values, y_values), 2)
+    return(np.interp(gross_wt, x_values, y_values))
     
 
 
