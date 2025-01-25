@@ -26,16 +26,16 @@ for c in  chart.curveNames():
         "y": yVector
     }
 
+
 def get_rotation_speed(gross_wt, takeoff_factor, data):
         
     x_values = []
     y_values = []
     
     for this_gross_weight, this_scales_data in data.items():
-        
         x_values.append(this_gross_weight)
-        y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2))       
-        print("Takeoff factor: ", takeoff_factor)
+        y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2)) 
+    print("rotationspeed: ",(np.interp(gross_wt, x_values, y_values)))     
     return(np.interp(gross_wt, x_values, y_values))
     
 
