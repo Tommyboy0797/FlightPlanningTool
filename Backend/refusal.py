@@ -2,87 +2,79 @@ import random
 import os
 import re
 import numpy as np
+from pprint import pprint
 print(os.getcwd())
 from Backend.py_utils import *
 from Backend import perf_calc as perf_calc
 
-aircraft_grossweight = perf_calc.aircraft_grossweight
-takeoff_factor = perf_calc.takeoff_factor
-rwy_available = float(perf_calc.rwy_available)
-
-TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
-DIG_FILE_NAME = "refusal-step-1.dig"
-
-data = {}
-
-chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
-for c in  chart.curveNames():
-    yVector = [row [1] for row in chart.curve(c)]
-    xVector = [row [0] for row in chart.curve(c)]
-    scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+def get_refusal_p1(takeoff_factor, rwy_available): 
     
-    data[scale_number] = {
-        "x": xVector,
-        "y": yVector
-    }
+    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
+    DIG_FILE_NAME = "refusal-step-1.dig"
 
-def get_refusal_p1(takeoff_factor, rwy_available, data):
-    xy_pair_for_rwy_avail = data[rwy_available]  #how long rwy is. Dictionary. dictionary_name[key]
+    data = {}
 
-    x_values = xy_pair_for_rwy_avail["y"] # x is now y
-    y_values = xy_pair_for_rwy_avail["x"] # y is now x
-
-    x_data = []
-    y_data = []
-
-    for takeoff_factor, xy_pair_for_rwy_avail in data.items():
-        x_data.append(rwy_available)
-        y_data.append(round(np.interp(rwy_available, x_values, y_values), 2))
-
-    return round(np.interp(rwy_available, x_data, y_data))
-
-
-
-    # x_values = []
-    # y_values = []
-    
-    # for this_gross_weight, this_scales_data in data.items():
-
-    #     x_values.append(this_gross_weight)
-    #     y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2))
-
-    # print("refusal: ",(np.interp(rwy_available, x_values, y_values))) 
-    # p1_result = round(np.interp(rwy_available, x_values, y_values))    
-    # return round(np.interp(rwy_available, x_values, y_values))
-
-##----------------------------------------------------------------------------------------------------------------------------##
-
-# TOP_FOLDER_1 = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
-# DIG_FILE_NAME_1 = "refusal-step-2.dig"
-
-# data1 = {}
-
-# chart1 = ParseDig(f'./{TOP_FOLDER_1}/dig/{DIG_FILE_NAME_1}')
-# for c in  chart1.curveNames():
-#     yVector1 = [row [1] for row in chart1.curve(c)]
-#     xVector1 = [row [0] for row in chart1.curve(c)]
-#     scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
-    
-#     data1[scale_number] = {
-#         "x": xVector1,
-#         "y": yVector1
-#     }
-
-# def get_refusal_p2(p1_result, gwt, data1):
+    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+    for c in  chart.curveNames():
+        yVector = [row [1] for row in chart.curve(c)]
+        xVector = [row [0] for row in chart.curve(c)]
+        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
         
-#     x_values1 = []
-#     y_values1= []
-    
-#     for this_gross_weight, this_scales_data in data1.items():
+        data[scale_number] = {
+            "x": xVector,
+            "y": yVector
+        }
 
-#         x_values1.append(this_gross_weight)
-#         y_values1.append(round(np.interp(aircraft_grossweight, this_scales_data["x"], this_scales_data["y"]), 2)) 
+    runway_scale_set = [] # runway scale (2,3,4, -> 14)
+    result_basedon_to_factor_and_rwylen = [] # result for given takeoff factor scale based on runway length  
 
-#     print("refusal2: ",(np.interp(p1_result, x_values1, y_values1)))     
-#     return round(np.interp(p1_result, x_values1, y_values1))
+    for rwy_scale, xy_pair_for_rwy_avail in data.items():
+        print("runway scale:" ,rwy_scale)
+        xy_pair_for_rwy_avail = data[rwy_scale]  #how long rwy is. Dictionary. dictionary_name[key] Key here is rwy_scale which is 2.0, 3.0, 4.0 etc
+
+        x_values = xy_pair_for_rwy_avail["y"] # x is now y
+        y_values = xy_pair_for_rwy_avail["x"] # y is now x
+
+        runway_scale_set.append(rwy_scale)
+        result_basedon_to_factor_and_rwylen.append(round(np.interp(takeoff_factor, x_values, y_values), 2))
+
+    resultp1 = np.interp(rwy_available, runway_scale_set, result_basedon_to_factor_and_rwylen)
+
+    return resultp1
+
+
+
+def get_refusal_p2(result, aircraft_grossweight): 
     
+    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
+    DIG_FILE_NAME = "refusal-step-2.dig"
+
+    data = {}
+
+    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+    for c in  chart.curveNames():
+        yVector = [row [1] for row in chart.curve(c)]
+        xVector = [row [0] for row in chart.curve(c)]
+        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+        
+        data[scale_number] = {
+            "x": xVector,
+            "y": yVector
+        }
+
+    runway_scale_set = [] # runway scale (2,3,4, -> 14)
+    result_basedon_to_factor_and_rwylen = [] # result for given takeoff factor scale based on runway length  
+
+    for rwy_scale, xy_pair_for_rwy_avail in data.items():
+        print("weight scale:" ,rwy_scale)
+        xy_pair_for_rwy_avail = data[rwy_scale]  #how long rwy is. Dictionary. dictionary_name[key] Key here is rwy_scale which is 2.0, 3.0, 4.0 etc
+
+        x_values = xy_pair_for_rwy_avail["y"] # x is now y
+        y_values = xy_pair_for_rwy_avail["x"] # y is now x
+
+        runway_scale_set.append(rwy_scale)
+        result_basedon_to_factor_and_rwylen.append(round(np.interp(result, x_values, y_values), 2))
+        
+    result = np.interp(aircraft_grossweight, runway_scale_set, result_basedon_to_factor_and_rwylen)
+
+    return result
