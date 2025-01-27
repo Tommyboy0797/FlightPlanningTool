@@ -6,20 +6,7 @@
     <title>FlightPlanningToolTest</title>
 </head>
 <body>
-    <h1>{{ title }}</h1>
-    <form action="/get_gwt" method="GET">
-        <label for="gwt">Enter Gross Weight: </label>
-        <input type="text" id="gwt" name="gwt" required>
-        <label for="get_to_factor">Enter Takeoff Factor: </label>
-        <input type="text" id="get_to_factor" name="get_to_factor" required>
-        <label for="get_rwy_available">Enter Runway Length: </label>
-        <input type="text" id="get_rwy_available" name="get_rwy_available" required>
-        <button type="submit">Send</button>
-    </form>
-    <br>
-
-    </form>
-
+    <h1> {{ title }} </h1>
     <h1> RESULTS: </h1>
 
     <b1> Gross Weight :</b1>
@@ -47,11 +34,19 @@
 
     <br>
 
-    <b1> Uncorrected Refusal Value : </b1>
-    <b2> {{uncorrected_refusal_test}}</b2>
-    
-    <br>
-
     <b1> Uncorrected Refusal 2 Value : </b1>
-    <b2> {{uncorrected_refusal_test_p2}}</b2>
+    <b2> {{uncorrected_refusal_test_p2}} knots</b2>
+
+    <form action="/get_gwt" method="GET">
+        <label for="gwt">Enter Gross Weight: </label>
+        <input type="text" id="gwt" name="gwt" required>
+        <br>
+        <label for="get_to_factor">Enter Takeoff Factor: </label>
+        <input type="text" id="get_to_factor" name="get_to_factor" required>
+        <br>
+        <label for="get_rwy_available">Enter Runway Length: </label>
+        <input type="text" id="get_rwy_available" name="get_rwy_available" required>
+        <br>
+        <button type="submit">Send</button>
+    </form>
 </html>
