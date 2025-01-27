@@ -8,21 +8,16 @@
 <body>
     <h1>{{ title }}</h1>
     <form action="/get_gwt" method="GET">
-        <label for="query">Enter Gross Weight: </label>
-        <input type="text" id="query" name="query" required>
-        <button type="submit">Send</button>
-    </form>
-    <br>
-    <form action="/get_takeoff_factor" method="GET">
+        <label for="gwt">Enter Gross Weight: </label>
+        <input type="text" id="gwt" name="gwt" required>
         <label for="get_to_factor">Enter Takeoff Factor: </label>
         <input type="text" id="get_to_factor" name="get_to_factor" required>
-        <button type="submit">Send</button>
-    </form>
-    <br>
-    <form action="/get_rwy_available" method="GET">
         <label for="get_rwy_available">Enter Runway Length: </label>
         <input type="text" id="get_rwy_available" name="get_rwy_available" required>
         <button type="submit">Send</button>
+    </form>
+    <br>
+
     </form>
 
     <h1> RESULTS: </h1>
