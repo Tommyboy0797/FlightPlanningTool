@@ -62,15 +62,15 @@ def get_refusal_p2(result, aircraft_grossweight):
             "y": yVector
         }
 
-    runway_scale_set = [] # runway scale (2,3,4, -> 14)
-    result_basedon_to_factor_and_rwylen = [] # result for given takeoff factor scale based on runway length  
+    runway_scale_set = [] 
+    result_basedon_to_factor_and_rwylen = []   
 
     for rwy_scale, xy_pair_for_rwy_avail in data.items():
         print("weight scale:" ,rwy_scale)
-        xy_pair_for_rwy_avail = data[rwy_scale]  #how long rwy is. Dictionary. dictionary_name[key] Key here is rwy_scale which is 2.0, 3.0, 4.0 etc
+        xy_pair_for_rwy_avail = data[rwy_scale]  
 
-        x_values = xy_pair_for_rwy_avail["x"] # x is now y
-        y_values = xy_pair_for_rwy_avail["y"] # y is now x
+        x_values = xy_pair_for_rwy_avail["x"] 
+        y_values = xy_pair_for_rwy_avail["y"] 
 
         runway_scale_set.append(rwy_scale)
         result_basedon_to_factor_and_rwylen.append(round(np.interp(result, x_values, y_values), 2))
