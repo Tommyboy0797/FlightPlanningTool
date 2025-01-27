@@ -7,6 +7,9 @@ print(os.getcwd())
 from Backend.py_utils import *
 from Backend import perf_calc as perf_calc
 
+uncorr_ref_spd = 140
+rwy_slope = 2
+
 def get_refusal_p1(takeoff_factor, rwy_available): 
     
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
@@ -78,3 +81,41 @@ def get_refusal_p2(result, aircraft_grossweight):
     result = np.interp(aircraft_grossweight, runway_scale_set, result_basedon_to_factor_and_rwylen)
 
     return round(result)
+
+
+
+
+def get_refusal_p3(uncorrected_ref_speed, rwy_slope_percent): #runway slope
+
+    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
+    DIG_FILE_NAME = "refusal-runway-slope.dig"
+
+    data = {}
+
+    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+    for c in  chart.curveNames():
+        yVector = [row [1] for row in chart.curve(c)]
+        xVector = [row [0] for row in chart.curve(c)]
+        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+        
+        data[scale_number] = {
+            "x": xVector,
+            "y": yVector
+        }
+    uncorr_ref_speed_scale_set = [] # runway scale (2,3,4, -> 14)
+    result_basedon_to_factor_and_rwylen = [] # result for given takeoff factor scale based on runway length  
+
+    for uncorr_ref_speed_scale, xy_pair_for_rwy_avail in data.items():
+        xy_pair_for_rwy_avail = data[uncorr_ref_speed_scale]  #how long rwy is. Dictionary. dictionary_name[key] 
+
+        x_values = xy_pair_for_rwy_avail["x"] # x is now y
+        y_values = xy_pair_for_rwy_avail["y"] # y is now x
+
+        uncorr_ref_speed_scale_set.append(uncorr_ref_speed_scale)
+        result = np.interp(uncorrected_ref_speed, x_values, y_values)
+        print(f"Result: {result} for uncorrected ref speed for {uncorrected_ref_speed} at runway slope: {uncorr_ref_speed_scale}")
+        result_basedon_to_factor_and_rwylen.append(round(np.interp(uncorrected_ref_speed, x_values, y_values), 2))
+
+    resultp3 = np.interp(rwy_slope_percent, uncorr_ref_speed_scale_set, result_basedon_to_factor_and_rwylen)
+    print(xy_pair_for_rwy_avail)
+    return resultp3

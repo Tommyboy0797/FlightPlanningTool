@@ -24,6 +24,11 @@
 
     <br>
 
+    <b1> Runway Slope : </b1>
+    <b2> {{ runway_slope }} </b2>
+    
+    <br>
+
     <b1>{{ uncorrected_max_eff_TO_dist_text }}</b1>
     <b2>{{uncorrected_max_eff_TO_dist}}</b2>
 
@@ -37,7 +42,14 @@
     <b1> Uncorrected Refusal 2 Value : </b1>
     <b2> {{uncorrected_refusal_test_p2}} knots</b2>
 
-    <form action="/get_gwt" method="GET">
+    <br>
+
+    <b1> Partially Correct Refusal 3 Value:</b1>
+    <b2> {{ partially_corrected_refusal_p3 }} </b2>
+
+    <br>
+
+    <form action="/get_data" method="GET">
         <label for="gwt">Enter Gross Weight: </label>
         <input type="text" id="gwt" name="gwt" required>
         <br>
@@ -46,6 +58,9 @@
         <br>
         <label for="get_rwy_available">Enter Runway Length: </label>
         <input type="text" id="get_rwy_available" name="get_rwy_available" required>
+        <br>
+        <label for="get_rwy_slope">Enter Runway slope: </label>
+        <input type="text" id="get_rwy_slope" name="get_rwy_slope" required>
         <br>
         <button type="submit">Send</button>
     </form>

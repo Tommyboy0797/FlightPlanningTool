@@ -23,8 +23,8 @@ def read_root(request: Request):
 
 
 # endpoint to recieve value for gross weight
-@app.get("/get_gwt") # mailbox (what we are listening on), get is request type -> serving get 
-def handle_gwt(request: Request,gwt,get_to_factor,get_rwy_available):
+@app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
+def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope):
     gwt = float(gwt)
     perf_calc.aircraft_grossweight = gwt
     print(gwt)
@@ -38,8 +38,9 @@ def handle_gwt(request: Request,gwt,get_to_factor,get_rwy_available):
             "rotation_speed_calculated": rotation_calc.get_rotation_speed(gwt, get_to_factor, rotation_calc.data),
             "runway_avail": get_rwy_available,
             "uncorrected_refusal_test": refusal.get_refusal_p1(get_to_factor, get_rwy_available),
-            "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt)
-
+            "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
+            "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
+            "runway_slope": refusal.rwy_slope
             }
     )
         
