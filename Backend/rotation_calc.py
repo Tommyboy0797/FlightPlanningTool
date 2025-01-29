@@ -34,8 +34,7 @@ def get_rotation_speed(gross_wt, takeoff_factor, data):
     
     for this_gross_weight, this_scales_data in data.items():
         x_values.append(this_gross_weight)
-        y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2)) 
-    print("rotationspeed: ",(np.interp(gross_wt, x_values, y_values)))     
+        y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2))     
     return round(np.interp(gross_wt, x_values, y_values))
     
 

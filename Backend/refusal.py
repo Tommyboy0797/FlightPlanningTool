@@ -32,7 +32,6 @@ def get_refusal_p1(takeoff_factor, rwy_available):
     result_basedon_to_factor_and_rwylen = [] # result for given takeoff factor scale based on runway length  
 
     for rwy_scale, xy_pair_for_rwy_avail in data.items():
-        print("runway scale:" ,rwy_scale)
         xy_pair_for_rwy_avail = data[rwy_scale]  #how long rwy is. Dictionary. dictionary_name[key] Key here is rwy_scale which is 2.0, 3.0, 4.0 etc
 
         x_values = xy_pair_for_rwy_avail["y"] # x is now y
@@ -69,7 +68,6 @@ def get_refusal_p2(result, aircraft_grossweight):
     result_basedon_to_factor_and_rwylen = []   
 
     for rwy_scale, xy_pair_for_rwy_avail in data.items():
-        print("weight scale:" ,rwy_scale)
         xy_pair_for_rwy_avail = data[rwy_scale]  
 
         x_values = xy_pair_for_rwy_avail["x"] 
@@ -85,7 +83,7 @@ def get_refusal_p2(result, aircraft_grossweight):
 
 
 
-def get_refusal_p3(uncorrected_ref_speed, rwy_slope_percent): #runway slope
+def get_refusal_p3(uncorrected_ref_speed, rwy_slope): #runway slope
 
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
     DIG_FILE_NAME = "refusal-runway-slope.dig"
@@ -102,20 +100,22 @@ def get_refusal_p3(uncorrected_ref_speed, rwy_slope_percent): #runway slope
             "x": xVector,
             "y": yVector
         }
-    uncorr_ref_speed_scale_set = [] # runway scale (2,3,4, -> 14)
-    result_basedon_to_factor_and_rwylen = [] # result for given takeoff factor scale based on runway length  
+    uncorr_ref_speed_scale_set = [] # speed scales, 50kts to 
+    result_basedon_to_factor_and_rwylen = []  
 
     for uncorr_ref_speed_scale, xy_pair_for_rwy_avail in data.items():
-        xy_pair_for_rwy_avail = data[uncorr_ref_speed_scale]  #how long rwy is. Dictionary. dictionary_name[key] 
+        xy_pair_for_rwy_avail = data[uncorr_ref_speed_scale]  #data with speeds as the scale
 
-        x_values = xy_pair_for_rwy_avail["x"] # x is now y
-        y_values = xy_pair_for_rwy_avail["y"] # y is now x
+        x_values = xy_pair_for_rwy_avail["x"] 
+        y_values = xy_pair_for_rwy_avail["y"] 
 
-        uncorr_ref_speed_scale_set.append(uncorr_ref_speed_scale)
+        uncorr_ref_speed_scale_set.append(uncorr_ref_speed_scale) # append speeds uncorrected
+
         result = np.interp(uncorrected_ref_speed, x_values, y_values)
-        print(f"Result: {result} for uncorrected ref speed for {uncorrected_ref_speed} at runway slope: {uncorr_ref_speed_scale}")
+        
+        print(f"Result: {result} for uncorrected ref speed for {uncorr_ref_speed_scale} at runway slope: {rwy_slope}")
         result_basedon_to_factor_and_rwylen.append(round(np.interp(uncorrected_ref_speed, x_values, y_values), 2))
 
-    resultp3 = np.interp(rwy_slope_percent, uncorr_ref_speed_scale_set, result_basedon_to_factor_and_rwylen)
+    resultp3 = np.interp(rwy_slope,result_basedon_to_factor_and_rwylen, uncorr_ref_speed_scale_set)
     print(xy_pair_for_rwy_avail)
     return resultp3

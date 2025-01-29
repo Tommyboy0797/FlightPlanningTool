@@ -36,7 +36,6 @@ def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
         
         x_values.append(this_gross_weight)
         y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2))       
-        print("Takeoff factor: ", takeoff_factor)
     return round(np.interp(gross_wt, x_values, y_values), 2) * 1000
     
 
