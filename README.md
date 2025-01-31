@@ -1,1 +1,3 @@
-Flight planning tool wip
+# Flight planning tool wip
+
+Current version - Alpha testing version.
