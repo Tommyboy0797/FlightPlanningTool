@@ -14,7 +14,7 @@ def database_handle_navdata():
 
     # country_airports = cursor.fetchall()  # Gets all matching rows
 
-    cursor.execute("SELECT lat, lon, icao FROM airports WHERE iso_country = 'GB'")
+    cursor.execute("SELECT lat, lon, icao FROM airports WHERE iso_country = 'GB'") # remove WHERE ..., added to improve performance, only loading UK airfields
 
     all_airports = cursor.fetchall()
 
