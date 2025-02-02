@@ -4,6 +4,9 @@ from fastapi.templating import Jinja2Templates
 from Backend import perf_calc as perf_calc
 from Backend import rotation_calc as rotation_calc
 from Backend import refusal as refusal
+from database import database_handler as db_handler
+from fastapi.responses import JSONResponse
+
 
 app = FastAPI()
 
@@ -24,7 +27,7 @@ def read_root(request: Request):
 
 # endpoint to recieve value for gross weight
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
-def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope):
+def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, enter_db_country):
     gwt = float(gwt)
     perf_calc.aircraft_grossweight = gwt
     print(gwt)
@@ -40,10 +43,18 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
             "uncorrected_refusal_test": refusal.get_refusal_p1(get_to_factor, get_rwy_available),
             "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
             "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
-            "runway_slope": refusal.rwy_slope
+            "runway_slope": refusal.rwy_slope,
+            # "country_airport": db_handler.database_handle_navdata()
             }
     )
         
     
     return respo
+
+
+@app.get("/fetch_airports")
+def fetch_airports():
+    airports = db_handler.database_handle_navdata()
+
+    return JSONResponse(content = airports)
 
