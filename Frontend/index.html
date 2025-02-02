@@ -102,7 +102,7 @@
                 if (Array.isArray(data)) {
                     data.forEach(airport => {
                         L.marker([airport.lat, airport.lng]).addTo(map)
-                            .bindPopup(`<b>${airport.name}</b>`);
+                        .bindPopup(`<b>${airport.name}</b><br>Type: ${airport.type}`);
                     });
                 } else {
                     console.error("Fetched data is not an array:", data);
