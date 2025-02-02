@@ -59,7 +59,9 @@
     <b2> {{ partially_corrected_refusal_p3 }} </b2>
 
     <br>
-
+<!-- 
+    <b1> Country airports:</b1>
+    <b2> {{country_airport}} </b2> -->
     <form action="/get_data" method="GET">
         <label for="gwt">Enter Gross Weight: </label>
         <input type="text" id="gwt" name="gwt" required>
@@ -73,6 +75,9 @@
         <label for="get_rwy_slope">Enter Runway slope: </label>
         <input type="text" id="get_rwy_slope" name="get_rwy_slope" required>
         <br>
+        <label for="enter_db_country">Enter country: </label>
+        <input type="text" id="enter_db_country" name="enter_db_country" required>
+        <br>
         <button type="submit">Send</button>
     </form>
 
@@ -80,19 +85,33 @@
 
 </html>
 
-
 <script>
-    // Initialize the map and set its view to a specific location
-    var map = L.map('map').setView([51.505, -0.09], 13); // [Latitude, Longitude], Zoom Level
-  
-    // Add OpenStreetMap tiles to the map
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 6); // Set initial zoom
+
+    // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-  
-    // Add a markers
-    L.marker([51.505, -0.09]).addTo(map)
-      .bindPopup('Marker of some kind')
-      .openPopup();
-  </script>
-  
+
+    // Function to fetch and display airport markers
+    function loadAirports() {
+        fetch(`/fetch_airports`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    data.forEach(airport => {
+                        L.marker([airport.lat, airport.lng]).addTo(map)
+                            .bindPopup(`<b>${airport.name}</b>`);
+                    });
+                } else {
+                    console.error("Fetched data is not an array:", data);
+                }
+            })
+            .catch(error => console.error('Error loading airport data:', error));
+        }
+
+
+    // Example: Load airports for the UK ('GB')
+    loadAirports();
+</script>
