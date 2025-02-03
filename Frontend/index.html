@@ -96,7 +96,12 @@
         <br>
         <button type="submit">Update Map</button>
     </form>
+    <br>
 
+    <b1> ROUTE: </b1>
+    <br>
+    <b2> {{user_route}} </b2>
+    <br>
     <div id="map" style="height: 900px; width: 100%;"></div> <!-- init map -->
 
     <script>
@@ -140,7 +145,7 @@
                         data.small_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: smallAirportIcon});
                             marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield()">Set as Origin</button>
+                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
                             `);
                             smallMarkersCluster.addLayer(marker);
                         });
@@ -196,6 +201,22 @@
 
         // Load initial airports with default filters
         loadAirports({ small_ap: true, medium_ap: true, large_ap: true });
+    </script>
+    <script>
+        function set_origin_airfield(airportname){
+            fetch("/set_origin", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+                body: JSON.stringify({airport_name: airportname}), // send airport name as the body
+            })
+            console.log(airportname)
+            .then(response => response.json()) // convert response to json - this bit is causing an error!
+            .then(data => {
+        document.getElementById("route_display").innerText = `Route: ${data.route}`;  // Update UI
+        })
+        .catch(error => console.error("Error setting origin:", error));  // Log any errors
+    }
+
     </script>
 </body>
 </html>

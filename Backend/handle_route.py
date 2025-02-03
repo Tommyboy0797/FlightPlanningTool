@@ -1,0 +1,2 @@
+origin_airfield = ""
+route = ""

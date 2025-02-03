@@ -6,7 +6,7 @@ from Backend import rotation_calc as rotation_calc
 from Backend import refusal as refusal
 from database import database_handler as db_handler
 from fastapi.responses import JSONResponse
-
+from Backend import handle_route as handle_route
 
 app = FastAPI()
 
@@ -63,3 +63,12 @@ def fetch_airports():
         "medium_airports": mediumairports,
         "large_airports": largeairports
     })
+
+# endpoint to handle the origin
+@app.post("/set_origin")
+def set_origin(airport_name: str):
+
+    handle_route.origin_airfield = airport_name 
+    handle_route.route = airport_name      
+    print(handle_route.route)
+    return JSONResponse(content={"message": f"Origin set to {airport_name}", "route": handle_route.route})
