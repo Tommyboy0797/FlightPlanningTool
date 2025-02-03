@@ -51,10 +51,15 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
     return respo
 
 
-
-# endpoint for airfields
+# endpoint for airports
 @app.get("/fetch_airports")
 def fetch_airports():
-    airports = db_handler.database_handle_navdata()
-    return JSONResponse(content = airports) # return airports as JSON when requested
-
+    mediumairports = db_handler.get_medium_airfields()
+    largeairports = db_handler.get_large_airfields()
+    smallairports = db_handler.get_small_airfields()
+    
+    return JSONResponse(content={
+        "small_airports": smallairports,
+        "medium_airports": mediumairports,
+        "large_airports": largeairports
+    })

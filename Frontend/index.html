@@ -87,31 +87,49 @@
 
 <script>
     // Initialize the map
-    var map = L.map('map').setView([51.505, -0.09], 6); // Set initial zoom
+    var map = L.map('map').setView([51.505, -0.09], 6);
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Function to fetch and display airport markers
+    var smallAirportIcon = L.icon({
+        iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAABgUlEQVR4nIWRzStEURjGf2ecGeZeG8zOR/wL7oaSjYXl4N5SIkqJjJ2FnWwUNiwxStlQ5zY+/gBLWZyy8bGRFBnjKyULMcfCjO6Mwbs5nZ7n97xPvWK6h3/Hc7w40AUsKa2Ogpr8HXJjIJqBMDAJtAH7wN8BruPaAjEPDAPlAekDzEGxX0z3gOd4nUAcWAdmgY6gyY7ZROwIT5dPFwbT4ms/k9dCuTcBjAGHpeD6oSS1fStY1VaTQMwE9XzACDAFPAdFq8aifjCJjEgyqXFeH18BPNdxywoClFY3Sqs54PobrrZoGFxDlkvuUgkyZ9+tqwC7uEF+rgCiVdGvzRWS++0Et6e3QU9WINo9x5OlAjZDMkRd/yrhaJiH3QnShTB8nXUP2IaiMxrMRvY923uzNdpZGaskfZoGUwCfAwvAALDzo4Gv/Xeg+yXzsp8+KYA/gJTBtCutlpVWbQaT/NEg1+MNRGPuMwpcGMyxr/3roMvXvikZYEAKWARaDWYlb/xtPgFd9n9MLLgfqAAAAABJRU5ErkJggg==', // Your base64 data here
+    });
+
+    var mediumAirportIcon = L.icon({
+        iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAABfklEQVR4nIXRMUtVcRzG8c/pnqt1jkOaLZVQb+G6FIiLg6PFPdSSNARhZFtDm7QE1VJjdoWgpeEcTHsBjtFwLy0VDSFE0jXLCMEhvJ0GPXC6V+tZ/vz5Ps/DA7+AOf9TfTSZwnk8yprpmzILDwzVkmGBGqq4hTGs4N8F9VoSC9zHVfSXUEfuVbc/YE59NJnEFJ7iLibKpoHhAX1Rn81Pm6tyZ7NW+rVgh/beWVzH657wsVhj+ZT57IRoMDojcKfMi4JruI2fZRgPxRrLI8K+0I3LG7Z/bENSryWVvwqyZvola6b3sFaAaCiysDwi7A/NTn+z/mG9QIOIuxcU+gzR0cjC0ojw8G64/b5d9vwWGK+PJuF+Bc8rYcWTxZOqR6puXvneHWb3rC/xgu4z5p51djqXZi62J+Pjsfa7nvBHPMA0lnoWZK10Bxe2NrZWusIdLMqNZ830cdZMx+QavQt2V/wSOL33m8Eq3mbNdK1sy1ppvn9BIMRDnJObL4wH6Q+YX3T83b7+/AAAAABJRU5ErkJggg==', // Your base64 data here
+    });
+
+    var largeAirportIcon = L.icon({
+        iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAAABmJLR0QA4ADgAODYf054AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1ggQEQ8TdhjdmgAAAB10RVh0Q29tbWVudABDcmVhdGVkIHdpdGggVGhlIEdJTVDvZCVuAAABiElEQVQoz42SPUgjURSFv6dvNGIqTTatgqJYWimYuLLFNguxsNiZVhJcEjsL220srLTNFCsITrBY/GFZoqCFiG7jTxGNwmCzWkiaWInBvTYTmUmi7G0ej3vOveeddxT/UU46nwQmgWUz9/XM39NvklJOBKWGAQOYA8aAfeD9AWspp1MptQhMA+2+1jMiR/V45Un8DCSBFWAB+OQHxQZjhKNh3AP3RkRGLNu8r1eQBb4A3+o3xAY+EM+MoQ1N5a7SW3bL3/24Fu9MA/NAxU+O9keJZ+LoNk3x9wVltwwwtZZyWgNP8LldBIYAIn0RPs6Oo0Oay0KJ85/nr16ISJdlmw9+BbX6C9Dd2814NoEOaUo7ATLAP6VUwknndbMBeSNkkMjEMToMrveuOQuS8b51G9hoGCAiq9XHauH4xx9Ku1ecrJ+CBMguMAMcApsNHng+dAC/gIlABmBLRLKWbd55eVGWbUpjEkWeUKrHu80AN4IUrZx564dZtilNkygKrWAJGBWRXA34Vr0A5+eD8J8Ey48AAAAASUVORK5CYII=', // Your base64 data here
+    });
+
     function loadAirports() {
-        fetch(`/fetch_airports`)
+        fetch('/fetch_airports')
             .then(response => response.json())
             .then(data => {
-                if (Array.isArray(data)) {
-                    data.forEach(airport => {
-                        L.marker([airport.lat, airport.lng]).addTo(map)
-                        .bindPopup(`<b>${airport.name}</b><br>Type: ${airport.type}`);
-                    });
-                } else {
-                    console.error("Fetched data is not an array:", data);
-                }
+                data.small_airports.forEach(airport => {
+                    L.marker([airport.lat, airport.lng], {icon: smallAirportIcon})
+                        .addTo(map)
+                        .bindPopup(`<b>${airport.name}</b> (${airport.type})`);
+                });
+
+                data.medium_airports.forEach(airport => {
+                    L.marker([airport.lat, airport.lng], {icon: mediumAirportIcon})
+                        .addTo(map)
+                        .bindPopup(`<b>${airport.name}</b> (${airport.type})`);
+                });
+
+                data.large_airports.forEach(airport => {
+                    L.marker([airport.lat, airport.lng], {icon: largeAirportIcon})
+                        .addTo(map)
+                        .bindPopup(`<b>${airport.name}</b> (${airport.type})`);
+                });
             })
-            .catch(error => console.error('Error loading airport data:', error));
-        }
+            .catch(error => console.error('Error fetching airport data:', error));
+    }
 
-
-    // Example: Load airports for the UK ('GB')
     loadAirports();
 </script>
