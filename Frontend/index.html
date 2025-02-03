@@ -139,7 +139,9 @@
                     if (filters.small_ap) {
                         data.small_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: smallAirportIcon});
-                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})`);
+                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
+                            <button onclick="set_origin_airfield()">Set as Origin</button>
+                            `);
                             smallMarkersCluster.addLayer(marker);
                         });
                     }
@@ -148,7 +150,9 @@
                     if (filters.medium_ap) {
                         data.medium_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: mediumAirportIcon});
-                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})`);
+                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
+                            <button onclick="set_origin_airfield()">Set as Origin</button>
+                            `);
                             mediumMarkersCluster.addLayer(marker);
                         });
                     }
@@ -157,7 +161,9 @@
                     if (filters.large_ap) {
                         data.large_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: largeAirportIcon});
-                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})`);
+                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
+                            <button onclick="set_origin_airfield()">Set as Origin</button>
+                            `);
                             largeMarkersCluster.addLayer(marker);
                         });
                     }
