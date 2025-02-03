@@ -44,7 +44,6 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
             "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
             "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
             "runway_slope": refusal.rwy_slope,
-            # "country_airport": db_handler.database_handle_navdata()
             }
     )
         
@@ -52,9 +51,10 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
     return respo
 
 
+
+# endpoint for airfields
 @app.get("/fetch_airports")
 def fetch_airports():
     airports = db_handler.database_handle_navdata()
-
-    return JSONResponse(content = airports)
+    return JSONResponse(content = airports) # return airports as JSON when requested
 
