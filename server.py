@@ -66,9 +66,10 @@ def fetch_airports():
 
 # endpoint to handle the origin
 @app.post("/set_origin")
-def set_origin(airport_name: str):
+def set_origin(airportname: str):
 
-    handle_route.origin_airfield = airport_name 
-    handle_route.route = airport_name      
+    handle_route.origin_airfield = airportname 
+    handle_route.route = airportname     
+    print(airportname) 
     print(handle_route.route)
-    return JSONResponse(content={"message": f"Origin set to {airport_name}", "route": handle_route.route})
+    return JSONResponse(content={"message": f"Origin set to {airportname}", "route": handle_route.route})
