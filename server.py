@@ -45,6 +45,7 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
             "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
             "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
             "runway_slope": refusal.rwy_slope,
+            "user_route": handle_route.route,
             }
     )
         
@@ -82,4 +83,8 @@ def set_origin(origin: Origin):
     handle_route.route = airport_name     
     print("print route",handle_route.route)
     print("print origin",handle_route.origin_airfield)
-    return JSONResponse(content={"message": f"Origin set to {airport_name}", "route": handle_route.route})
+
+    return {
+        "request": origin,
+        "user_route": handle_route.route,
+    }
