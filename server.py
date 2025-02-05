@@ -7,6 +7,7 @@ from Backend import refusal as refusal
 from database import database_handler as db_handler
 from fastapi.responses import JSONResponse
 from Backend import handle_route as handle_route
+from pydantic import BaseModel 
 
 app = FastAPI()
 
@@ -64,12 +65,21 @@ def fetch_airports():
         "large_airports": largeairports
     })
 
+
+class Origin(BaseModel):
+    airport_name:str
+
+
+
 # endpoint to handle the origin
 @app.post("/set_origin")
-def set_origin(airportname: str):
+def set_origin(origin: Origin):
 
-    handle_route.origin_airfield = airportname 
-    handle_route.route = airportname     
-    print(airportname) 
-    print(handle_route.route)
-    return JSONResponse(content={"message": f"Origin set to {airportname}", "route": handle_route.route})
+    airport_name = origin.airport_name
+    print(airport_name)
+
+    handle_route.origin_airfield = airport_name 
+    handle_route.route = airport_name     
+    print("print route",handle_route.route)
+    print("print origin",handle_route.origin_airfield)
+    return JSONResponse(content={"message": f"Origin set to {airport_name}", "route": handle_route.route})

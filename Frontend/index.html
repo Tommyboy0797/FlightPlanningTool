@@ -201,22 +201,22 @@
 
         // Load initial airports with default filters
         loadAirports({ small_ap: true, medium_ap: true, large_ap: true });
-    </script>
-    <script>
+
+
         function set_origin_airfield(airportname){
+            var stringified_origin = JSON.stringify({airport_name: airportname})
+            console.log(stringified_origin)
             fetch("/set_origin", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-                body: JSON.stringify({airport_name: airportname}), // send airport name as the body
+                body: stringified_origin, // send airport name as the body
             })
+
             console.log(airportname)
-            .then(response => response.json()) // convert response to json - this bit is causing an error!
-            .then(data => {
-        document.getElementById("route_display").innerText = `Route: ${data.route}`;  // Update UI
-        })
+            // .then(response => response.json(airportname)) // convert response to json - this bit is causing an error!
+
         .catch(error => console.error("Error setting origin:", error));  // Log any errors
     }
-
     </script>
 </body>
 </html>
