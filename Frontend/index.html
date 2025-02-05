@@ -156,7 +156,7 @@
                         data.medium_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: mediumAirportIcon});
                             marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield()">Set as Origin</button>
+                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
                             `);
                             mediumMarkersCluster.addLayer(marker);
                         });
@@ -167,7 +167,7 @@
                         data.large_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: largeAirportIcon});
                             marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield()">Set as Origin</button>
+                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
                             `);
                             largeMarkersCluster.addLayer(marker);
                         });
@@ -213,8 +213,7 @@
             })
 
             console.log(airportname)
-            // .then(response => response.json(airportname)) // convert response to json - this bit is causing an error!
-
+            
         .catch(error => console.error("Error setting origin:", error));  // Log any errors
     }
     </script>
