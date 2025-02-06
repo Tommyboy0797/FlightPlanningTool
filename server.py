@@ -19,19 +19,19 @@ def read_root(request: Request):
         "index.html", 
         {"request": request,
           "title": "TOLD TEST",
-            }
-
-        
+            }   
     )
+    
     return respo
 
 
 # endpoint to recieve value for gross weight
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
 def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, enter_db_country):
+
     gwt = float(gwt)
     perf_calc.aircraft_grossweight = gwt
-    print(gwt)
+
     respo = templates.TemplateResponse(
         "index.html", 
         {"request": request,
@@ -45,11 +45,10 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
             "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
             "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
             "runway_slope": refusal.rwy_slope,
-            "user_route": handle_route.route,
+            # "user_route": handle_route.route,
             }
     )
         
-    
     return respo
 
 
@@ -67,8 +66,8 @@ def fetch_airports():
     })
 
 
-class Origin(BaseModel):
-    airport_name:str
+class Origin(BaseModel): # class base model so that it knows what to expect
+    airport_name:str #airport name set to string
 
 
 
@@ -80,11 +79,12 @@ def set_origin(origin: Origin):
     print(airport_name)
 
     handle_route.origin_airfield = airport_name 
-    handle_route.route = airport_name     
+    handle_route.route = airport_name 
+
     print("print route",handle_route.route)
     print("print origin",handle_route.origin_airfield)
 
-    return {
+    return JSONResponse({ # return JSON route
         "request": origin,
-        "user_route": handle_route.route,
-    }
+        "user_route": handle_route.route, # route is not updating ? -> JSON error?
+    })
