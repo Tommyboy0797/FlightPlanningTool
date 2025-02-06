@@ -204,8 +204,10 @@
 
 
         function set_origin_airfield(airportname){
-            var stringified_origin = JSON.stringify({airport_name: airportname})
+
+            var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
             console.log(stringified_origin)
+
             fetch("/set_origin", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
