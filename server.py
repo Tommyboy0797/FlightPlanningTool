@@ -84,7 +84,4 @@ def set_origin(origin: Origin):
     print("print route",handle_route.route)
     print("print origin",handle_route.origin_airfield)
 
-    return JSONResponse({ # return JSON route
-        "request": origin,
-        "user_route": handle_route.route, # route is not updating ? -> JSON error?
-    })
+    return 

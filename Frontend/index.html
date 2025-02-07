@@ -100,7 +100,7 @@
 
     <b1> ROUTE: </b1>
     <br>
-    <b2> {{user_route}} </b2>
+    <b2> <p id="userRoute">{{user_route}}</p></b2>
     <br>
     <div id="map" style="height: 900px; width: 100%;"></div> <!-- init map -->
 
@@ -208,14 +208,13 @@
             var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
             console.log(stringified_origin)
 
+            document.getElementById("userRoute").innerHTML = airportname // setting the text for userroute to the origin for the route
+
             fetch("/set_origin", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
                 body: stringified_origin, // send airport name as the body
             })
-
-            console.log(airportname)
-            
         .catch(error => console.error("Error setting origin:", error));  // Log any errors
     }
     </script>
