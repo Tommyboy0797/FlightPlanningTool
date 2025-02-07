@@ -1,4 +1,6 @@
 import sqlite3
+from Backend import handle_route 
+
 
 def get_small_airfields():
     database_path = "database/nav_data.db" # path to database
@@ -43,4 +45,21 @@ def get_large_airfields():
     connect_to_db.close() # close database connection
 
     return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in all_airports] #return airfield info 
+
+
+def get_sids(origin):
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute("SELECT procedure_identifier FROM sids WHERE airport_identifier = ?", (origin,))
+
+    sids = cursor.fetchall()
+
+    connect_to_db.close()
+
+    indiv_sids = set(sids)
+
+    return indiv_sids
 

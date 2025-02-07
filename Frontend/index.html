@@ -94,14 +94,17 @@
         <label for="small_ap">Small Airports</label>
         <input type="checkbox" id="small_ap" name="small_ap">
         <br>
+        <label for="show_sids">Show SIDs</label>
+        <input type="checkbox" id="show_sids" name="show_sids">
         <button type="submit">Update Map</button>
     </form>
     <br>
 
     <b1> ROUTE: </b1>
-    <br>
     <b2> <p id="userRoute">{{user_route}}</p></b2>
     <br>
+    <b1> Standard Instrument Departures:</b1>
+    <b2> {{sids}} </b2>
     <div id="map" style="height: 900px; width: 100%;"></div> <!-- init map -->
 
     <script>
