@@ -53,13 +53,11 @@ def get_sids(origin):
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
     cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    cursor.execute("SELECT procedure_identifier FROM sids WHERE airport_identifier = ?", (origin,))
+    cursor.execute("SELECT DISTINCT procedure_identifier FROM sids WHERE airport_identifier = ?", (origin,))
 
     sids = cursor.fetchall()
 
     connect_to_db.close()
 
-    indiv_sids = set(sids)
-
-    return indiv_sids
+    return sids
 
