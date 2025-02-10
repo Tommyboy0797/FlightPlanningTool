@@ -23,49 +23,50 @@
 </head>
 <body>
     <h1> {{ title }} </h1>
+    <h1>TOLD TEST</h1>
     <h1> RESULTS: </h1>
 
     <b1> Gross Weight :</b1>
-    <b2> {{gross_weight_text}}lbs</b2>
+    <b2 id="gross_weight_txt"> lbs</b2>
 
     <br>
 
     <b1> Takeoff Factor : </b1>
-    <b2> {{takeoff_factor_text}} </b2>
+    <b2 id="takeofffactortext">  </b2>
 
     <br>
 
     <b1> Runway Available : </b1>
-    <b2> {{runway_avail}} feet </b2>
+    <b2 id="runway_avail_text">  feet </b2>
 
     <br>
 
     <b1> Runway Slope : </b1>
-    <b2> {{ runway_slope }} degrees </b2>
-    
+    <b2 id="runway_slope_text"> degrees </b2>
+
     <br>
 
-    <b1>{{ uncorrected_max_eff_TO_dist_text }}</b1>
-    <b2>{{uncorrected_max_eff_TO_dist}} feet </b2>
+    <b1>Uncorrected maximum effort takeoff distance:</b1>
+    <b2 id="uncorrected_max_eff_TO_dist_text"> feet </b2>
 
     <br>
 
     <b1> AMAX Rotation speed : </b1>
-    <b2> {{ rotation_speed_calculated }} knots </b2>
+    <b2 id="rotation_speed_calculated_text"> knots </b2>
 
     <br>
 
     <b1> Uncorrected Refusal 2 Value : </b1>
-    <b2> {{uncorrected_refusal_test_p2}} knots</b2>
+    <b2 id="uncorrected_refusal_test_p2_text"> knots</b2>
 
     <br>
 
     <b1> Partially Correct Refusal 3 Value:</b1>
-    <b2> {{ partially_corrected_refusal_p3 }} </b2>
+    <b2 id="partially_corrected_refusal_p3_text"> </b2>
 
     <br>
 
-    <form action="/get_data" method="GET">
+    <form id="dataForm">
         <label for="gwt">Enter Gross Weight: </label>
         <input type="text" id="gwt" name="gwt" required>
         <br>
@@ -84,7 +85,7 @@
         <button type="submit">Send</button>
     </form>
 
-    <form id="filterForm" action="/map_filters" method="GET">
+    <form id="filterForm">
         <label for="large_ap">Large Airports</label>
         <input type="checkbox" id="large_ap" name="large_ap">
         <br>
@@ -98,13 +99,14 @@
         <input type="checkbox" id="show_sids" name="show_sids">
         <button type="submit">Update Map</button>
     </form>
+
     <br>
 
     <b1> ROUTE: </b1>
-    <b2> <p id="userRoute">{{user_route}}</p></b2>
+    <b2> <p id="userRoute"></p></b2>
     <br>
     <b1> Standard Instrument Departures:</b1>
-    <b2> {{sids}} </b2>
+    <b2 id="sids_display"></b2> 
     <div id="map" style="height: 900px; width: 100%;"></div> <!-- init map -->
 
     <script>
@@ -128,68 +130,105 @@
             iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAABfklEQVR4nIXRMUtVcRzG8c/pnqt1jkOaLZVQb+G6FIiLg6PFPdSSNARhZFtDm7QE1VJjdoWgpeEcTHsBjtFwLy0VDSFE0jXLCMEhvJ0GPXC6V+tZ/vz5Ps/DA7+AOf9TfTSZwnk8yprpmzILDwzVkmGBGqq4hTGs4N8F9VoSC9zHVfSXUEfuVbc/YE59NJnEFJ7iLibKpoHhAX1Rn81Pm6tyZ7NW+rVgh/beWVzH657wsVhj+ZT57IRoMDojcKfMi4JruI2fZRgPxRrLI8K+0I3LG7Z/bENSryWVvwqyZvola6b3sFaAaCiysDwi7A/NTn+z/mG9QIOIuxcU+gzR0cjC0ojw8G64/b5d9vwWGK+PJuF+Bc8rYcWTxZOqR6puXvneHWb3rC/xgu4z5p51djqXZi62J+Pjsfa7nvBHPMA0lnoWZK10Bxe2NrZWusIdLMqNZ830cdZMx+QavQt2V/wSOL33m8Eq3mbNdK1sy1ppvn9BIMRDnJObL4wH6Q+YX3T83b7+/AAAAABJRU5ErkJggg=='
         });
 
+        document.getElementById('dataForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                gwt: document.getElementById('gwt').value,
+                get_to_factor: document.getElementById('get_to_factor').value,
+                get_rwy_available: document.getElementById('get_rwy_available').value,
+                get_rwy_slope: document.getElementById('get_rwy_slope').value,
+                enter_db_country: document.getElementById('enter_db_country').value
+            };
+            
+            const params = new URLSearchParams(formData);
+            
+            fetch(`/get_data?${params}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('gross_weight_txt').textContent = `${data.gross_weight_text} lbs`;
+                    document.getElementById('takeofffactortext').textContent = data.takeoff_factor_text;
+                    document.getElementById('runway_avail_text').textContent = `${data.runway_avail} feet`;
+                    document.getElementById('runway_slope_text').textContent = `${data.runway_slope} degrees`;
+                    document.getElementById('uncorrected_max_eff_TO_dist_text').textContent = `${data.uncorrected_max_eff_TO_dist} feet`;
+                    document.getElementById('rotation_speed_calculated_text').textContent = `${data.rotation_speed_calculated} knots`;
+                    document.getElementById('uncorrected_refusal_test_p2_text').textContent = `${data.uncorrected_refusal_test_p2} knots`;
+                    document.getElementById('partially_corrected_refusal_p3_text').textContent = data.partially_corrected_refusal_p3;
+                    document.getElementById('sids_display').textContent = data.sids.join(', ');
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        
         // Store markers for each airport type
         var smallAirportsMarkers = [];
         var mediumAirportsMarkers = [];
         var largeAirportsMarkers = [];
 
         function loadAirports(filters) {
-            const filterParams = new URLSearchParams(filters);
-            fetch(`/fetch_airports?${filterParams}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Initialize marker clusters
-                    var smallMarkersCluster = L.markerClusterGroup();
-                    var mediumMarkersCluster = L.markerClusterGroup();
-                    var largeMarkersCluster = L.markerClusterGroup();
+            
+    const filterParams = new URLSearchParams(filters);
+    fetch(`/fetch_airports?${filterParams}`)
+        .then(response => response.json())
+        .then(data => {
+            // Initialize marker clusters
+            var smallMarkersCluster = L.markerClusterGroup();
+            var mediumMarkersCluster = L.markerClusterGroup();
+            var largeMarkersCluster = L.markerClusterGroup();
 
-                    // Add small airports with clustering
-                    if (filters.small_ap) {
-                        data.small_airports.forEach(airport => {
-                            var marker = L.marker([airport.lat, airport.lng], {icon: smallAirportIcon});
-                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                            `);
-                            smallMarkersCluster.addLayer(marker);
-                        });
-                    }
+            // Add small airports with clustering
+            if (filters.small_ap && data.small_airports) {
+                data.small_airports.forEach(airport => {
+                    var marker = L.marker([airport.lat, airport.lng], { icon: smallAirportIcon });
+                    marker.bindPopup(`
+                        <b>${airport.name}</b> (${airport.type})<br>
+                        <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                    `);
+                    smallMarkersCluster.addLayer(marker);
+                });
+            }
 
-                    // Add medium airports with clustering
-                    if (filters.medium_ap) {
-                        data.medium_airports.forEach(airport => {
-                            var marker = L.marker([airport.lat, airport.lng], {icon: mediumAirportIcon});
-                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                            `);
-                            mediumMarkersCluster.addLayer(marker);
-                        });
-                    }
+            // Add medium airports with clustering
+            if (filters.medium_ap && data.medium_airports) {
+                data.medium_airports.forEach(airport => {
+                    var marker = L.marker([airport.lat, airport.lng], { icon: mediumAirportIcon });
+                    marker.bindPopup(`
+                        <b>${airport.name}</b> (${airport.type})<br>
+                        <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                    `);
+                    mediumMarkersCluster.addLayer(marker);
+                });
+            }
 
-                    // Add large airports with clustering
-                    if (filters.large_ap) {
-                        data.large_airports.forEach(airport => {
-                            var marker = L.marker([airport.lat, airport.lng], {icon: largeAirportIcon});
-                            marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                            `);
-                            largeMarkersCluster.addLayer(marker);
-                        });
-                    }
+            // Add large airports with clustering
+            if (filters.large_ap && data.large_airports) {
+                data.large_airports.forEach(airport => {
+                    var marker = L.marker([airport.lat, airport.lng], { icon: largeAirportIcon });
+                    marker.bindPopup(`
+                        <b>${airport.name}</b> (${airport.type})<br>
+                        <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                    `);
+                    largeMarkersCluster.addLayer(marker);
+                });
+            }
 
-                    // Clear previous markers
-                    map.eachLayer(layer => {
-                        if (layer instanceof L.MarkerClusterGroup) {
-                            map.removeLayer(layer);
-                        }
-                    });
+            // Clear previous marker clusters
+            map.eachLayer(layer => {
+                if (layer instanceof L.MarkerClusterGroup) {
+                    map.removeLayer(layer);
+                }
+            });
 
-                    // Add all clusters to the map
-                    map.addLayer(smallMarkersCluster);
-                    map.addLayer(mediumMarkersCluster);
-                    map.addLayer(largeMarkersCluster);
-                })
-                .catch(error => console.error('Error fetching airport data:', error));
-        }
+            // Add all clusters to the map
+            map.addLayer(smallMarkersCluster);
+            map.addLayer(mediumMarkersCluster);
+            map.addLayer(largeMarkersCluster);
+        })
+        .catch(error => console.error('Error fetching airport data:', error));
+    }
+
+    // Initial load
+    loadAirports({ small_ap: true, medium_ap: true, large_ap: true });
 
         // Update map on form submission
         document.getElementById('filterForm').addEventListener('submit', function(event) {
@@ -204,7 +243,15 @@
 
         // Load initial airports with default filters
         loadAirports({ small_ap: true, medium_ap: true, large_ap: true });
-
+        document.getElementById('gross_weight_txt').textContent = `${data.gross_weight_text} lbs`;
+        document.getElementById('takeofffactortext').textContent = data.takeoff_factor_text;
+        document.getElementById('runway_avail_text').textContent = `${data.runway_avail} feet`;
+        document.getElementById('runway_slope_text').textContent = `${data.runway_slope} degrees`;
+        document.getElementById('uncorrected_max_eff_TO_dist_text').textContent = `${data.uncorrected_max_eff_TO_dist} feet`;
+        document.getElementById('rotation_speed_calculated_text').textContent = `${data.rotation_speed_calculated} knots`;
+        document.getElementById('uncorrected_refusal_test_p2_text').textContent = `${data.uncorrected_refusal_test_p2} knots`;
+        document.getElementById('partially_corrected_refusal_p3_text').textContent = data.partially_corrected_refusal_p3;
+        document.getElementById('sids_display').textContent = data.sids.join(', ');
 
         function set_origin_airfield(airportname){
 
