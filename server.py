@@ -81,3 +81,15 @@ def set_origin(origin: Origin):
     print("print origin",handle_route.origin_airfield)
 
     return 
+
+
+@app.get("/set_sids")
+def set_sids():
+
+    origin_airfield = handle_route.origin_airfield
+
+    sids = {
+        "sids": database_handler.get_sids(origin_airfield)
+    }
+
+    return sids
