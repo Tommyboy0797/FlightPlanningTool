@@ -26,7 +26,7 @@
     <h1> RESULTS: </h1>
 
     <b1> Gross Weight :</b1>
-    <b2> {{gross_weight_text}}lbs</b2>
+    <b2 id="gross_weight_txt"> {{gross_weight_text}}lbs</b2>
 
     <br>
 
@@ -148,8 +148,8 @@
                         data.small_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: smallAirportIcon});
                             marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                            `);
+                            <button id="origin-btn-${airport.name}" onclick="set_origin_airfield('${airport.name}', ${JSON.stringify(airport.sids)})">Set as Origin</button>`
+                        );
                             smallMarkersCluster.addLayer(marker);
                         });
                     }
@@ -159,8 +159,8 @@
                         data.medium_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: mediumAirportIcon});
                             marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                            `);
+                            <button id="origin-btn-${airport.name}" onclick="set_origin_airfield('${airport.name}', ${JSON.stringify(airport.sids)})">Set as Origin</button>`
+                        );
                             mediumMarkersCluster.addLayer(marker);
                         });
                     }
@@ -170,8 +170,8 @@
                         data.large_airports.forEach(airport => {
                             var marker = L.marker([airport.lat, airport.lng], {icon: largeAirportIcon});
                             marker.bindPopup(`<b>${airport.name}</b> (${airport.type})<br>
-                            <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                            `);
+                            <button id="origin-btn-${airport.name}" onclick="set_origin_airfield('${airport.name}', ${JSON.stringify(airport.sids)})">Set as Origin</button>`
+                        );
                             largeMarkersCluster.addLayer(marker);
                         });
                     }
@@ -206,12 +206,20 @@
         loadAirports({ small_ap: true, medium_ap: true, large_ap: true });
 
 
-        function set_origin_airfield(airportname){
+        function set_origin_airfield(airportname, airportsids){
 
             var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
             console.log(stringified_origin)
 
             document.getElementById("userRoute").innerHTML = airportname // setting the text for userroute to the origin for the route
+            
+            if (airportsids.length > 0){
+                let sidOptions = airportsids.map(sid => `<option value="${sid}">${sid}</option>`).join("");
+                button.outerHTML = `<select id="sid-select-${airportname}" onchange="select_sid('${airportname}', this.value)"><option value="">Select SID</option>${sidOptions}</select>`;
+            } else {
+                button.textContent = "No SIDs Available";
+    }
+
 
             fetch("/set_origin", {
                 method: "POST",
