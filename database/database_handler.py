@@ -47,13 +47,13 @@ def get_large_airfields():
     return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in all_airports] #return airfield info 
 
 
-def get_sids(origin):
+def get_sids(origin,runway):
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
     cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    cursor.execute("SELECT DISTINCT procedure_identifier FROM sids WHERE airport_identifier = ?", (origin,))
+    cursor.execute("SELECT DISTINCT procedure_identifier FROM sids WHERE airport_identifier = ? AND transition_identifier = ?", (origin,runway))
 
     sids = cursor.fetchall()
 

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from Backend import perf_calc as perf_calc
 from Backend import rotation_calc as rotation_calc
 from Backend import refusal as refusal
@@ -13,6 +14,7 @@ from pydantic import BaseModel
 app = FastAPI()
 
 templates = Jinja2Templates(directory="Frontend")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def read_root(request: Request):
@@ -86,8 +88,9 @@ def set_origin(origin: Origin):
 @app.get("/set_sids")
 def set_sids():
     origin_airfield = handle_route.origin_airfield
+    selected_runway = handle_route.selected_runway
     sids = {
-        "sids": database_handler.get_sids(origin_airfield)
+        "sids": database_handler.get_sids(origin_airfield, selected_runway)
     }
     return sids
 
@@ -104,5 +107,9 @@ def return_runway(runwy: Rwy):
     
     handle_route.selected_runway = runwy.selected_runway
     print(handle_route.selected_runway)
-
-    return
+    origin_airfield = handle_route.origin_airfield
+    selected_runway = handle_route.selected_runway
+    sids = {
+        "sids": database_handler.get_sids(origin_airfield, selected_runway)
+    }
+    return sids
