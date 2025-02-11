@@ -72,8 +72,6 @@ def get_runways(origin):
 
     rwys = cursor.fetchall()
 
-    print("Runways: ", rwys)
-
     connect_to_db.close()
 
     return rwys
