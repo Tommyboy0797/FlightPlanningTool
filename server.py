@@ -64,7 +64,8 @@ def fetch_airports():
 class Origin(BaseModel): # class base model so that it knows what to expect
     airport_name:str #airport name set to string
 
-
+class rwy(BaseModel):
+    selected_runway:str
 
 # endpoint to handle the origin
 @app.post("/set_origin")
@@ -97,3 +98,10 @@ def get_rwys():
         "origin_runways": database_handler.get_runways(origin_airfield)
     }
     return runways
+
+@app.post("/return_runway")
+def return_runway(runwy: rwy):
+
+    handle_route.selected_runway = runwy
+    print(handle_route.selected_runway)
+    return

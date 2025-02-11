@@ -117,7 +117,6 @@
     <form id="enter_runway_sid">
         <label>Choose Runway:</label>
         <select name="enterRwy" id="enterRwy">
-            <option value="" selected="selected"></option>
         </select>
     </form>
 
@@ -292,15 +291,26 @@
                 document.getElementById('available_runways').textContent = data.origin_runways.join(', ');
             })
 
-            let runways_list = data.origin_runways
 
-            enter_rwy_dropdown = document.getElementById("enterRwy")
+            enter_rwy_dropdown.onchange = function () {
+                let selected_rwy = this.value;
+                if (!selected_rwy) return; // Prevent sending empty selections
 
-            runways_list.forEach(runway => {
-                enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
-            })
-        .catch(error => console.error("Error setting origin:", error));  // Log any errors
-    }
+                    console.log("Selected Runway:", selected_rwy);
+                    let stringified_selected_runway = JSON.stringify({ selected_runway: selected_rwy });
+
+                    fetch("/return_runway", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: stringified_selected_runway,
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log("Runway selection sent successfully"))
+                    .catch(error => console.error("Error sending selected runway:", error));
+                 };
+            }
+
+            
     </script>
 </body>
 </html>
