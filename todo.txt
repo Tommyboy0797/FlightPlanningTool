@@ -1,7 +1,7 @@
 Set origin now shows SIDs
 
 
-Make a dropdown to select runway (0.5)
+**Make a dropdown to select runway** (0.5) DONE
 Need to make dropdown menu with said SIDs inside. (1)
 Make a SID selectable (2)
 Make the waypoints for the SID show on the map (3)
