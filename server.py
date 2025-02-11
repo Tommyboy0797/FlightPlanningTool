@@ -84,16 +84,6 @@ def set_origin(origin: Origin):
 
     return 
 
-
-@app.get("/set_sids")
-def set_sids():
-    origin_airfield = handle_route.origin_airfield
-    selected_runway = handle_route.selected_runway
-    sids = {
-        "sids": database_handler.get_sids(origin_airfield, selected_runway)
-    }
-    return sids
-
 @app.get("/get_runways")
 def get_rwys():
     origin_airfield = handle_route.origin_airfield
