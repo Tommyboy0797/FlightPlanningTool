@@ -22,7 +22,6 @@
     <title>FlightPlanningToolTest</title>
 </head>
 <body>
-    <h1> {{ title }} </h1>
     <h1>TOLD TEST</h1>
     <h1> RESULTS: </h1>
 
@@ -104,12 +103,26 @@
 
     <b1> ROUTE: </b1>
     <b2> <p id="userRoute"></p></b2>
+
     <br>
+
     <b1> Standard Instrument Departures:</b1>
     <b2 id="sids_display"></b2> 
+
     <br>
+
     <b1> RUNWAYS: </b1>
     <b2 id="available_runways"></b2>
+
+    <form id="enter_runway_sid">
+        <label>Choose Runway:</label>
+        <select name="enterRwy" id="enterRwy">
+            <option value="" selected="selected"></option>
+        </select>
+    </form>
+
+    <br>
+
     <div id="map" style="height: 900px; width: 100%;"></div> <!-- init map -->
 
     <script>
@@ -269,9 +282,23 @@
             fetch(`/get_runways?`)
             .then(response => response.json())
             .then(data => {
+                let runways_list = data.origin_runways
+
+                enter_rwy_dropdown = document.getElementById("enterRwy")
+
+                runways_list.forEach(runway => {
+                    enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
+                })
                 document.getElementById('available_runways').textContent = data.origin_runways.join(', ');
             })
-        
+
+            let runways_list = data.origin_runways
+
+            enter_rwy_dropdown = document.getElementById("enterRwy")
+
+            runways_list.forEach(runway => {
+                enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
+            })
         .catch(error => console.error("Error setting origin:", error));  // Log any errors
     }
     </script>
