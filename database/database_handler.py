@@ -61,3 +61,11 @@ def get_sids(origin):
 
     return sids
 
+
+def get_runways(origin)
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute("SELECT DISTINCT ")
