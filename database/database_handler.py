@@ -62,10 +62,18 @@ def get_sids(origin):
     return sids
 
 
-def get_runways(origin)
+def get_runways(origin):
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
     cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    cursor.execute("SELECT DISTINCT ")
+    cursor.execute("SELECT DISTINCT transition_identifier FROM sids WHERE transition_identifier LIKE 'RW%' AND airport_identifier = ?", (origin,))
+
+    rwys = cursor.fetchall()
+
+    print("Runways: ", rwys)
+
+    connect_to_db.close()
+
+    return rwys
