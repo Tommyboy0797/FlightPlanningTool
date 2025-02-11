@@ -296,8 +296,7 @@
                 let selected_rwy = this.value;
                 if (!selected_rwy) return; // Prevent sending empty selections
 
-                    console.log("Selected Runway:", selected_rwy);
-                    let stringified_selected_runway = JSON.stringify({ selected_runway: selected_rwy });
+                    let stringified_selected_runway = JSON.stringify({selected_runway: selected_rwy});
 
                     fetch("/return_runway", {
                         method: "POST",
@@ -305,7 +304,6 @@
                         body: stringified_selected_runway,
                     })
                     .then(response => response.json())
-                    .then(data => console.log("Runway selection sent successfully"))
                     .catch(error => console.error("Error sending selected runway:", error));
                  };
             }
