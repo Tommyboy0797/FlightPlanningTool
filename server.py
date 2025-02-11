@@ -89,3 +89,11 @@ def set_sids():
         "sids": database_handler.get_sids(origin_airfield)
     }
     return sids
+
+@app.get("/get_runways")
+def get_rwys():
+    origin_airfield = handle_route.origin_airfield
+    runways = {
+        "origin_runways": database_handler.get_runways(origin_airfield)
+    }
+    return runways
