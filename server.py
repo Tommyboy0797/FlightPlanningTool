@@ -96,7 +96,7 @@ def get_rwys():
 def return_runway(runwy: Rwy):
     
     handle_route.selected_runway = runwy.selected_runway
-    print(handle_route.selected_runway)
+
     origin_airfield = handle_route.origin_airfield
     selected_runway = handle_route.selected_runway
     sids = {

@@ -130,15 +130,11 @@ document.getElementById('filterForm').addEventListener('submit', function(event)
 loadAirports({ small_ap: true, medium_ap: true, large_ap: true, show_sids: true, });
 
 enter_rwy_dropdown = document.getElementById("enterRwy");
+enter_sid_dropdown = document.getElementById("chooseSid")
 
 function set_origin_airfield(airportname){
-    var airport_name_is = ""
-    var airport_name_is = airportname
-
     var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
     console.log(stringified_origin)
-
-    
 
     document.getElementById("userRoute").innerHTML = airportname // setting the text for userroute to the origin for the route
 
@@ -147,12 +143,6 @@ function set_origin_airfield(airportname){
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
         body: stringified_origin, // send airport name as the body
     })
-
-    // fetch(`/set_sids?`)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         document.getElementById('sids_display').textContent = data.sids.join(', ');
-    //     })
 
     const dropdown = document.getElementById("runways_dropdown");
 
@@ -168,9 +158,9 @@ function set_origin_airfield(airportname){
         runways_list.forEach(runway => {
             enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
         })
+
         document.getElementById('available_runways').textContent = data.origin_runways.join(', ');
     })
-
     
     }
 
@@ -187,9 +177,21 @@ function set_origin_airfield(airportname){
                 headers: { "Content-Type": "application/json" },
                 body: stringified_selected_runway,
             })
+
             .then(response => response.json())
             .then(data => {
+   
                 document.getElementById('sids_display').textContent = data.sids.join(', ');
+
+                let sid_list = data.sids;
+
+                console.log(data.sids);
+
+                enter_sid_dropdown.innerHTML = ""
+
+                data.sids.forEach(sids => {
+                    enter_sid_dropdown.options[enter_sid_dropdown.options.length] = new Option(sids, sids);
+                })
             })
             .catch(error => console.error("Error sending selected runway:", error));
          };
