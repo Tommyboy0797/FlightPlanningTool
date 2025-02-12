@@ -2,7 +2,8 @@ Set origin now shows SIDs
 
 
 **Make a dropdown to select runway** (0.5) DONE
-Need to make dropdown menu with said SIDs inside. (1)
+Need to make dropdown menu with said SIDs inside. -> started. Data outputs into terminal OK, but not on frontend.
+     Appears as "[object Object],[object Object],[object Object]", amount of objects determined by amount of SID points.  (1)
 Make a SID selectable (2)
 Make the waypoints for the SID show on the map (3)
 Make the points joined via blue line (4)
