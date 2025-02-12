@@ -75,3 +75,18 @@ def get_runways(origin):
     connect_to_db.close()
 
     return rwys
+
+def send_sid_points(selectedsid):
+
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute("SELECT waypoint_latitude, waypoint_longitude, center_waypoint_latitude, center_waypoint_longitude, waypoint_identifier, seqno FROM sids WHERE procedure_identifier = ?", (selectedsid,))
+
+    selected_sid = cursor.fetchall()
+
+    connect_to_db.close()
+
+    return [{"lat": waypoint_latitude, "lng": waypoint_longitude, "ctr_lat": center_waypoint_latitude, "ctr_lng": center_waypoint_longitude, "wpt_ident": waypoint_identifier, "sequence_number": seqno} for waypoint_latitude, waypoint_longitude, center_waypoint_latitude, center_waypoint_longitude, waypoint_identifier, seqno in selected_sid]

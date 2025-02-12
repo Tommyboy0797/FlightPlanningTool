@@ -183,8 +183,6 @@ function set_origin_airfield(airportname){
    
                 document.getElementById('sids_display').textContent = data.sids.join(', ');
 
-                let sid_list = data.sids;
-
                 console.log(data.sids);
 
                 enter_sid_dropdown.innerHTML = ""
@@ -192,7 +190,24 @@ function set_origin_airfield(airportname){
                 data.sids.forEach(sids => {
                     enter_sid_dropdown.options[enter_sid_dropdown.options.length] = new Option(sids, sids);
                 })
+
             })
             .catch(error => console.error("Error sending selected runway:", error));
          };
+
+    document.getElementById("chooseSid").onchange = function () {
+        let selected_sid = this.value;
+        let stringified_selected_sid = JSON.stringify({selected_sid: selected_sid});
+
+        fetch("/return_sid", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: stringified_selected_sid,
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("chosen_sid").textContent = data.selected_sid;
+
+        })
+    };
     

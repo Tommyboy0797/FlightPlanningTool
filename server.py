@@ -69,6 +69,9 @@ class Origin(BaseModel): # class base model so that it knows what to expect
 class Rwy(BaseModel):
     selected_runway:str
 
+class Sid(BaseModel):
+    selected_sid:str
+
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: Origin):
@@ -103,3 +106,16 @@ def return_runway(runwy: Rwy):
         "sids": database_handler.get_sids(origin_airfield, selected_runway)
     }
     return sids
+
+@app.post("/return_sid")
+def return_sid(select_sid: Sid):
+
+    handle_route.selected_sid = select_sid.selected_sid
+    print(f"Using the {handle_route.selected_sid} sid")
+
+    print(f"function data:{database_handler.send_sid_points(handle_route.selected_sid)}")
+    sid_waypoints = {
+        "selected_sid": database_handler.send_sid_points(handle_route.selected_sid)
+    }
+
+    return sid_waypoints
