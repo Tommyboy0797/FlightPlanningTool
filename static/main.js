@@ -198,30 +198,35 @@ function set_origin_airfield(airportname){
     document.getElementById("chooseSid").onchange = function () {
         let selected_sid = this.value;
         let stringified_selected_sid = JSON.stringify({selected_sid: selected_sid});
-    
+
+        if (window.sid_waypoints && window.sid_waypoints.length > 0) {
+            window.sid_waypoints.forEach(marker => map.removeLayer(marker));
+        }
+
+        // Reset the marker array
+        window.sid_waypoints = [];
+
         fetch("/return_sid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: stringified_selected_sid,
         })
+
         .then(response => response.json())
         .then(data => {
             
             console.log("selected sid", data.selected_sid);
             console.log("sid points", data.selected_sid_points);
-            
 
             document.getElementById("chosen_sid").textContent = data.selected_sid;
 
             data.selected_sid_points.forEach(point => {
-                var sid_waypoint = L.marker([point.lat, point.lng]);
-                console.log("Lat and long points: ", point.lat, point.long);
-                // map.removeLayer(sid_waypoint);
-                sid_waypoint.bindPopup(`
-                    <b>${point.ident}</b>)
-                    `)
-                map.addLayer(sid_waypoint);
-            })
+                let sid_waypoint = L.marker([point.lat, point.lng])
+                    .bindPopup(`<b>${point.ident}</b>`)
+                    .addTo(map);
+    
+                window.sid_waypoints.push(sid_waypoint);
+            });
 
         })
     };
