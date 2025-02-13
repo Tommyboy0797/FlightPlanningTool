@@ -83,11 +83,24 @@ def send_sid_points(selectedsid):
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
     cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    cursor.execute("""SELECT CASE WHEN waypoint_latitude IS NOT null THEN waypoint_latitude ELSE center_waypoint_latitude END AS latitude,
-                   CASE WHEN waypoint_longitude IS NOT null THEN waypoint_longitude ELSE center_waypoint_longitude END AS longitude,
-                   waypoint_identifier, seqno 
-                   FROM sids 
-                   WHERE procedure_identifier = ?""", (selectedsid,))
+    cursor.execute("""
+        SELECT 
+            CASE 
+                WHEN waypoint_latitude IS NOT NULL THEN waypoint_latitude 
+                ELSE center_waypoint_latitude 
+            END AS latitude,
+            CASE 
+                WHEN waypoint_longitude IS NOT NULL THEN waypoint_longitude 
+                ELSE center_waypoint_longitude 
+            END AS longitude,
+            waypoint_identifier, 
+            seqno
+        FROM sids 
+        WHERE procedure_identifier = ?
+        AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
+        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)""", (selectedsid,))
+
+
 
     selected_sid = cursor.fetchall()
 
