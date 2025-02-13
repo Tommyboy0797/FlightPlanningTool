@@ -206,8 +206,20 @@ function set_origin_airfield(airportname){
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data.selected_sid);
-            document.getElementById("chosen_sid").textContent = data.selected_sid.join(', ');
+            map.removeLayer(sid_waypoint);
+
+            console.log("selected sid", data.selected_sid);
+            console.log("sid points", data.selected_sid_points);
+
+            document.getElementById("chosen_sid").textContent = data.selected_sid;
+
+            data.selected_sid_points.forEach(point => {
+                var sid_waypoint = L.marker([point.lat, point.lng]);
+                sid_waypoint.bindPopup(`
+                    <b>${point.wpt_ident}</b>)
+                    `)
+                map.addLayer(sid_waypoint);
+            })
 
         })
     };
