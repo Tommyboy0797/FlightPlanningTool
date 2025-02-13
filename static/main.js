@@ -206,7 +206,8 @@ function set_origin_airfield(airportname){
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById("chosen_sid").textContent = data.selected_sid;
+            console.log(data.selected_sid);
+            document.getElementById("chosen_sid").textContent = data.selected_sid.join(', ');
 
         })
     };
