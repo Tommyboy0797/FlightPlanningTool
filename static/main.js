@@ -198,7 +198,7 @@ function set_origin_airfield(airportname){
     document.getElementById("chooseSid").onchange = function () {
         let selected_sid = this.value;
         let stringified_selected_sid = JSON.stringify({selected_sid: selected_sid});
-
+    
         fetch("/return_sid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -206,8 +206,7 @@ function set_origin_airfield(airportname){
         })
         .then(response => response.json())
         .then(data => {
-            map.removeLayer(sid_waypoint);
-
+            
             console.log("selected sid", data.selected_sid);
             console.log("sid points", data.selected_sid_points);
 
@@ -215,6 +214,7 @@ function set_origin_airfield(airportname){
 
             data.selected_sid_points.forEach(point => {
                 var sid_waypoint = L.marker([point.lat, point.lng]);
+                // map.removeLayer(sid_waypoint);
                 sid_waypoint.bindPopup(`
                     <b>${point.wpt_ident}</b>)
                     `)
