@@ -209,11 +209,13 @@ function set_origin_airfield(airportname){
             
             console.log("selected sid", data.selected_sid);
             console.log("sid points", data.selected_sid_points);
+            
 
             document.getElementById("chosen_sid").textContent = data.selected_sid;
 
             data.selected_sid_points.forEach(point => {
                 var sid_waypoint = L.marker([point.lat, point.lng]);
+                console.log("Lat and long points: ", point.lat, point.long);
                 // map.removeLayer(sid_waypoint);
                 sid_waypoint.bindPopup(`
                     <b>${point.wpt_ident}</b>)
