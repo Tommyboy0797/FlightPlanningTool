@@ -218,7 +218,7 @@ function set_origin_airfield(airportname){
                 console.log("Lat and long points: ", point.lat, point.long);
                 // map.removeLayer(sid_waypoint);
                 sid_waypoint.bindPopup(`
-                    <b>${point.wpt_ident}</b>)
+                    <b>${point.ident}</b>)
                     `)
                 map.addLayer(sid_waypoint);
             })
