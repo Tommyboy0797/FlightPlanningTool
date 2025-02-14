@@ -14,3 +14,7 @@ Set origin now shows SIDs
 
 
 Make the points joined via blue line (4)
+- Done somewhat...
+- some points are just blatantly incorrect.
+- Some sort of data validation needed perhaps?
+
