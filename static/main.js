@@ -220,12 +220,15 @@ function set_origin_airfield(airportname){
 
             document.getElementById("chosen_sid").textContent = data.selected_sid;
 
+            data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
+
             data.selected_sid_points.forEach(point => {
                 let sid_waypoint = L.marker([point.lat, point.lng])
                     .bindPopup(`<b>${point.ident}</b>`)
                     .addTo(map);
-    
-                window.sid_waypoints.push(sid_waypoint);
+                let sid_lines = L.polyline(data.selected_sid_points, { color: "blue"}).addTo(map);
+                window.sid_waypoints.push(sid_waypoint, sid_lines);
+                
             });
 
         })
