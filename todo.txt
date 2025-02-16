@@ -16,57 +16,6 @@ Set origin now shows SIDs
 **Make the points joined via blue line (4)** DONE
 
 Set up tranisiton stuff (5)
-WITH rw_to_sid as (
-SELECT 
-            CASE 
-                WHEN waypoint_latitude IS NOT NULL THEN waypoint_latitude 
-                ELSE center_waypoint_latitude 
-            END AS latitude,
-            CASE 
-                WHEN waypoint_longitude IS NOT NULL THEN waypoint_longitude 
-                ELSE center_waypoint_longitude 
-            END AS longitude,
-            waypoint_identifier,  transition_identifier
-        FROM sids 
-        WHERE procedure_identifier = 'LEETZ6'
-        AND transition_identifier = 'RW17'    
-        AND airport_identifier = 'KSLC'
-        AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
-        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)
-        ORDER BY seqno
-),
-transition_options as (
-SELECT DISTINCT transition_identifier 
-FROM sids
-        WHERE procedure_identifier = 'LEETZ6'
-        AND airport_identifier = 'KSLC'
-        AND transition_identifier NOT LIKE 'RW%'
-        AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
-        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)
-),
-sid_to_transition AS (
-SELECT 
-            CASE 
-                WHEN waypoint_latitude IS NOT NULL THEN waypoint_latitude 
-                ELSE center_waypoint_latitude 
-            END AS latitude,
-            CASE 
-                WHEN waypoint_longitude IS NOT NULL THEN waypoint_longitude 
-                ELSE center_waypoint_longitude 
-            END AS longitude,
-            waypoint_identifier,  transition_identifier
-        FROM sids 
-        WHERE procedure_identifier = 'LEETZ6'
-        AND airport_identifier = 'KSLC'
-        AND transition_identifier IN (SELECT transition_identifier FROM transition_options LIMIT 1)
-        AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
-        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)
-        ORDER BY seqno
-)
-select * , row_number() over() as row
-from 
-(select * from rw_to_sid
-UNION ALL
-select * from sid_to_transition) as tmp
-
-
+- transitons show in a green line BUT:
+    - for some reason, SID waypoints dont hide depending on transition selected
+    - transitions do not reset when the origin airfield changes
