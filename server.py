@@ -119,7 +119,7 @@ def return_sid(select_sid: Sid):
     print(f"function data:{database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield)}")
     sid_waypoints = {
         "selected_sid": handle_route.selected_sid,
-        "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield),
+        "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield, handle_route.selected_transition),
         "all_transitions": database_handler.get_transition_points(handle_route.origin_airfield, handle_route.selected_sid)
     }
 

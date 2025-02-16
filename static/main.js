@@ -245,37 +245,47 @@ function set_origin_airfield(airportname){
     
     document.getElementById("chooseTransition").onchange = function() {
         let selected_trans = this.value;
-        stringified_transition = JSON.stringify({selected_transition : selected_trans});
-        
+        let stringified_transition = JSON.stringify({ selected_transition: selected_trans });
+    
         fetch("/handle_transition", {  
             method: "POST",
-            headers: {"Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" },
             body: stringified_transition,
         })
-
         .then(response => response.json())
         .then(data => {
-
             console.log("chosen transition:", data.selected_transition);
-
-            document.getElementById("chosen_tran".textContent = data.selected_transition);
-            
+    
+            document.getElementById("chosen_tran").textContent = data.selected_transition;
+    
             data.selected_transition_points.sort((a, b) => a.sequence_number - b.sequence_number);
-            
+    
+            // Ensure window.transition_waypoints is initialized
+            if (!window.transition_waypoints) {
+                window.transition_waypoints = [];
+            }
+    
+            // Clear previous waypoints if necessary
+            window.transition_waypoints.forEach(layer => map.removeLayer(layer));
+            window.transition_waypoints = [];
+    
+            let waypoints = [];
+    
             data.selected_transition_points.forEach(point => {
                 let transition_waypoint = L.marker([point.lat, point.lng])
                     .bindPopup(`<b>${point.ident}</b>`)
-                    .addTo(map); 
-                let transition_lines = L.polyline(data.selected_transition_points, {color: "yellow"}).addTo(map);
-                window.transition_waypoints.push(transition_waypoint, transition_lines);
-            })
-
-
-
+                    .addTo(map);
+    
+                window.transition_waypoints.push(transition_waypoint);
+                waypoints.push([point.lat, point.lng]); // Collect lat/lng for polyline
+            });
+    
+            // Draw polyline only if there are waypoints
+            if (waypoints.length > 1) {
+                let transition_lines = L.polyline(waypoints, { color: "green" }).addTo(map);
+                window.transition_waypoints.push(transition_lines);
+            }
         })
-
-
-
-
-
-    }
+        .catch(error => console.error("Error:", error));
+    };
+    
