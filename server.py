@@ -72,6 +72,9 @@ class Rwy(BaseModel):
 class Sid(BaseModel):
     selected_sid:str
 
+class Trans(BaseModel):
+    selected_transition:str
+
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: Origin):
@@ -116,7 +119,21 @@ def return_sid(select_sid: Sid):
     print(f"function data:{database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield)}")
     sid_waypoints = {
         "selected_sid": handle_route.selected_sid,
-        "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield)
+        "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield),
+        "all_transitions": database_handler.get_transition_points(handle_route.origin_airfield, handle_route.selected_sid)
     }
 
     return sid_waypoints
+
+@app.post("/handle_transition")
+def handle_transition(transiton: Trans):
+    handle_route.selected_transition = transiton.selected_transition
+    
+    print(database_handler.send_transitions(handle_route.selected_transition, handle_route.selected_sid))
+    transition_points = {
+        "selected_transition": handle_route.selected_transition,
+        "selected_transition_points": database_handler.send_transitions(handle_route.selected_transition, handle_route.selected_sid)
+    }
+
+   
+    return transition_points

@@ -130,7 +130,8 @@ document.getElementById('filterForm').addEventListener('submit', function(event)
 loadAirports({ small_ap: true, medium_ap: true, large_ap: true, show_sids: true, });
 
 enter_rwy_dropdown = document.getElementById("enterRwy");
-enter_sid_dropdown = document.getElementById("chooseSid")
+enter_sid_dropdown = document.getElementById("chooseSid");
+enter_transition_dropdown = document.getElementById("chooseTransition");
 
 function set_origin_airfield(airportname){
     var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
@@ -228,9 +229,53 @@ function set_origin_airfield(airportname){
                     .addTo(map);
                 let sid_lines = L.polyline(data.selected_sid_points, { color: "blue"}).addTo(map);
                 window.sid_waypoints.push(sid_waypoint, sid_lines);
+
+            data.all_transitions.innerHTML = "";
+            data.all_transitions.forEach(transition => {
+                enter_transition_dropdown.options[enter_transition_dropdown.options.length] = new Option(transition, transition );
+
+            document.getElementById("chosen_tran".textContent = data.selected_transition);
+            })
+    
                 
             });
 
         })
     };
     
+    document.getElementById("chooseTransition").onchange = function() {
+        let selected_trans = this.value;
+        stringified_transition = JSON.stringify({selected_transition : selected_trans});
+        
+        fetch("/handle_transition", {  
+            method: "POST",
+            headers: {"Content-Type": "application/json" },
+            body: stringified_transition,
+        })
+
+        .then(response => response.json())
+        .then(data => {
+
+            console.log("chosen transition:", data.selected_transition);
+
+            document.getElementById("chosen_tran".textContent = data.selected_transition);
+            
+            data.selected_transition_points.sort((a, b) => a.sequence_number - b.sequence_number);
+            
+            data.selected_transition_points.forEach(point => {
+                let transition_waypoint = L.marker([point.lat, point.lng])
+                    .bindPopup(`<b>${point.ident}</b>`)
+                    .addTo(map); 
+                let transition_lines = L.polyline(data.selected_transition_points, {color: "yellow"}).addTo(map);
+                window.transition_waypoints.push(transition_waypoint, transition_lines);
+            })
+
+
+
+        })
+
+
+
+
+
+    }
