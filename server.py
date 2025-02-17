@@ -72,6 +72,9 @@ class Rwy(BaseModel):
 class Sid(BaseModel):
     selected_sid:str
 
+class Arrival(BaseModel):
+    arrival_field:str
+
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: Origin):
@@ -120,3 +123,17 @@ def return_sid(select_sid: Sid):
     }
 
     return sid_waypoints
+
+@app.post("/return_arrival_airport")
+def return_arrival_airport(arrival_airfield: Arrival):
+
+    handle_route.arrival_airfield = arrival_airfield.arrival_field
+    
+    print(f"Arrival airport: {handle_route.arrival_airfield}")
+    
+    arrival_data = {
+        "arrival_airfield": handle_route.arrival_airfield
+    }
+
+    return arrival_data
+
