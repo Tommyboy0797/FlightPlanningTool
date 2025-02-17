@@ -13,9 +13,8 @@ Set origin now shows SIDs
 **Make the waypoints for the SID show on the map (3)** DONE
 
 
-**Make the points joined via blue line (4)** DONE
+Make the points joined via blue line (4)
+- Done somewhat...
+- some points are just blatantly incorrect.
+- Some sort of data validation needed perhaps?
 
-Set up tranisiton stuff (5)
-- transitons show in a green line BUT:
-    - for some reason, SID waypoints dont hide depending on transition selected
-    - transitions do not reset when the origin airfield changes

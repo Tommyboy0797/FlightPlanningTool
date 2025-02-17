@@ -76,15 +76,14 @@ def get_runways(origin):
 
     return rwys
 
+def send_sid_points(selectedsid,origin):
 
-def send_sid_points(selectedsid, origin, transition=None):
-    database_path = "database/nav_data.db"  # Path to database
+    database_path = "database/nav_data.db" # path to database
 
-    connect_to_db = sqlite3.connect(database_path)  # Connect to database
-    cursor = connect_to_db.cursor()  # Create a cursor to execute SQL commands
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    # Base query
-    query = """
+    cursor.execute("""
         SELECT 
             CASE 
                 WHEN waypoint_latitude IS NOT NULL THEN waypoint_latitude 
@@ -100,61 +99,12 @@ def send_sid_points(selectedsid, origin, transition=None):
         WHERE procedure_identifier = ?
         AND airport_identifier = ?
         AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
-        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)
-    """
+        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)""", (selectedsid, origin))
 
-    params = [selectedsid, origin]
 
-    if transition:
-        query += " AND transition_identifier = ?"
-        params.append(transition)
 
-    cursor.execute(query, tuple(params))
     selected_sid = cursor.fetchall()
 
     connect_to_db.close()
 
-    return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} 
-            for latitude, longitude, waypoint_ident, seqno in selected_sid]
-
-
-def send_transitions(transition, sid):
-    database_path = "database/nav_data.db"  # Path to the database
-
-    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
-    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
-
-    cursor.execute("""
-            SELECT 
-                CASE 
-                    WHEN waypoint_latitude IS NOT NULL THEN waypoint_latitude 
-                    ELSE center_waypoint_latitude 
-                END AS latitude,
-                CASE 
-                    WHEN waypoint_longitude IS NOT NULL THEN waypoint_longitude 
-                    ELSE center_waypoint_longitude 
-                END AS longitude,
-                waypoint_identifier, 
-                seqno, 
-                transition_identifier
-            FROM sids
-            WHERE transition_identifier = ?
-            AND procedure_identifier = ?""", (transition, sid))
-    selected_transitions = cursor.fetchall()
-    return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno, "transition_identifier":transition_identifier } for latitude, longitude, waypoint_ident, seqno, transition_identifier in selected_transitions]
-
-
-def get_transition_points(airport,sid):
-
-    database_path = "database/nav_data.db" # path to database
-
-    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
-    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
-    print("sid value:", sid)
-    print("airport value: ", airport)
-    cursor.execute("SELECT DISTINCT transition_identifier FROM sids WHERE transition_identifier NOT LIKE 'RW%' AND airport_identifier = ? AND procedure_identifier = ?", (airport, sid))
-
-    transition_names = cursor.fetchall()
-
-
-    return transition_names
+    return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_sid]
