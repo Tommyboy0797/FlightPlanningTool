@@ -109,3 +109,55 @@ def send_sid_points(selectedsid,origin,runway):
     connect_to_db.close()
 
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_sid]
+
+
+def get_stars(arrival,runway):
+
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute("SELECT DISTINCT procedure_identifier FROM stars WHERE airport_identifier = ? AND transition_identifier = ?", (arrival,runway))
+
+    stars = cursor.fetchall()
+
+    connect_to_db.close()
+
+    return
+
+
+
+def send_star_data(procedure, airport):
+
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+    
+    cursor.execute("""
+        SELECT 
+            CASE 
+                WHEN waypoint_latitude IS NOT NULL THEN waypoint_latitude 
+                ELSE center_waypoint_latitude 
+            END AS latitude,
+            CASE 
+                WHEN waypoint_longitude IS NOT NULL THEN waypoint_longitude 
+                ELSE center_waypoint_longitude 
+            END AS longitude,
+            waypoint_identifier, 
+            seqno
+            FROM stars
+            WHERE procedure_identifier = ?
+            AND airport identifier = ?
+            AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
+            AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)                 
+                   """, (procedure, airport))
+
+
+
+    selected_star = cursor.fetchall()
+
+    connect_to_db.close()
+
+    return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_star]

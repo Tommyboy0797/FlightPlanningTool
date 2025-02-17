@@ -136,7 +136,8 @@ document.getElementById('filterForm').addEventListener('submit', function(event)
 loadAirports({ small_ap: true, medium_ap: true, large_ap: true, show_sids: true, });
 
 enter_rwy_dropdown = document.getElementById("enterRwy");
-enter_sid_dropdown = document.getElementById("chooseSid")
+enter_sid_dropdown = document.getElementById("chooseSid");
+enter_arr_runway = document.getElementById("chooseArrRw");
 
 function set_origin_airfield(airportname){
     var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
@@ -254,6 +255,14 @@ function set_arrival_airfield(arrival_field) {
     .then(data => {
 
         console.log("Selected Arrival: ", data.arrival_airfield);
+        console.log("Arrival runways: ", data.arrival_runways);
+
+        enter_arr_runway.innerHTML = "";
+
+        data.arrival_runways.forEach(runway => {
+            enter_arr_runway.options[enter_arr_runway.options.length] = new Option(runway, runway);
+
+        })
 
     })
 }

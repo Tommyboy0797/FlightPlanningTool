@@ -128,11 +128,14 @@ def return_sid(select_sid: Sid):
 def return_arrival_airport(arrival_airfield: Arrival):
 
     handle_route.arrival_airfield = arrival_airfield.arrival_field
-    
+    arrival_runways = database_handler.get_runways(handle_route.arrival_airfield)
+
     print(f"Arrival airport: {handle_route.arrival_airfield}")
     
     arrival_data = {
-        "arrival_airfield": handle_route.arrival_airfield
+        "arrival_airfield": handle_route.arrival_airfield,
+        "arrival_runways": arrival_runways,
+        "arrival_stars": database_handler.get_stars(handle_route.arrival_airfield, handle_route.selected_runway_arrival)
     }
 
     return arrival_data
