@@ -76,7 +76,7 @@ def get_runways(origin):
 
     return rwys
 
-def send_sid_points(selectedsid,origin):
+def send_sid_points(selectedsid,origin,runway):
 
     database_path = "database/nav_data.db" # path to database
 
@@ -98,8 +98,9 @@ def send_sid_points(selectedsid,origin):
         FROM sids 
         WHERE procedure_identifier = ?
         AND airport_identifier = ?
+        AND transition_identifier = ?
         AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
-        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)""", (selectedsid, origin))
+        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)""", (selectedsid, origin,runway))
 
 
 
