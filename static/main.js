@@ -70,6 +70,8 @@ fetch(`/fetch_airports?${filterParams}`)
             marker.bindPopup(`
                 <b>${airport.name}</b> (${airport.type})<br>
                 <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                <br>
+                <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
             `);
             smallMarkersCluster.addLayer(marker);
         });
@@ -82,6 +84,8 @@ fetch(`/fetch_airports?${filterParams}`)
             marker.bindPopup(`
                 <b>${airport.name}</b> (${airport.type})<br>
                 <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                <br>
+                <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
             `);
             mediumMarkersCluster.addLayer(marker);
         });
@@ -93,7 +97,9 @@ fetch(`/fetch_airports?${filterParams}`)
             var marker = L.marker([airport.lat, airport.lng], { icon: largeAirportIcon });
             marker.bindPopup(`
                 <b>${airport.name}</b> (${airport.type})<br>
-                <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                <button onclick="set_origin_airfield('${airport.name}')">Set as Departure</button>
+                <br>
+                <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
             `);
             largeMarkersCluster.addLayer(marker);
         });
@@ -233,4 +239,21 @@ function set_origin_airfield(airportname){
 
         })
     };
+ 
+function set_arrival_airfield(arrival_field) {
+    stringified_arrival = JSON.stringify({arrival_field: arrival_field});
+
+    fetch("/return_arrival_airport", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: stringified_arrival, // send airport name as the body
+    })
     
+    
+    .then(response => response.json())
+    .then(data => {
+
+        console.log("Selected Arrival: ", data.arrival_airfield);
+
+    })
+}
