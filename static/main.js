@@ -261,8 +261,27 @@ function set_arrival_airfield(arrival_field) {
 
         data.arrival_runways.forEach(runway => {
             enter_arr_runway.options[enter_arr_runway.options.length] = new Option(runway, runway);
-
         })
+    })
+}
 
+
+document.getElementById("chooseArrRw").onchange = function () {
+    let arr_rw = this.value;
+    strignfied_arr_rw = JSON.stringify({arrival_runway: arr_rw})
+
+    fetch("/handle_stars", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: strignfied_arr_rw, 
+    })
+     
+    .then(response => response.json())
+    .then(data => {
+        console.log("Selected Arrival Runway: ", data.selected_runway);
+        chooseArrStar.innerHTML = "";
+        data.arrival_stars.forEach(star => {
+            chooseArrStar.options[chooseArrStar.options.length] = new Option(star, star);
+        })
     })
 }

@@ -75,6 +75,9 @@ class Sid(BaseModel):
 class Arrival(BaseModel):
     arrival_field:str
 
+class ArrivalRunway(BaseModel):
+    arrival_runway:str
+
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: Origin):
@@ -135,8 +138,20 @@ def return_arrival_airport(arrival_airfield: Arrival):
     arrival_data = {
         "arrival_airfield": handle_route.arrival_airfield,
         "arrival_runways": arrival_runways,
-        "arrival_stars": database_handler.get_stars(handle_route.arrival_airfield, handle_route.selected_runway_arrival)
     }
 
     return arrival_data
 
+
+@app.post("/handle_stars")
+def handle_stars(selected_runway: ArrivalRunway):
+
+    handle_route.selected_runway_arrival = selected_runway.arrival_runway
+
+    star_data = {
+        "selected_runway": handle_route.selected_runway_arrival,
+        "arrival_stars": database_handler.get_stars(handle_route.arrival_airfield, handle_route.selected_runway_arrival),
+    }
+
+
+    return star_data

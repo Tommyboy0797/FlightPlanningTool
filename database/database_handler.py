@@ -124,7 +124,7 @@ def get_stars(arrival,runway):
 
     connect_to_db.close()
 
-    return
+    return stars
 
 
 
