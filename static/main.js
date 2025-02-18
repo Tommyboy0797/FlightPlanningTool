@@ -278,10 +278,51 @@ document.getElementById("chooseArrRw").onchange = function () {
      
     .then(response => response.json())
     .then(data => {
+
         console.log("Selected Arrival Runway: ", data.selected_runway);
+
         chooseArrStar.innerHTML = "";
+
         data.arrival_stars.forEach(star => {
             chooseArrStar.options[chooseArrStar.options.length] = new Option(star, star);
         })
+
     })
+}
+
+document.getElementById("chooseArrStar").onchange = function () {
+    let chosen_star = this.value;
+    stringified_chosen_star = JSON.stringify({selected_star: chosen_star})
+
+    if (window.star_waypoints && window.star_waypoints.length > 0) {
+        window.star_waypoints.forEach(marker => map.removeLayer(marker));
+    }
+
+    // Reset the marker array
+    window.star_waypoints = [];
+
+    fetch("/send_star_data", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: stringified_chosen_star, 
+    })
+
+    .then(response => response.json())
+    .then(data => {
+
+        console.log("Chosen STAR is: ", chosen_star);
+
+        data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
+
+        data.selected_star_data.forEach(point => {
+            let star_waypoint = L.marker([point.lat, point.lng])
+                .bindPopup(`<b>${point.ident}</b>`)
+                .addTo(map);
+            let star_lines = L.polyline(data.selected_star_data, { color: "red"}).addTo(map);
+            window.star_waypoints.push(star_waypoint, star_lines)
+
+        });
+
+    })
+
 }
