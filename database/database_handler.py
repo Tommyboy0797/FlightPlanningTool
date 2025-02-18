@@ -118,7 +118,7 @@ def get_stars(arrival,runway):
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
     cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    cursor.execute("SELECT DISTINCT procedure_identifier FROM stars WHERE airport_identifier = ? AND transition_identifier = ?", (arrival,runway))
+    cursor.execute("SELECT DISTINCT procedure_identifier FROM stars WHERE airport_identifier = ? AND (transition_identifier = ? OR transition_identifier = 'ALL')", (arrival,runway))
 
     stars = cursor.fetchall()
 
@@ -149,7 +149,7 @@ def send_star_data(procedure, airport):
             seqno
             FROM stars
             WHERE procedure_identifier = ?
-            AND airport identifier = ?
+            AND airport_identifier = ?
             AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
             AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)                 
                    """, (procedure, airport))
