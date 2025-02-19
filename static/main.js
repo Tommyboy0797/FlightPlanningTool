@@ -26,7 +26,6 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
         get_to_factor: document.getElementById('get_to_factor').value,
         get_rwy_available: document.getElementById('get_rwy_available').value,
         get_rwy_slope: document.getElementById('get_rwy_slope').value,
-        enter_db_country: document.getElementById('enter_db_country').value
     };
     
     const params = new URLSearchParams(formData);
@@ -347,7 +346,7 @@ document.getElementById("enter_waypoint_box").onchange = function () {
             let waypoint_marker = L.marker([point.lat, point.lng])
                 .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area}</b>`)
                 .addTo(map);
-            let new_view = map.panTo(new L.LatLng(point.lat, point.lng))
+            let new_view = map.panTo(new L.LatLng(point.lat, point.lng)) // recenter view onto waypoint
             window.waypoint_markers.push(waypoint_marker, new_view)
 
         });

@@ -30,7 +30,7 @@ def read_root(request: Request):
 
 # endpoint to recieve value for gross weight
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
-def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, enter_db_country):
+def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope):
     gwt = float(gwt)
     perf_calc.aircraft_grossweight = gwt
     respo = {
