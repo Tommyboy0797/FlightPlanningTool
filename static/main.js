@@ -151,9 +151,6 @@ function set_origin_airfield(airportname){
         body: stringified_origin, // send airport name as the body
     })
 
-    const dropdown = document.getElementById("runways_dropdown");
-
-
     fetch(`/get_runways?`)
     .then(response => response.json())
     .then(data => {
@@ -324,5 +321,31 @@ document.getElementById("chooseArrStar").onchange = function () {
         });
 
     })
+
+}
+
+document.getElementById("enter_waypoint_box").onchange = function () {
+    let entered_waypoint = this.value;
+    stringified_entered_waypoint = JSON.stringify({waypointname: entered_waypoint});
+
+    fetch("/waypoint_info", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: stringified_entered_waypoint, 
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        console.log(data.waypointdata)
+        data.waypointdata.forEach(point => {
+            let waypoint_marker = L.marker([point.lat, point.lng])
+                .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area}</b>`)
+                .addTo(map);
+            let new_view = map.panTo(new L.LatLng(point.lat, point.lng))
+            window.waypoint_markers.push(waypoint_marker, new_view)
+
+        });
+    })
+
 
 }
