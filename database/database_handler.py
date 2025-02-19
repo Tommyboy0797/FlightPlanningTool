@@ -161,3 +161,16 @@ def send_star_data(procedure, airport):
     connect_to_db.close()
 
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_star]
+
+
+def waypoint_search(waypointname):
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute("""SELECT DISTINCT waypoint_latitude, waypoint_longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code FROM waypoints WHERE waypoint_identifier = ? OR waypoint_name = ?""", (waypointname, waypointname))
+
+    waypoint_info = cursor.fetchall()
+
+    return [{"lat": latitude, "lng": longitude, "ident": waypoint_identifier, "name": waypoint_name, "usage": waypoint_usage, "icao": icao_code, "area": area_code} for latitude, longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code in waypoint_info]
