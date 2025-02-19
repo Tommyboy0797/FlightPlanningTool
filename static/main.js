@@ -328,6 +328,12 @@ document.getElementById("enter_waypoint_box").onchange = function () {
     let entered_waypoint = this.value;
     stringified_entered_waypoint = JSON.stringify({waypointname: entered_waypoint});
 
+    if (window.waypoint_markers && window.waypoint_markers.length > 0) {
+        window.waypoint_markers.forEach(marker => map.removeLayer(marker));
+    }
+
+    window.waypoint_markers = [];
+
     fetch("/waypoint_info", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
