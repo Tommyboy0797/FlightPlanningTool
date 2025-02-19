@@ -81,6 +81,9 @@ class ArrivalRunway(BaseModel):
 class SelectedStar(BaseModel):
     selected_star:str
 
+class WaypointName(BaseModel):
+    waypointname:str
+
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: Origin):
@@ -170,3 +173,13 @@ def send_star_data(selected_star: SelectedStar):
         "selected_star_data": database_handler.send_star_data(handle_route.selected_star, handle_route.arrival_airfield)
     }
     return star_points
+
+
+@app.post("/waypoint_info")
+def waypoint_info(waypoint_name: WaypointName):
+
+    waypoint_info = {
+        "waypointdata": database_handler.waypoint_search(waypoint_name.waypointname)
+    }
+
+    return waypoint_info
