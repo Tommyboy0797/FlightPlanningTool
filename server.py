@@ -84,6 +84,9 @@ class SelectedStar(BaseModel):
 class WaypointName(BaseModel):
     waypointname:str
 
+class WaypointAppend(BaseModel):
+    waypoint:str
+
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: Origin):
@@ -103,7 +106,8 @@ def set_origin(origin: Origin):
 def get_rwys():
     origin_airfield = handle_route.origin_airfield
     runways = {
-        "origin_runways": database_handler.get_runways(origin_airfield)
+        "origin_runways": database_handler.get_runways(origin_airfield),
+        "route": handle_route.route
     }
     return runways
 
@@ -115,7 +119,8 @@ def return_runway(runwy: Rwy):
     origin_airfield = handle_route.origin_airfield
     selected_runway = handle_route.selected_runway
     sids = {
-        "sids": database_handler.get_sids(origin_airfield, selected_runway)
+        "sids": database_handler.get_sids(origin_airfield, selected_runway),
+        "route": handle_route.route
     }
     return sids
 
@@ -128,7 +133,8 @@ def return_sid(select_sid: Sid):
     print(f"function data:{database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield, handle_route.selected_runway)}")
     sid_waypoints = {
         "selected_sid": handle_route.selected_sid,
-        "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield, handle_route.selected_runway)
+        "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield, handle_route.selected_runway),
+        "route": handle_route.route
     }
 
     return sid_waypoints
@@ -144,6 +150,7 @@ def return_arrival_airport(arrival_airfield: Arrival):
     arrival_data = {
         "arrival_airfield": handle_route.arrival_airfield,
         "arrival_runways": arrival_runways,
+        "route": handle_route.route
     }
 
     return arrival_data
@@ -157,6 +164,7 @@ def handle_stars(selected_runway: ArrivalRunway):
     star_data = {
         "selected_runway": handle_route.selected_runway_arrival,
         "arrival_stars": database_handler.get_stars(handle_route.arrival_airfield, handle_route.selected_runway_arrival),
+        "route": handle_route.route
     }
 
 
@@ -179,7 +187,21 @@ def send_star_data(selected_star: SelectedStar):
 def waypoint_info(waypoint_name: WaypointName):
 
     waypoint_info = {
-        "waypointdata": database_handler.waypoint_search(waypoint_name.waypointname)
+        "waypointdata": database_handler.waypoint_search(waypoint_name.waypointname),
+        "route": handle_route.route
     }
 
     return waypoint_info
+
+
+@app.post("/append_route")
+def append_route(waypoint: WaypointAppend):
+
+    handle_route.build_route(waypoint.waypoint)
+    print(handle_route.route)
+
+    route_data = {
+        "route": handle_route.route
+    }
+
+    return route_data
