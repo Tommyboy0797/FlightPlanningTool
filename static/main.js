@@ -142,8 +142,6 @@ function set_origin_airfield(airportname){
     var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
     console.log(stringified_origin)
 
-    document.getElementById("userRoute").innerHTML = airportname // setting the text for userroute to the origin for the route
-
     fetch("/set_origin", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
@@ -307,6 +305,8 @@ document.getElementById("chooseArrStar").onchange = function () {
     .then(data => {
 
         console.log("Chosen STAR is: ", chosen_star);
+        
+        document.getElementById("userRoute").innerHTML = data.route
 
         data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
 
@@ -344,13 +344,31 @@ document.getElementById("enter_waypoint_box").onchange = function () {
         console.log(data.waypointdata)
         data.waypointdata.forEach(point => {
             let waypoint_marker = L.marker([point.lat, point.lng])
-                .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area}</b>`)
+                .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} <br> <button onclick="add_wp_to_route('${point.name}')">Add to Route</button></b>`)
                 .addTo(map);
             let new_view = map.panTo(new L.LatLng(point.lat, point.lng)) // recenter view onto waypoint
             window.waypoint_markers.push(waypoint_marker, new_view)
 
+        
         });
     })
 
+
+}
+
+function add_wp_to_route(waypoint_name) {
+    stringified_waypoint_name = JSON.stringify({waypoint: waypoint_name})
+
+    fetch("/append_route", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: stringified_waypoint_name, 
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        document.getElementById("userRoute").innerHTML = data.route
+
+    })
 
 }
