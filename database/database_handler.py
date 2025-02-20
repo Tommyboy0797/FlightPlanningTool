@@ -68,7 +68,7 @@ def get_runways(origin):
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
     cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    cursor.execute("SELECT DISTINCT transition_identifier FROM sids WHERE transition_identifier LIKE 'RW%' AND airport_identifier = ?", (origin,))
+    cursor.execute("SELECT CONCAT('RW', name) AS runway_name FROM runways WHERE icao = ?", (origin,))
 
     rwys = cursor.fetchall()
 
