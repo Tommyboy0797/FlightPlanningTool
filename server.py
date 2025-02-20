@@ -197,7 +197,8 @@ def waypoint_info(waypoint_name: WaypointName):
 @app.post("/append_route")
 def append_route(waypoint: WaypointAppend):
 
-    handle_route.build_route(waypoint.waypoint)
+    handle_route.add_waypoint(waypoint.waypoint)
+    handle_route.build_route()
     print(handle_route.route)
 
     route_data = {

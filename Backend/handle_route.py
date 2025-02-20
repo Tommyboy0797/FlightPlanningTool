@@ -5,8 +5,14 @@ selected_sid = ""
 arrival_airfield = ""
 selected_runway_arrival = ""
 selected_star = ""
+waypoints = []  # Store multiple waypoints
 
-def build_route(waypoints=""):
+def add_waypoint(waypoint):
+    """Adds a waypoint to the list in order."""
+    global waypoints
+    waypoints.append(waypoint)
+
+def build_route():
     """Constructs the route dynamically based on the user's inputs."""
     route_parts = []
     
@@ -18,9 +24,9 @@ def build_route(waypoints=""):
         if selected_sid:
             route_parts.append(selected_sid)
     
-    # Add waypoints if provided
+    # Add waypoints if available
     if waypoints:
-        route_parts.append(waypoints)
+        route_parts.extend(waypoints)
     
     # Add arrival details
     if selected_star:
@@ -30,6 +36,6 @@ def build_route(waypoints=""):
     if arrival_airfield:
         route_parts.append(arrival_airfield)
     
-    # Join everything with commas and update route
+    # Join everything with "->" and update route
     global route
     route = " -> ".join(route_parts)
