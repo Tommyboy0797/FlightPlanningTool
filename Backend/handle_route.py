@@ -32,4 +32,4 @@ def build_route(waypoints=""):
     
     # Join everything with commas and update route
     global route
-    route = "> ".join(route_parts)
+    route = " -> ".join(route_parts)
