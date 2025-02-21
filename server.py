@@ -59,7 +59,7 @@ def fetch_airports():
     return JSONResponse(content={
         "small_airports": smallairports,
         "medium_airports": mediumairports,
-        "large_airports": largeairports
+        "large_airports": largeairports,
     })
 
 
@@ -86,6 +86,9 @@ class WaypointName(BaseModel):
 
 class WaypointAppend(BaseModel):
     waypoint:str
+
+class AirfieldData(BaseModel):
+    airfielddata:str
 
 # endpoint to handle the origin
 @app.post("/set_origin")
@@ -120,7 +123,7 @@ def return_runway(runwy: Rwy):
     selected_runway = handle_route.selected_runway
     sids = {
         "sids": database_handler.get_sids(origin_airfield, selected_runway),
-        "route": handle_route.route
+        "runway_data": database_handler.get_runway_data(handle_route.origin_airfield, handle_route.selected_runway)
     }
     return sids
 
@@ -134,7 +137,6 @@ def return_sid(select_sid: Sid):
     sid_waypoints = {
         "selected_sid": handle_route.selected_sid,
         "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield, handle_route.selected_runway),
-        "route": handle_route.route
     }
 
     return sid_waypoints
@@ -206,3 +208,14 @@ def append_route(waypoint: WaypointAppend):
     }
 
     return route_data
+
+
+@app.get("/airfield_data")
+def airfield_data():
+
+
+    af_data = {
+        "runway_data": database_handler.get_runway_data(handle_route.origin_airfield, handle_route.selected_runway)
+
+    }
+    return af_data

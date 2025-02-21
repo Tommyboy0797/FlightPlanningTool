@@ -67,10 +67,13 @@ fetch(`/fetch_airports?${filterParams}`)
         data.small_airports.forEach(airport => {
             var marker = L.marker([airport.lat, airport.lng], { icon: smallAirportIcon });
             marker.bindPopup(`
-                <b>${airport.name}</b> (${airport.type})<br>
+                <b>${airport.name} (${airport.type})</b> 
+                <br>
+                <b>${airport.length}</b>
                 <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
                 <br>
                 <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
+                
             `);
             smallMarkersCluster.addLayer(marker);
         });
@@ -162,8 +165,8 @@ function set_origin_airfield(airportname){
 
         document.getElementById('available_runways').textContent = data.origin_runways.join(', ');
     })
-    
-    }
+    .catch(error => console.error('Error fetching runway data:', error));
+    };
 
 
     document.getElementById("enterRwy").onchange = function () {
@@ -191,10 +194,33 @@ function set_origin_airfield(airportname){
                 data.sids.forEach(sids => {
                     enter_sid_dropdown.options[enter_sid_dropdown.options.length] = new Option(sids, sids);
                 })
-
             })
-            .catch(error => console.error("Error sending selected runway:", error));
-         };
+            
+            fetch("/airfield_data")
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Error:", data.error);
+                    document.getElementById("airfield_info").textContent = "No airfield or runway selected.";
+                    return;
+                }
+        
+                let airfieldInfoElement = document.getElementById("airfield_info");
+                airfieldInfoElement.innerHTML = ""; // Clear previous data
+        
+                data.runway_data.forEach(runway => {
+                    let runwayInfo = `
+                        <p><strong>Length:</strong> ${runway.length} ft</p>
+                        <p><strong>Width:</strong> ${runway.width} ft</p>
+                        <p><strong>Heading:</strong> ${runway.hdg}°</p>
+                        <p><strong>Surface:</strong> ${runway.surface}</p>
+                        <hr>
+                    `;
+                    airfieldInfoElement.innerHTML += runwayInfo;
+                });
+            })
+            .catch(error => console.error("Error fetching runway data:", error));
+    };
 
     document.getElementById("chooseSid").onchange = function () {
         let selected_sid = this.value;

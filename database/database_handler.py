@@ -76,6 +76,21 @@ def get_runways(origin):
 
     return rwys
 
+def get_runway_data(origin, runway):
+
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute("SELECT length_ft, width_ft, hdg, surface FROM runways WHERE icao = ? AND name = ?", (origin,runway,))
+
+    rwys = cursor.fetchall()
+
+    connect_to_db.close()
+
+    return [{"length": length_ft, "width": width_ft, "hdg": hdg, "surface": surface} for length_ft, width_ft, hdg, surface in rwys]
+
 def send_sid_points(selectedsid,origin,runway):
 
     database_path = "database/nav_data.db" # path to database
