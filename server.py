@@ -213,7 +213,6 @@ def append_route(waypoint: WaypointAppend):
 @app.get("/airfield_data")
 def airfield_data():
 
-
     af_data = {
         "runway_data": database_handler.get_runway_data(handle_route.origin_airfield, handle_route.selected_runway)
 

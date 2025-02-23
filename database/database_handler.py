@@ -83,7 +83,9 @@ def get_runway_data(origin, runway):
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
     cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
 
-    cursor.execute("SELECT length_ft, width_ft, hdg, surface FROM runways WHERE icao = ? AND name = ?", (origin,runway,))
+    runway_cleaned = runway.lstrip("RW")
+
+    cursor.execute("SELECT length_ft, width_ft, hdg, surface FROM runways WHERE icao = ? AND name = ?", (origin,runway_cleaned,))
 
     rwys = cursor.fetchall()
 
