@@ -18,6 +18,8 @@ var largeAirportIcon = L.icon({
     iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAABfklEQVR4nIXRMUtVcRzG8c/pnqt1jkOaLZVQb+G6FIiLg6PFPdSSNARhZFtDm7QE1VJjdoWgpeEcTHsBjtFwLy0VDSFE0jXLCMEhvJ0GPXC6V+tZ/vz5Ps/DA7+AOf9TfTSZwnk8yprpmzILDwzVkmGBGqq4hTGs4N8F9VoSC9zHVfSXUEfuVbc/YE59NJnEFJ7iLibKpoHhAX1Rn81Pm6tyZ7NW+rVgh/beWVzH657wsVhj+ZT57IRoMDojcKfMi4JruI2fZRgPxRrLI8K+0I3LG7Z/bENSryWVvwqyZvola6b3sFaAaCiysDwi7A/NTn+z/mG9QIOIuxcU+gzR0cjC0ojw8G64/b5d9vwWGK+PJuF+Bc8rYcWTxZOqR6puXvneHWb3rC/xgu4z5p51djqXZi62J+Pjsfa7nvBHPMA0lnoWZK10Bxe2NrZWusIdLMqNZ830cdZMx+QavQt2V/wSOL33m8Eq3mbNdK1sy1ppvn9BIMRDnJObL4wH6Q+YX3T83b7+/AAAAABJRU5ErkJggg=='
 });
 
+let selected_waypoints = [];
+
 document.getElementById('dataForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -384,6 +386,9 @@ document.getElementById("enter_waypoint_box").onchange = function () {
 
 function add_wp_to_route(waypoint_name) {
     stringified_waypoint_name = JSON.stringify({waypoint: waypoint_name})
+    selected_waypoints.push(waypoint_name);
+
+    console.log("Selected Waypoints in route: ", selected_waypoints);
 
     fetch("/append_route", {
         method: "POST",
@@ -393,7 +398,36 @@ function add_wp_to_route(waypoint_name) {
     .then(response => response.json())
     .then(data => {
 
-        document.getElementById("userRoute").innerHTML = data.route
+        document.getElementById("userRoute").innerHTML = data.route;
+        display_waypoints();
+    })
+
+}
+
+function display_waypoints() {
+    let waypoint_data_values = []
+    selected_waypoints.forEach(wp => {
+        stringified_wp = JSON.stringify({waypointname: wp})
+
+        fetch("/waypoint_info", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+            body: stringified_wp, 
+        })
+
+        .then(response => response.json())
+        .then(data => {
+            waypoint_data_values.push(data.waypointdata);
+            console.log("Route Waypoint Data: ", waypoint_data_values);
+        });
+        
+        waypoint_data_values.forEach(point => {
+            let waypoint_marker = L.marker([point.lat, point.lng])
+                .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} <br> <button onclick="add_wp_to_route('${point.name}')">Remove from route</button></b>`)
+                .addTo(map);
+            map.addLayer(waypoint_marker);
+        console.log("log")
+    })
 
     })
 
