@@ -15,12 +15,5 @@ Set origin now shows SIDs
 
 **Make the points joined via blue line** (4) DONE
 
-**set up stars** (5) DONE
-
-**Set up filters for waypoints**
-
-**Add waypoints/navaids**
-
-**route building**
-
-
+Make it so selected waypoints show up. 
+Then can connect w polyline. 
