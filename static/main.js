@@ -399,36 +399,64 @@ function add_wp_to_route(waypoint_name) {
     .then(data => {
 
         document.getElementById("userRoute").innerHTML = data.route;
-        display_waypoints();
-    })
-
-}
-
-function display_waypoints() {
-    let waypoint_data_values = []
-    selected_waypoints.forEach(wp => {
-        stringified_wp = JSON.stringify({waypointname: wp})
-
-        fetch("/waypoint_info", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-            body: stringified_wp, 
         })
+    .then(function display_waypoints() {
+        let waypoint_data_values = []
+        selected_waypoints.forEach(wp => {
+            stringified_wp = JSON.stringify({waypointname: wp})
+    
+            fetch("/waypoint_info", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+                body: stringified_wp, 
+            })
+    
+            .then(response => response.json())
+            .then(data => {
+                waypoint_data_values.push(data.waypointdata);
+                console.log("Route Waypoint Data: ", waypoint_data_values);
+            });
+            
+            waypoint_data_values.forEach(point => {
+                let waypoint_marker = L.marker([point.lat, point.lng])
+                    .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} <br> <button onclick="add_wp_to_route('${point.name}')">Remove from route</button></b>`)
+                    .addTo(map);
+                map.addLayer(waypoint_marker);
+            console.log("log")
+        })
+    
+        })
+    
+    }
 
-        .then(response => response.json())
-        .then(data => {
-            waypoint_data_values.push(data.waypointdata);
-            console.log("Route Waypoint Data: ", waypoint_data_values);
-        });
-        
-        waypoint_data_values.forEach(point => {
-            let waypoint_marker = L.marker([point.lat, point.lng])
-                .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} <br> <button onclick="add_wp_to_route('${point.name}')">Remove from route</button></b>`)
-                .addTo(map);
-            map.addLayer(waypoint_marker);
-        console.log("log")
-    })
-
-    })
-
+    )
 }
+
+// function display_waypoints() {
+//     let waypoint_data_values = []
+//     selected_waypoints.forEach(wp => {
+//         stringified_wp = JSON.stringify({waypointname: wp})
+
+//         fetch("/waypoint_info", {
+//             method: "POST",
+//             headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+//             body: stringified_wp, 
+//         })
+
+//         .then(response => response.json())
+//         .then(data => {
+//             waypoint_data_values.push(data.waypointdata);
+//             console.log("Route Waypoint Data: ", waypoint_data_values);
+//         });
+        
+//         waypoint_data_values.forEach(point => {
+//             let waypoint_marker = L.marker([point.lat, point.lng])
+//                 .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} <br> <button onclick="add_wp_to_route('${point.name}')">Remove from route</button></b>`)
+//                 .addTo(map);
+//             map.addLayer(waypoint_marker);
+//         console.log("log")
+//     })
+
+//     })
+
+// }
