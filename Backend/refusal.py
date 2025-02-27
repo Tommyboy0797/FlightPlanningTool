@@ -119,3 +119,28 @@ def get_refusal_p3(uncorrected_ref_speed, rwy_slope): #runway slope
     resultp3 = np.interp(rwy_slope,result_basedon_to_factor_and_rwylen, uncorr_ref_speed_scale_set)
     print(xy_pair_for_rwy_avail)
     return resultp3
+
+def get_refusal_p4(prev_data, wind_speed, tail_or_head):
+
+    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
+    DIG_FILE_NAME = "refusal-runway-slope.dig"
+
+    data = {}
+
+    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+    for c in  chart.curveNames():
+        yVector = [row [1] for row in chart.curve(c)]
+        xVector = [row [0] for row in chart.curve(c)]
+        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+        
+        data[scale_number] = {
+            "x": xVector,
+            "y": yVector
+        }
+
+    if tail_or_head == "tail"
+
+
+
+
+    return

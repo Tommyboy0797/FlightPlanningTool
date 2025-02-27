@@ -191,3 +191,19 @@ def waypoint_search(waypointname):
     waypoint_info = cursor.fetchall()
 
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_identifier, "name": waypoint_name, "usage": waypoint_usage, "icao": icao_code, "area": area_code} for latitude, longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code in waypoint_info]
+
+
+def runway_heading(airfield, runway):
+
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    runway_cleaned = runway.lstrip("RW")
+
+    cursor.execute("SELECT DISTINCT hdg FROM runways WHERE icao = ? AND name = ?", airfield,runway_cleaned)
+
+    runway_hdg = cursor.fetchall()
+
+    return runway_hdg

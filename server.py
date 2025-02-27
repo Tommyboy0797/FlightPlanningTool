@@ -8,7 +8,6 @@ from Backend import refusal as refusal
 from database import database_handler as db_handler
 from fastapi.responses import JSONResponse
 from Backend import handle_route as handle_route
-from database import database_handler
 from pydantic import BaseModel 
 
 app = FastAPI()
@@ -218,3 +217,8 @@ def airfield_data():
 
     }
     return af_data
+
+@app.post("/handle_winds")
+def handle_winds():
+
+    return
