@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from Backend import perf_calc as perf_calc
 from Backend import rotation_calc as rotation_calc
 from Backend import refusal as refusal
-from database import database_handler as db_handler
+from database import database_handler
 from fastapi.responses import JSONResponse
 from Backend import handle_route as handle_route
 from pydantic import BaseModel 
@@ -51,9 +51,9 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
 # endpoint for airports
 @app.get("/fetch_airports")
 def fetch_airports():
-    mediumairports = db_handler.get_medium_airfields()
-    largeairports = db_handler.get_large_airfields()
-    smallairports = db_handler.get_small_airfields()
+    mediumairports = database_handler.get_medium_airfields()
+    largeairports = database_handler.get_large_airfields()
+    smallairports = database_handler.get_small_airfields()
     
     return JSONResponse(content={
         "small_airports": smallairports,
@@ -220,5 +220,8 @@ def airfield_data():
 
 @app.post("/handle_winds")
 def handle_winds():
+
+
+    
 
     return
