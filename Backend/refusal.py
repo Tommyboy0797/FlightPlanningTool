@@ -138,7 +138,7 @@ def get_refusal_p4(prev_data, wind_speed, tail_or_head):
             "y": yVector
         }
 
-    if tail_or_head == "tail"
+    # if tail_or_head == "tail":
 
 
 
