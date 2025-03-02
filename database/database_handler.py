@@ -202,7 +202,7 @@ def runway_heading(airfield, runway):
 
     runway_cleaned = runway.lstrip("RW")
 
-    cursor.execute("SELECT DISTINCT hdg FROM runways WHERE icao = ? AND name = ?", airfield,runway_cleaned)
+    cursor.execute("SELECT hdg FROM runways WHERE icao = ? AND name = ?", (airfield,runway_cleaned))
 
     runway_hdg = cursor.fetchall()
 
