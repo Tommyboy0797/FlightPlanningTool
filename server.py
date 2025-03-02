@@ -9,6 +9,7 @@ from database import database_handler
 from fastapi.responses import JSONResponse
 from Backend import handle_route as handle_route
 from pydantic import BaseModel 
+from Backend import wind_calc
 
 app = FastAPI()
 
@@ -88,6 +89,9 @@ class WaypointAppend(BaseModel):
 
 class AirfieldData(BaseModel):
     airfielddata:str
+
+class WindHdg(BaseModel):
+    windhdg:str
 
 # endpoint to handle the origin
 @app.post("/set_origin")
@@ -219,9 +223,12 @@ def airfield_data():
     return af_data
 
 @app.post("/handle_winds")
-def handle_winds():
+def handle_winds(windhdg: WindHdg):
 
-    
-    
+    wind_hdg = windhdg.windhdg
+    rwy_hdg = database_handler.runway_heading(handle_route.origin_airfield, handle_route.selected_runway)
+    wind_data = {
+        "head_or_tail_wind": wind_calc.calc_winds(rwy_hdg, wind_hdg)
+    }
 
-    return
+    return wind_data
