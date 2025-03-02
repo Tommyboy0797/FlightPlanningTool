@@ -12,12 +12,16 @@ def calc_winds(runwayhdg,windhdg):
     diff = abs((windhdg - runwayhdg + 180) % 360 - 180)
     diff = diff <= tolerance
 
+    reciprocal_hdg = (runwayhdg + 180) % 360 # get the recirpocal heading of the runway
+    undiff = abs((windhdg - reciprocal_hdg + 180) % 360 - 180)
+    tailwind = undiff <= tolerance
+
     if diff == True:
-        print("Wind is headwind")
         return "Headwind"
+    elif tailwind == True:
+        return "Tailwind"
     else:
-        print("Wind is tail")
-        return "Not headwind"
+        return "Crosswind"
 
 
 
