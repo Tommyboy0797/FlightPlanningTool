@@ -463,17 +463,18 @@ function add_wp_to_route(waypoint_name) {
 
 
 document.getElementById("enter_wind_box").onchange = function () {
-    wind_speed = this.value
-    stringified_wind_speed = JSON.stringify({windspeed: wind_speed})
+    wind_hdg = this.value
+    stringified_wind_hdg = JSON.stringify({windhdg: wind_hdg})
 
     fetch("/handle_winds", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: stringified_wind_speed, 
+        body: stringified_wind_hdg, 
     })
     .then(response => response.json())
     .then(data => {
-
+        
+        document.getElementById("tail_or_head").innerHTML = data.head_or_tail_wind
 
         
     })
