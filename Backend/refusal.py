@@ -138,8 +138,12 @@ def get_refusal_p4(prev_data, wind_speed, tail_or_head):
             "y": yVector
         }
 
-    # if tail_or_head == "tail":
-
+    if tail_or_head == "Headwind":
+        wind_speed = wind_speed * 0.5 # apply a +50% factor to reported headwind
+    elif tail_or_head == "Tailwind":
+        wind_speed = wind_speed * 1.5 # apply a +150% factor to reported headwind
+    else:
+        wind_speed = wind_speed # do nothing if its a crosswind
 
 
 

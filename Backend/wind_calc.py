@@ -7,7 +7,7 @@ def calc_winds(runwayhdg,windhdg):
 
     windhdg = int(windhdg)
 
-    tolerance = 30 # 30 degrees of tolerance
+    tolerance = 30 # degrees of tolerance
 
     diff = abs((windhdg - runwayhdg + 180) % 360 - 180)
     diff = diff <= tolerance
