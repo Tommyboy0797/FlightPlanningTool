@@ -17,3 +17,10 @@ Set origin now shows SIDs
 
 Make it so selected waypoints show up. 
 Then can connect w polyline. 
+
+
+--------------------------
+
+Refusal next steps:
+- Winds and tailwinds are calculated and have correct factors applied
+- just need to use it now. 
