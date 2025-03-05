@@ -145,6 +145,8 @@ def get_refusal_p4(prev_data, wind_speed, tail_or_head):
     else:
         wind_speed = wind_speed # do nothing if its a crosswind
 
-
+    windscale = []
+    result = []
+    
 
     return
