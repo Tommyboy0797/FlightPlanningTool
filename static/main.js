@@ -19,6 +19,7 @@ var largeAirportIcon = L.icon({
 });
 
 let selected_waypoints = [];
+let waypoint_data_values = [];
 
 document.getElementById('dataForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -404,7 +405,6 @@ function add_wp_to_route(waypoint_name) {
 
 
 function display_waypoints() {
-    let waypoint_data_values = []; // To store fetched waypoint data
     let fetchPromises = selected_waypoints.map(wp => {
         return fetch("/waypoint_info", {
             method: "POST",
@@ -433,7 +433,7 @@ function display_waypoints() {
         waypoint_data_values.forEach(point => {
             let waypoint_marker = L.marker([point.lat, point.lng])
                 .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} 
-                <br> <button onclick="remove_wp_from_route('${point.name}')">Remove</button></b>`)
+                <br> <button onclick="remove_wp_from_route('${point.lat}, ${point.lng}')">Remove</button></b>`)
                 .addTo(map);
 
             // Store marker so it can be cleared later
@@ -474,4 +474,13 @@ document.getElementById("enter_wind_box").onchange = function () {
 
         
     })
+}
+
+
+function remove_wp_from_route(lat, lng) {
+
+    waypoint_data_values = waypoint_data_values.filter(wp => wp != lat,lng);
+    console.log(waypoint_data_values, "removed from route");
+    display_waypoints();
+    
 }
