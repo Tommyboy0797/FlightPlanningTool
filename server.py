@@ -140,6 +140,7 @@ def return_sid(select_sid: Sid):
     sid_waypoints = {
         "selected_sid": handle_route.selected_sid,
         "selected_sid_points": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield, handle_route.selected_runway),
+        "final_sid_point": database_handler.send_sid_points(handle_route.selected_sid, handle_route.origin_airfield, handle_route.selected_runway) # need to make this return the last point in the SID
     }
 
     return sid_waypoints
