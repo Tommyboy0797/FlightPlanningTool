@@ -231,7 +231,9 @@ function set_origin_airfield(airportname){
 
     document.getElementById("chooseSid").onchange = function () {
         let selected_sid = this.value;
-        SELECTED_SID = selected_sid;
+
+        CHOSEN_SID = selected_sid;
+
         let stringified_selected_sid = JSON.stringify({selected_sid: selected_sid});
 
         if (window.sid_waypoints && window.sid_waypoints.length > 0) {
@@ -250,10 +252,10 @@ function set_origin_airfield(airportname){
         .then(response => response.json())
         .then(data => {
             
-            console.log("selected sid", SELECTED_SID);
+            console.log("selected sid", CHOSEN_SID);
             console.log("sid points", data.selected_sid_points);
 
-            document.getElementById("chosen_sid").textContent = SELECTED_SID;
+            document.getElementById("chosen_sid").textContent = CHOSEN_SID;
 
             data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
 
