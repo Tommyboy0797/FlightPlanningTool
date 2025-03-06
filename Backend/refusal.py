@@ -13,7 +13,7 @@ rwy_slope = 2
 def get_refusal_p1(takeoff_factor, rwy_available): 
     
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
-    DIG_FILE_NAME = "refusal-step-1.dig"
+    DIG_FILE_NAME = "refusal-step-1.dig" 
 
     data = {}
 
@@ -100,25 +100,22 @@ def get_refusal_p3(uncorrected_ref_speed, rwy_slope): #runway slope
             "x": xVector,
             "y": yVector
         }
-    uncorr_ref_speed_scale_set = [] # speed scales, 50kts to 
-    result_basedon_to_factor_and_rwylen = []  
+    
+    runway_slope_scale = []
+    result_slope = []
 
-    for uncorr_ref_speed_scale, xy_pair_for_rwy_avail in data.items():
-        xy_pair_for_rwy_avail = data[uncorr_ref_speed_scale]  #data with speeds as the scale
+    for slope_scale, xy_pair_slope in data.items():
+        xy_pair_slope = data[slope_scale]
 
-        x_values = xy_pair_for_rwy_avail["x"] 
-        y_values = xy_pair_for_rwy_avail["y"] 
+        x_values = xy_pair_slope["x"]
+        y_values = xy_pair_slope["y"]
 
-        uncorr_ref_speed_scale_set.append(uncorr_ref_speed_scale) # append speeds uncorrected
+        runway_slope_scale.append(slope_scale)
+        result_slope.append(np.interp(rwy_slope,x_values, y_values))
 
-        result = np.interp(uncorrected_ref_speed, x_values, y_values)
-        
-        print(f"Result: {result} for uncorrected ref speed for {uncorr_ref_speed_scale} at runway slope: {rwy_slope}")
-        result_basedon_to_factor_and_rwylen.append(round(np.interp(uncorrected_ref_speed, x_values, y_values), 2))
+    result = np.interp(uncorrected_ref_speed, runway_slope_scale, result_slope)
 
-    resultp3 = np.interp(rwy_slope,result_basedon_to_factor_and_rwylen, uncorr_ref_speed_scale_set)
-    print(xy_pair_for_rwy_avail)
-    return resultp3
+    return round(result)
 
 def get_refusal_p4(prev_data, wind_speed, tail_or_head):
 
@@ -145,8 +142,18 @@ def get_refusal_p4(prev_data, wind_speed, tail_or_head):
     else:
         wind_speed = wind_speed # do nothing if its a crosswind
 
-    windscale = []
-    result = []
-    
+    runway_windscale = []
+    result_wind = []
 
-    return
+    for windscale, xy_pair_wind in data.items():
+        xy_pair_wind = data[windscale]
+
+        x_values = xy_pair_wind["x"]
+        y_values = xy_pair_wind["y"]
+
+        runway_windscale.append(windscale)
+        result_wind.append(np.interp(wind_speed, x_values, y_values))
+    
+    result = np.interp(prev_data, runway_windscale, result_wind)
+
+    return round(result)
