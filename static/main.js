@@ -21,6 +21,10 @@ var largeAirportIcon = L.icon({
 let selected_waypoints = [];
 let waypoint_data_values = [];
 
+let ROUTE = "";
+let CHOSEN_SID = "";
+let CHOSEN_STAR = "";
+
 document.getElementById('dataForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -227,6 +231,7 @@ function set_origin_airfield(airportname){
 
     document.getElementById("chooseSid").onchange = function () {
         let selected_sid = this.value;
+        SELECTED_SID = selected_sid;
         let stringified_selected_sid = JSON.stringify({selected_sid: selected_sid});
 
         if (window.sid_waypoints && window.sid_waypoints.length > 0) {
@@ -245,10 +250,10 @@ function set_origin_airfield(airportname){
         .then(response => response.json())
         .then(data => {
             
-            console.log("selected sid", data.selected_sid);
+            console.log("selected sid", SELECTED_SID);
             console.log("sid points", data.selected_sid_points);
 
-            document.getElementById("chosen_sid").textContent = data.selected_sid;
+            document.getElementById("chosen_sid").textContent = SELECTED_SID;
 
             data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
 
