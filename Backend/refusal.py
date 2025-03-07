@@ -191,3 +191,37 @@ def get_refusal_p5(prev_data, dragindex):
 
     return round(result)
 
+def get_refusal_p6(prev_data, rcr):
+
+    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
+    DIG_FILE_NAME = "refusal-runway-slope.dig"
+
+    data = {}
+
+    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+    for c in  chart.curveNames():
+        yVector = [row [1] for row in chart.curve(c)]
+        xVector = [row [0] for row in chart.curve(c)]
+        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+        
+        data[scale_number] = {
+            "x": xVector,
+            "y": yVector
+        }
+
+    rcr_scale = []
+    result_rcr = []
+
+    for rcrscale, xy_pair_rcr in data.items():
+        xy_pair_rcr = data[rcrscale]
+
+        x_values = xy_pair_rcr["x"]
+        y_values = xy_pair_rcr["y"]
+
+        rcr_scale.append(rcrscale)
+        result_rcr.append(np.interp(rcr, x_values, y_values))
+
+    result = np.interp(prev_data, rcr_scale, result_rcr)
+    return round(result)
+
+
