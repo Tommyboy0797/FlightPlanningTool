@@ -53,8 +53,6 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
             document.getElementById('runway_slope_text').textContent = `${data.runway_slope} degrees`;
             document.getElementById('uncorrected_max_eff_TO_dist_text').textContent = `${data.uncorrected_max_eff_TO_dist} feet`;
             document.getElementById('rotation_speed_calculated_text').textContent = `${data.rotation_speed_calculated} knots`;
-            document.getElementById('uncorrected_refusal_test_p2_text').textContent = `${data.uncorrected_refusal_test_p2} knots`;
-            document.getElementById('partially_corrected_refusal_p3_text').textContent = data.partially_corrected_refusal_p3;
             document.getElementById('corrected_refusal_speed').textContent = data.corrected_refusal_speed;
         })
         .catch(error => console.error('Error:', error));
