@@ -120,7 +120,7 @@ def get_refusal_p3(uncorrected_ref_speed, rwy_slope): #runway slope
 def get_refusal_p4(prev_data, wind_speed, tail_or_head):
 
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
-    DIG_FILE_NAME = "refusal-runway-slope.dig"
+    DIG_FILE_NAME = "wind-velocity-for-refusal.dig"
 
     data = {}
 
@@ -161,7 +161,7 @@ def get_refusal_p4(prev_data, wind_speed, tail_or_head):
 def get_refusal_p5(prev_data, dragindex):
 
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
-    DIG_FILE_NAME = "refusal-runway-slope.dig"
+    DIG_FILE_NAME = "refusal-drag-index.dig"
 
     data = {}
 
@@ -194,7 +194,7 @@ def get_refusal_p5(prev_data, dragindex):
 def get_refusal_p6(prev_data, rcr):
 
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
-    DIG_FILE_NAME = "refusal-runway-slope.dig"
+    DIG_FILE_NAME = "refusal-rcr.dig"
 
     data = {}
 
@@ -227,7 +227,7 @@ def get_refusal_p6(prev_data, rcr):
 def get_refusal_p7(prev_data, rsc):
 
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
-    DIG_FILE_NAME = "refusal-runway-slope.dig"
+    DIG_FILE_NAME = "refusal-rsc.dig"
 
     data = {}
 
