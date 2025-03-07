@@ -5,6 +5,7 @@ selected_sid = ""
 arrival_airfield = ""
 selected_runway_arrival = ""
 selected_star = ""
+runway_slope = ""
 waypoints = []  # Store multiple waypoints
 
 def add_waypoint(waypoint):

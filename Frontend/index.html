@@ -81,6 +81,9 @@
 
     <br>
 
+    <b1> Fully Corrected Refusal Speed: </b1>
+    <b2 id="corrected_refusal_speed"> </b2>
+
     <form id="dataForm">
         <label for="gwt">Enter Gross Weight: </label>
         <input type="text" id="gwt" name="gwt" required>
@@ -94,9 +97,33 @@
         <label for="get_rwy_slope">Enter Runway slope: </label>
         <input type="text" id="get_rwy_slope" name="get_rwy_slope" required>
         <br>
+        <label for="get_rsc">Enter RSC: </label>
+        <input type="text" id="get_rsc" name="get_rsc" required>
+        <br>
+        <label for="get_rcr">Enter RCR: </label>
+        <input type="text" id="get_rcr" name="get_rcr" required>
+        <br>
+        <label for="get_di">Enter drag index: </label>
+        <input type="text" id="get_di" name="get_di" required>
+        <br>
+        <label for="anti_skid_oper">Anti Skid Operational </label>
+        <input type="checkbox" id="anti_skid_oper" name="anti_skid_oper" required>
+        <br>
+        <label for="atcs_oper">ATCS Operational </label>
+        <input type="checkbox" id="atcs_oper" name="atcs_oper" required>
+        <br>
+        <br>
         <button type="submit">Send</button>
     </form>
-
+    <form id="enter_winds">
+        <b> Enter wind heading at takeoff runway </b>
+        <input type="text" id="enter_wind_box" name="enter_wind_box">
+        <br>
+        <b> Enter wind speed at takeoff runway </b>
+        <input type="text" id="wind_speed" name="wind_speed">
+        <br>
+        <b1 id="tail_or_head">Wind</b1>
+    </form>
     <form id="filterForm">
         <label for="large_ap">Large Airports</label>
         <input type="checkbox" id="large_ap" name="large_ap">
@@ -161,13 +188,7 @@
         <input type="text" id="enter_waypoint_box" name="enter_waypoint_box">
     </form>
     <br>
-    <form id="enter_winds">
-        <b> Enter winds at takeoff runway </b>
-        <input type="text" id="enter_wind_box" name="enter_wind_box">
-        <br>
-        <b1 id="tail_or_head">Wind</b1>
-    </form>
-    <br>
+
 
     <b1 id="chosen_sid">Chosen SID: </b1>
 
