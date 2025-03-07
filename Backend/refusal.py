@@ -7,9 +7,6 @@ print(os.getcwd())
 from Backend.py_utils import *
 from Backend import perf_calc as perf_calc
 
-uncorr_ref_spd = 140
-rwy_slope = 2
-
 def get_refusal_p1(takeoff_factor, rwy_available): 
     
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
@@ -134,6 +131,8 @@ def get_refusal_p4(prev_data, wind_speed, tail_or_head):
             "x": xVector,
             "y": yVector
         }
+
+    wind_speed = int(wind_speed)
 
     if tail_or_head == "Headwind":
         wind_speed = wind_speed * 0.5 # apply a +50% factor to reported headwind
