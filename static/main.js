@@ -33,6 +33,13 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
         get_to_factor: document.getElementById('get_to_factor').value,
         get_rwy_available: document.getElementById('get_rwy_available').value,
         get_rwy_slope: document.getElementById('get_rwy_slope').value,
+        rsc: document.getElementById("get_rsc").value,
+        rcr: document.getElementById("get_rcr").value,
+        atcsoper: document.getElementById("atcs_oper").value,
+        asoper: document.getElementById("anti_skid_oper").value,
+        dragindex: document.getElementById("get_di").value,
+        windspeed: document.getElementById("wind_speed").value,
+        tail_or_head: document.getElementById("tail_or_head").innerHTML,
     };
     
     const params = new URLSearchParams(formData);
@@ -48,6 +55,7 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
             document.getElementById('rotation_speed_calculated_text').textContent = `${data.rotation_speed_calculated} knots`;
             document.getElementById('uncorrected_refusal_test_p2_text').textContent = `${data.uncorrected_refusal_test_p2} knots`;
             document.getElementById('partially_corrected_refusal_p3_text').textContent = data.partially_corrected_refusal_p3;
+            document.getElementById('corrected_refusal_speed').textContent = data.corrected_refusal_speed;
         })
         .catch(error => console.error('Error:', error));
 });
