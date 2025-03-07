@@ -208,20 +208,21 @@ def get_refusal_p6(prev_data, rcr):
             "x": xVector,
             "y": yVector
         }
-
+    
     rcr_scale = []
     result_rcr = []
 
     for rcrscale, xy_pair_rcr in data.items():
         xy_pair_rcr = data[rcrscale]
 
-        x_values = xy_pair_rcr["x"]
-        y_values = xy_pair_rcr["y"]
+        x_values = xy_pair_rcr["x"][::-1]
+        y_values = xy_pair_rcr["y"][::-1]
 
         rcr_scale.append(rcrscale)
         result_rcr.append(np.interp(rcr, x_values, y_values))
 
     result = np.interp(prev_data, rcr_scale, result_rcr)
+
     return round(result)
 
 def get_refusal_p7(prev_data, rsc):
@@ -256,3 +257,86 @@ def get_refusal_p7(prev_data, rsc):
 
     result = np.interp(prev_data, rsc_scale, result_rsc)
     return round(result)
+
+def get_refusal_p8(prev_data, yes_no):
+
+    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
+    DIG_FILE_NAME = "atcs-for-refusal.dig"
+
+    data = {}
+
+    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+    for c in  chart.curveNames():
+        yVector = [row [1] for row in chart.curve(c)]
+        xVector = [row [0] for row in chart.curve(c)]
+        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+        
+        data[scale_number] = {
+            "x": xVector,
+            "y": yVector
+        }
+
+    if yes_no == True: # if the atcs is operational
+        yes_no = 0
+    elif yes_no == False: # if the atcs is not operational
+        yes_no = 1
+    else: yes_no = 0
+
+
+    atcs_scale = []
+    result_atcs = []
+
+    for atcscale, xy_pair_atcs in data.items():
+        xy_pair_atcs = data[atcscale]
+
+        x_values = xy_pair_atcs["x"]
+        y_values = xy_pair_atcs["y"]
+
+        atcs_scale.append(atcscale)
+        result_atcs.append(np.interp(yes_no, x_values, y_values))
+
+    result = np.interp(prev_data,atcs_scale,result_atcs)
+
+    return round(result)
+
+
+def get_refusal_p9(prev_data, yes_no):  
+
+    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/refusal-and-cef-speed"
+    DIG_FILE_NAME = "refusal-anti-skid.dig"
+
+    data = {}
+
+    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+    for c in  chart.curveNames():
+        yVector = [row [1] for row in chart.curve(c)]
+        xVector = [row [0] for row in chart.curve(c)]
+        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+        
+        data[scale_number] = {
+            "x": xVector,
+            "y": yVector
+        }
+
+    if yes_no == True: # if the AS is operational
+        yes_no = 0
+    elif yes_no == False: # if the AS is not operational
+        yes_no = 1
+    else: yes_no = 0
+
+
+    as_scale = []
+    result_as = []
+
+    for asscale, xy_pair_as in data.items():
+        xy_pair_as = data[asscale]
+
+        x_values = xy_pair_as["x"]
+        y_values = xy_pair_as["y"]
+
+        as_scale.append(asscale)
+        result_as.append(np.interp(yes_no, x_values, y_values))
+
+    result = np.interp(prev_data,as_scale,result_as)
+
+    return round(result) # fully corrected refusal IAS!
