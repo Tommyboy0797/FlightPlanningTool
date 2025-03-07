@@ -30,9 +30,19 @@ def read_root(request: Request):
 
 # endpoint to recieve value for gross weight
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
-def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope):
+def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, rsc, rcr, atcsoper, asoper, dragindex,windspeed,tail_or_head):
     gwt = float(gwt)
     perf_calc.aircraft_grossweight = gwt
+
+    p1 = refusal.get_refusal_p1(get_to_factor, get_rwy_available)
+    p2 = refusal.get_refusal_p2(p1, gwt)
+    p3 = refusal.get_refusal_p3(p2, get_rwy_slope)
+    p4 = refusal.get_refusal_p4(p3, windspeed, tail_or_head)
+    p5 = refusal.get_refusal_p5(p4, dragindex)
+    p6 = refusal.get_refusal_p6(p5, rcr)
+    p7 = refusal.get_refusal_p7(p6, rsc)
+    p8 = refusal.get_refusal_p8(p7, atcsoper)
+    p9 = refusal.get_refusal_p9(p8, asoper) 
     respo = {
         "uncorrected_max_eff_TO_dist_text": "Uncorrected maximum effort takeoff distance: ",
         "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(gwt, get_to_factor, perf_calc.data),
@@ -43,8 +53,8 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
         "uncorrected_refusal_test": refusal.get_refusal_p1(get_to_factor, get_rwy_available),
         "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
         "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
-        "runway_slope": refusal.rwy_slope,
-
+        "runway_slope": handle_route.runway_slope,
+        "corrected_refusal_speed": p9,
     }
        
     return respo
