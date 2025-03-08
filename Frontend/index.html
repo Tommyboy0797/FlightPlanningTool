@@ -1,192 +1,185 @@
 <!DOCTYPE html>
-<!-- Un-Minified version -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flight Planning Tool</title>
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Leaflet CSS -->
+    
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- MarkerCluster CSS -->
+    
+    <!-- MarkerCluster CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.Default.css" />
-
-    <!-- MarkerCluster JS -->
     <script src="https://unpkg.com/leaflet.markercluster@1.5.0/dist/leaflet.markercluster.js"></script>
-
+    
     <style>
-        .container {
-            display: flex;
-            align-items: flex-start; 
-            gap: 20px; 
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
         }
-
-        .airfield-box {
-            border: 2px solid black; 
-            padding: 10px; 
-            background-color: #f8f8f8; 
-            border-radius: 5px; 
-            min-width: 250px; 
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        .section-box {
+            border: 2px solid black;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
         }
     </style>
-
-    <title>FlightPlanningToolTest</title>
 </head>
 <body>
-    <h1>TOLD TEST</h1>
-    <h1> RESULTS: </h1>
-
-    <b1> Gross Weight :</b1>
-    <b2 id="gross_weight_txt"> lbs</b2>
-
-    <br>
-
-    <b1> Takeoff Factor : </b1>
-    <b2 id="takeofffactortext">  </b2>
-
-    <br>
-
-    <b1> Runway Available : </b1>
-    <b2 id="runway_avail_text">  feet </b2>
-
-    <br>
-
-    <b1> Runway Slope : </b1>
-    <b2 id="runway_slope_text"> degrees </b2>
-
-    <br>
-
-    <b1>Uncorrected maximum effort takeoff distance:</b1>
-    <b2 id="uncorrected_max_eff_TO_dist_text"> feet </b2>
-
-    <br>
-
-    <b1> AMAX Rotation speed : </b1>
-    <b2 id="rotation_speed_calculated_text"> knots </b2>
-
-    <br>
-
-    <b1> Fully Corrected Refusal Speed: </b1>
-    <b2 id="corrected_refusal_speed"> </b2>
-
-    <form id="dataForm">
-        <label for="gwt">Enter Gross Weight: </label>
-        <input type="text" id="gwt" name="gwt" required>
-        <br>
-        <label for="get_to_factor">Enter Takeoff Factor: </label>
-        <input type="text" id="get_to_factor" name="get_to_factor" required>
-        <br>
-        <label for="get_rwy_available">Enter Runway Length: </label>
-        <input type="text" id="get_rwy_available" name="get_rwy_available" required>
-        <br>
-        <label for="get_rwy_slope">Enter Runway slope: </label>
-        <input type="text" id="get_rwy_slope" name="get_rwy_slope" required>
-        <br>
-        <label for="get_rsc">Enter RSC: </label>
-        <input type="text" id="get_rsc" name="get_rsc" required>
-        <br>
-        <label for="get_rcr">Enter RCR: </label>
-        <input type="text" id="get_rcr" name="get_rcr" required>
-        <br>
-        <label for="get_di">Enter drag index: </label>
-        <input type="text" id="get_di" name="get_di" required>
-        <br>
-        <label for="anti_skid_oper">Anti Skid Operational </label>
-        <input type="checkbox" id="anti_skid_oper" name="anti_skid_oper">
-        <br>
-        <label for="atcs_oper">ATCS Operational </label>
-        <input type="checkbox" id="atcs_oper" name="atcs_oper">
-        <br>
-        <br>
-        <button type="submit">Send</button>
-    </form>
-    <form id="enter_winds">
-        <b> Enter wind heading at takeoff runway </b>
-        <input type="text" id="enter_wind_box" name="enter_wind_box">
-        <br>
-        <b> Enter wind speed at takeoff runway </b>
-        <input type="text" id="wind_speed" name="wind_speed">
-        <br>
-        <b1 id="tail_or_head">Wind</b1>
-    </form>
-    <form id="filterForm">
-        <label for="large_ap">Large Airports</label>
-        <input type="checkbox" id="large_ap" name="large_ap">
-        <br>
-        <label for="medium_ap">Medium Airports</label>
-        <input type="checkbox" id="medium_ap" name="medium_ap">
-        <br>
-        <label for="small_ap">Small Airports</label>
-        <input type="checkbox" id="small_ap" name="small_ap">
-        <br>
-        <label for="show_sids">Show SIDs</label>
-        <input type="checkbox" id="show_sids" name="show_sids">
-        <button type="submit">Update Map</button>
-    </form>
-    
-    <b>ROUTE:</b>
-    <p id="userRoute"></p>
-
     <div class="container">
-        <div class="airfield-box">
-            <b>AIRFIELD INFORMATION:</b>
-            <p id="airfield_info"></p>
+        <h1 class="text-center">TOLD TEST</h1>
+        
+        <!-- Results Section -->
+        <div class="row">
+            <div class="col-md-6 section-box">
+                <h4>Results</h4>
+                <p><strong>Gross Weight:</strong> <span id="gross_weight_txt"> lbs</span></p>
+                <p><strong>Takeoff Factor:</strong> <span id="takeofffactortext"></span></p>
+                <p><strong>Runway Available:</strong> <span id="runway_avail_text"> feet</span></p>
+                <p><strong>Runway Slope:</strong> <span id="runway_slope_text"> degrees</span></p>
+                <p><strong>Uncorrected max effort takeoff distance:</strong> <span id="uncorrected_max_eff_TO_dist_text"> feet</span></p>
+                <p><strong>AMAX Rotation Speed:</strong> <span id="rotation_speed_calculated_text"> knots</span></p>
+                <p><strong>Fully Corrected Refusal Speed:</strong> <span id="corrected_refusal_speed"></span></p>
+            </div>
+            
+            <!-- Data Entry Section (without wind fields) -->
+            <div class="col-md-6 section-box">
+                <h4>Enter Data</h4>
+                <form id="dataForm">
+                    <label for="gwt">Gross Weight:</label>
+                    <input type="text" class="form-control" id="gwt" required>
+                    
+                    <label for="get_to_factor">Takeoff Factor:</label>
+                    <input type="text" class="form-control" id="get_to_factor" required>
+                    
+                    <label for="get_rwy_available">Runway Length:</label>
+                    <input type="text" class="form-control" id="get_rwy_available" required>
+                    
+                    <label for="get_rwy_slope">Runway Slope:</label>
+                    <input type="text" class="form-control" id="get_rwy_slope" required>
+                    
+                    <label for="get_rsc">RSC:</label>
+                    <input type="text" class="form-control" id="get_rsc" required>
+                    
+                    <label for="get_rcr">RCR:</label>
+                    <input type="text" class="form-control" id="get_rcr" required>
+                    
+                    <label for="get_di">Drag Index:</label>
+                    <input type="text" class="form-control" id="get_di" required>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="anti_skid_oper">
+                        <label class="form-check-label" for="anti_skid_oper">Anti Skid Operational</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="atcs_oper">
+                        <label class="form-check-label" for="atcs_oper">ATCS Operational</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary mt-3">Send</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Wind Information Section (kept separate) -->
+        <div class="section-box">
+            <h4>Wind Information</h4>
+            <form id="enter_winds">
+                <label>Enter wind heading at takeoff runway:</label>
+                <input type="text" class="form-control" id="enter_wind_box" name="enter_wind_box">
+                <br>
+                <label>Enter wind speed at takeoff runway:</label>
+                <input type="text" class="form-control" id="wind_speed" name="wind_speed">
+                <br>
+                <p id="tail_or_head" class="text-muted">Wind</p>
+            </form>
+        </div>
+        
+        <!-- Filters Section -->
+        <div class="section-box">
+            <h4>Filters</h4>
+            <form id="filterForm">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="large_ap">
+                    <label class="form-check-label" for="large_ap">Large Airports</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="medium_ap">
+                    <label class="form-check-label" for="medium_ap">Medium Airports</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="small_ap">
+                    <label class="form-check-label" for="small_ap">Small Airports</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="show_sids">
+                    <label class="form-check-label" for="show_sids">Show SIDs</label>
+                </div>
+                <button type="submit" class="btn btn-secondary mt-2">Update Map</button>
+            </form>
+        </div>
+        
+        <!-- Additional Information Section -->
+        <div class="section-box">
+            <h4>Additional Information</h4>
+            <p><strong>ROUTE:</strong> <span id="userRoute"></span></p>
+            <div class="mb-3">
+                <b>AIRFIELD INFORMATION:</b>
+                <p id="airfield_info"></p>
+            </div>
+            <p><strong>Standard Instrument Departures:</strong> <span id="sids_display"></span></p>
+            <p><strong>RUNWAYS:</strong> <span id="available_runways"></span></p>
+            <form id="enter_runway_sid">
+                <label>Choose Runway:</label>
+                <select name="enterRwy" id="enterRwy" class="form-select"></select>
+            </form>
+            <form id="enter_sid_box">
+                <label>Select SID:</label>
+                <select name="chooseSid" id="chooseSid" class="form-select"></select>
+            </form>
+            <form id="enter_arr_rw">
+                <label>Select arrival runway:</label>
+                <select name="chooseArrRw" id="chooseArrRw" class="form-select"></select>
+            </form>
+            <form id="enter_arr_star">
+                <label>Select arrival STAR:</label>
+                <select name="chooseArrStar" id="chooseArrStar" class="form-select"></select>
+            </form>
+            <br>
+            <form id="enter_waypoint">
+                <b>GPS Waypoint Viewer</b>
+                <br>
+                <label>Enter Waypoint Name:</label>
+                <br>
+                <input type="text" class="form-control" id="enter_waypoint_box" name="enter_waypoint_box">
+            </form>
+            <br>
+            <p><strong>Chosen SID:</strong> <span id="chosen_sid"></span></p>
         </div>
     </div>
-
-
-
-    <b1> Standard Instrument Departures:</b1>
-    <b2 id="sids_display"></b2> 
-
-    <br>
-
-    <b1> RUNWAYS: </b1>
-    <b2 id="available_runways"></b2>
-
-    <form id="enter_runway_sid">
-        <label>Choose Runway:</label>
-        <select name="enterRwy" id="enterRwy">
-        </select>
-    </form>
-    <form id="enter_sid_box">
-        <label>Select SID:</label>
-        <select name="chooseSid" id="chooseSid">
-        </select>
-    </form>
-    <form id="enter_arr_rw">
-        <label>Select arrival runway:</label>
-        <select name="chooseArrRw" id="chooseArrRw">
-        </select>
-    </form>
-    <form id="enter_arr_star">
-        <label>Select arrival STAR:</label>
-        <select name="chooseArrStar" id="chooseArrStar">
-        </select>
-    </form>
-    <br>
-    <form id="enter_waypoint">
-        <b>GPS Waypoint Viewer</b>
-        <br>
-        <label>Enter Waypoint Name: </label>
-        <br>
-        <input type="text" id="enter_waypoint_box" name="enter_waypoint_box">
-    </form>
-    <br>
-
-
-    <b1 id="chosen_sid">Chosen SID: </b1>
-
-    <br>
-
-    <div id="map" style="height: 900px; width: 100%;"></div> <!-- init map -->
-
+    
+    <!-- Map Section -->
+    <div class="container">
+        <div id="map" class="section-box"></div>
+    </div>
+    
     <script src="static/main.js"></script>
-
 </body>
 </html>
