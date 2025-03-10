@@ -21,10 +21,6 @@ var largeAirportIcon = L.icon({
 let selected_waypoints = [];
 let waypoint_data_values = [];
 
-let ROUTE = "";
-let CHOSEN_SID = "";
-let CHOSEN_STAR = "";
-
 document.getElementById('dataForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -155,16 +151,20 @@ enter_sid_dropdown = document.getElementById("chooseSid");
 enter_arr_runway = document.getElementById("chooseArrRw");
 
 function set_origin_airfield(airportname){
-    var stringified_origin = JSON.stringify({airport_name: airportname}) // airportname is now a JSON format
-    console.log(stringified_origin)
+    document.getElementById("airport_dis").innerText = airportname
 
     fetch("/set_origin", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: stringified_origin, // send airport name as the body
+        body: JSON.stringify({airport_name: airportname}), // send airport name as the body
     })
 
-    fetch(`/get_runways?`)
+    fetch(`/get_runways`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: JSON.stringify({airport_name: airportname}), // send airport name as the body
+    })
+
     .then(response => response.json())
     .then(data => {
 
@@ -183,16 +183,12 @@ function set_origin_airfield(airportname){
 
 
     document.getElementById("enterRwy").onchange = function () {
-        // set_origin_airfield(airport_name_is)
-        let selected_rwy = this.value;
-        if (!selected_rwy) return; // Prevent sending empty selections
-
-            let stringified_selected_runway = JSON.stringify({selected_runway: selected_rwy});
+        if (!this.value) return; // Prevent sending empty selections
 
             fetch("/return_runway", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: stringified_selected_runway,
+                body: JSON.stringify({selected_runway: this.value, airport_name: document.getElementById("airport_dis").innerText}),
             })
 
             .then(response => response.json())
@@ -200,16 +196,18 @@ function set_origin_airfield(airportname){
    
                 document.getElementById('sids_display').textContent = data.sids.join(', ');
 
-                console.log(data.sids);
-
-                enter_sid_dropdown.innerHTML = ""
+                enter_sid_dropdown.innerHTML = "";
 
                 data.sids.forEach(sids => {
                     enter_sid_dropdown.options[enter_sid_dropdown.options.length] = new Option(sids, sids);
                 })
             })
             
-            fetch("/airfield_data")
+            fetch("/airfield_data", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({airport_name: document.getElementById("airport_dis").innerText, selected_runway: document.getElementById("enterRwy").value}),
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
@@ -218,9 +216,8 @@ function set_origin_airfield(airportname){
                     return;
                 }
         
-                let airfieldInfoElement = document.getElementById("airfield_info");
-                airfieldInfoElement.innerHTML = ""; // Clear previous data
-        
+                document.getElementById("airfield_info").innerHTML = ""; // Clear previous data
+                console.log(data.runway_data);
                 data.runway_data.forEach(runway => {
                     let runwayInfo = `
                         <p><strong>Length:</strong> ${runway.length} ft</p>
@@ -229,18 +226,13 @@ function set_origin_airfield(airportname){
                         <p><strong>Surface:</strong> ${runway.surface}</p>
                         <hr>
                     `;
-                    airfieldInfoElement.innerHTML += runwayInfo;
+                    document.getElementById("airfield_info").innerHTML += runwayInfo;
                 });
             })
             .catch(error => console.error("Error fetching runway data:", error));
     };
 
     document.getElementById("chooseSid").onchange = function () {
-        let selected_sid = this.value;
-
-        CHOSEN_SID = selected_sid;
-
-        let stringified_selected_sid = JSON.stringify({selected_sid: selected_sid});
 
         if (window.sid_waypoints && window.sid_waypoints.length > 0) {
             window.sid_waypoints.forEach(marker => map.removeLayer(marker));
@@ -252,16 +244,13 @@ function set_origin_airfield(airportname){
         fetch("/return_sid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: stringified_selected_sid,
+            body: JSON.stringify({selected_sid: this.value, airport_name: document.getElementById("airport_dis").innerText, selected_runway: this.value}),
         })
 
         .then(response => response.json())
         .then(data => {
             
-            console.log("selected sid", CHOSEN_SID);
-            console.log("sid points", data.selected_sid_points);
-
-            document.getElementById("chosen_sid").textContent = CHOSEN_SID;
+            document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
 
             data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
 
@@ -276,22 +265,18 @@ function set_origin_airfield(airportname){
 
         })
     };
- 
-function set_arrival_airfield(arrival_field) {
-    stringified_arrival = JSON.stringify({arrival_field: arrival_field});
 
+let arrivalairport = ""
+function set_arrival_airfield(arrival_field) {
+    arrivalairport = arrival_field
     fetch("/return_arrival_airport", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: stringified_arrival, // send airport name as the body
+        body: JSON.stringify({arrival_field: arrival_field}), // send airport name as the body
     })
-    
     
     .then(response => response.json())
     .then(data => {
-
-        console.log("Selected Arrival: ", data.arrival_airfield);
-        console.log("Arrival runways: ", data.arrival_runways);
 
         enter_arr_runway.innerHTML = "";
 
@@ -303,19 +288,15 @@ function set_arrival_airfield(arrival_field) {
 
 
 document.getElementById("chooseArrRw").onchange = function () {
-    let arr_rw = this.value;
-    strignfied_arr_rw = JSON.stringify({arrival_runway: arr_rw})
 
     fetch("/handle_stars", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: strignfied_arr_rw, 
+        body: JSON.stringify({arrival_runway: this.value, arrival_field: arrivalairport}), 
     })
      
     .then(response => response.json())
     .then(data => {
-
-        console.log("Selected Arrival Runway: ", data.selected_runway);
 
         chooseArrStar.innerHTML = "";
 
@@ -327,8 +308,6 @@ document.getElementById("chooseArrRw").onchange = function () {
 }
 
 document.getElementById("chooseArrStar").onchange = function () {
-    let chosen_star = this.value;
-    stringified_chosen_star = JSON.stringify({selected_star: chosen_star})
 
     if (window.star_waypoints && window.star_waypoints.length > 0) {
         window.star_waypoints.forEach(marker => map.removeLayer(marker));
@@ -340,14 +319,12 @@ document.getElementById("chooseArrStar").onchange = function () {
     fetch("/send_star_data", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: stringified_chosen_star, 
+        body: JSON.stringify({selected_star: this.value, arrival_field: arrivalairport}), 
     })
 
     .then(response => response.json())
     .then(data => {
-
-        console.log("Chosen STAR is: ", chosen_star);
-        
+     
         document.getElementById("userRoute").innerHTML = data.route
 
         data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
@@ -366,8 +343,6 @@ document.getElementById("chooseArrStar").onchange = function () {
 }
 
 document.getElementById("enter_waypoint_box").onchange = function () {
-    let entered_waypoint = this.value;
-    stringified_entered_waypoint = JSON.stringify({waypointname: entered_waypoint});
 
     if (window.waypoint_markers && window.waypoint_markers.length > 0) {
         window.waypoint_markers.forEach(marker => map.removeLayer(marker));
@@ -378,12 +353,11 @@ document.getElementById("enter_waypoint_box").onchange = function () {
     fetch("/waypoint_info", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: stringified_entered_waypoint, 
+        body: JSON.stringify({waypointname: this.value}), 
     })
     .then(response => response.json())
     .then(data => {
 
-        console.log(data.waypointdata)
         data.waypointdata.forEach(point => {
             let waypoint_marker = L.marker([point.lat, point.lng])
                 .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} <br> <button onclick="add_wp_to_route('${point.name}')">Add to Route</button></b>`) // call the function + send WP name
@@ -399,7 +373,6 @@ document.getElementById("enter_waypoint_box").onchange = function () {
 }
 
 function add_wp_to_route(waypoint_name) {
-    let stringified_waypoint_name = JSON.stringify({ waypoint: waypoint_name });
     selected_waypoints.push(waypoint_name);
 
     console.log("Selected Waypoints in route: ", selected_waypoints);
@@ -407,7 +380,7 @@ function add_wp_to_route(waypoint_name) {
     fetch("/append_route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: stringified_waypoint_name,
+        body: JSON.stringify({waypoint: waypoint_name}),
     })
     .then(response => response.json())
     .then(data => {
