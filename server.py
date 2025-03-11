@@ -32,7 +32,6 @@ def read_root(request: Request):
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
 def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, rsc, rcr, atcsoper, asoper, dragindex,windspeed,tail_or_head):
     gwt = float(gwt)
-    perf_calc.aircraft_grossweight = gwt
 
     p1 = refusal.get_refusal_p1(get_to_factor, get_rwy_available)
     p2 = refusal.get_refusal_p2(p1, gwt)
@@ -53,7 +52,6 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
         "uncorrected_refusal_test": refusal.get_refusal_p1(get_to_factor, get_rwy_available),
         "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
         "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
-        "runway_slope": handle_route.runway_slope,
         "corrected_refusal_speed": p9,
     }
        
