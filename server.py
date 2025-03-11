@@ -101,12 +101,20 @@ class AirfieldData(BaseModel):
 class WindHdg(BaseModel):
     windhdg:str
 
+class RouteRequest(BaseModel):
+    waypoint: WaypointAppend
+    origin: Origin
+    runwy: Rwy
+    select_sid: Sid
+    selected_star: SelectedStar
+    selected_runway: ArrivalRunway
+    arrival_airfield: Arrival
+
+
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: Origin):
  
-    handle_route.route = origin.airport_name 
-
     return 
 
 @app.post("/get_runways")
@@ -174,13 +182,12 @@ def waypoint_info(waypoint_name: WaypointName):
 
 
 @app.post("/append_route")
-def append_route(waypoint: WaypointAppend):
+def append_route(waypoint: WaypointAppend, origin: Origin, runwy: Rwy, select_sid: Sid,selected_star: SelectedStar,selected_runway: ArrivalRunway,arrival_airfield: Arrival):
 
     handle_route.add_waypoint(waypoint.waypoint)
-    handle_route.build_route()
 
     route_data = {
-        "route": handle_route.build_route()
+        "route": handle_route.build_route(origin.airport_name, runwy.selected_runway, select_sid.selected_sid, selected_star.selected_star, selected_runway.arrival_runway, arrival_airfield.arrival_field)
     }
 
     return route_data

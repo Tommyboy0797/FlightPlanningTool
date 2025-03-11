@@ -373,14 +373,12 @@ document.getElementById("enter_waypoint_box").onchange = function () {
 }
 
 function add_wp_to_route(waypoint_name) {
+
     selected_waypoints.push(waypoint_name);
-
-    console.log("Selected Waypoints in route: ", selected_waypoints);
-
     fetch("/append_route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({waypoint: waypoint_name}),
+        body: JSON.stringify({waypoint: {waypoint: waypoint_name}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}, select_sid: {selected_sid: document.getElementById("chooseSid").value}, selected_star: {selected_star: document.getElementById("chooseArrStar").value},selected_runway: {arrival_runway: document.getElementById("chooseArrRw").value} ,arrival_airfield: {arrival_field: arrivalairport}}),
     })
     .then(response => response.json())
     .then(data => {
