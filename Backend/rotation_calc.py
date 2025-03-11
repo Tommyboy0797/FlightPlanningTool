@@ -6,10 +6,6 @@ print(os.getcwd())
 from Backend.py_utils import *
 from Backend import perf_calc as perf_calc
 
-aircraft_grossweight = perf_calc.aircraft_grossweight
-takeoff_factor = perf_calc.takeoff_factor
-
-
 TOP_FOLDER = "Backend/chart_dig/completed-takeoff/amax-takeoff"
 DIG_FILE_NAME = "amax-speed-rotation.dig"
 
