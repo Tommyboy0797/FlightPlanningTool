@@ -317,9 +317,9 @@ def get_refusal_p9(prev_data, yes_no):
             "y": yVector
         }
 
-    if yes_no == True: # if the AS is operational
+    if yes_no == True or yes_no == "true": # if the AS is operational
         yes_no = 0
-    elif yes_no == False: # if the AS is not operational
+    elif yes_no == False or yes_no == "false": # if the AS is not operational
         yes_no = 1
     else: yes_no = 0
 
