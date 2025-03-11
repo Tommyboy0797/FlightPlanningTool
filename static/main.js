@@ -46,7 +46,7 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
             document.getElementById('gross_weight_txt').textContent = `${data.gross_weight_text} lbs`;
             document.getElementById('takeofffactortext').textContent = data.takeoff_factor_text;
             document.getElementById('runway_avail_text').textContent = `${data.runway_avail} feet`;
-            document.getElementById('runway_slope_text').textContent = `${data.runway_slope} degrees`;
+            document.getElementById('runway_slope_text').textContent = `${document.getElementById('get_rwy_slope').value} degrees`;
             document.getElementById('uncorrected_max_eff_TO_dist_text').textContent = `${data.uncorrected_max_eff_TO_dist} feet`;
             document.getElementById('rotation_speed_calculated_text').textContent = `${data.rotation_speed_calculated} knots`;
             document.getElementById('corrected_refusal_speed').textContent = data.corrected_refusal_speed;
@@ -184,11 +184,11 @@ function set_origin_airfield(airportname){
 
     document.getElementById("enterRwy").onchange = function () {
         if (!this.value) return; // Prevent sending empty selections
-
+            console.log(JSON.stringify({selected_runway: this.value, airport_name: document.getElementById("airport_dis").innerText}));
             fetch("/return_runway", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({selected_runway: this.value, airport_name: document.getElementById("airport_dis").innerText}),
+                body: JSON.stringify({runwy: {selected_runway: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}}),
             })
 
             .then(response => response.json())
@@ -206,7 +206,7 @@ function set_origin_airfield(airportname){
             fetch("/airfield_data", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({airport_name: document.getElementById("airport_dis").innerText, selected_runway: document.getElementById("enterRwy").value}),
+                body: JSON.stringify({origin: {airport_name: document.getElementById("airport_dis").innerText},runwy: {selected_runway: document.getElementById("enterRwy").value}}),
             })
             .then(response => response.json())
             .then(data => {
@@ -237,23 +237,23 @@ function set_origin_airfield(airportname){
         if (window.sid_waypoints && window.sid_waypoints.length > 0) {
             window.sid_waypoints.forEach(marker => map.removeLayer(marker));
         }
-
+        console.log(JSON.stringify({select_sid: {selected_sid: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}}))
         // Reset the marker array
         window.sid_waypoints = [];
 
         fetch("/return_sid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({selected_sid: this.value, airport_name: document.getElementById("airport_dis").innerText, selected_runway: this.value}),
+            body: JSON.stringify({select_sid: {selected_sid: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}}),
         })
-
+        
         .then(response => response.json())
         .then(data => {
             
             document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
 
             data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
-
+            console.log(data.selected_sid_points);
             data.selected_sid_points.forEach(point => {
                 let sid_waypoint = L.marker([point.lat, point.lng])
                     .bindPopup(`<b>${point.ident}</b>`)
@@ -292,7 +292,7 @@ document.getElementById("chooseArrRw").onchange = function () {
     fetch("/handle_stars", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({arrival_runway: this.value, arrival_field: arrivalairport}), 
+        body: JSON.stringify({selected_runway: {arrival_runway: this.value},arrival_airfield: {arrival_field: arrivalairport}}), 
     })
      
     .then(response => response.json())
@@ -319,7 +319,7 @@ document.getElementById("chooseArrStar").onchange = function () {
     fetch("/send_star_data", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({selected_star: this.value, arrival_field: arrivalairport}), 
+        body: JSON.stringify({selected_star: {selected_star: this.value}, arrival_airfield: {arrival_field: arrivalairport}}), 
     })
 
     .then(response => response.json())
@@ -445,13 +445,12 @@ function display_waypoints() {
 
 
 document.getElementById("enter_wind_box").onchange = function () {
-    wind_hdg = this.value
-    stringified_wind_hdg = JSON.stringify({windhdg: wind_hdg})
+    stringified_wind_hdg = JSON.stringify({windhdg: this.value})
 
     fetch("/handle_winds", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: stringified_wind_hdg, 
+        body: JSON.stringify({windhdg: {windhdg: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}}), 
     })
     .then(response => response.json())
     .then(data => {
