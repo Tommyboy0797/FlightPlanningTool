@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: flightplanning-site-cert
+  namespace: flightplanning
+spec:
+  secretName: flightplantool-tls
+  issuerRef:
+    name: airplanesimulation-issuer
+  dnsNames:
+  - flightplanning.airplanesimulations.com
+  - www.flightplanning.airplanesimulations.com
+
+  

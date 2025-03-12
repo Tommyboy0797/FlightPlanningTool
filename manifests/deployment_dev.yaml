@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fp-site-dev
+  namespace: flightplanning
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: fp-site-dev
+  template:
+    metadata:
+      labels:
+        name: fp-site-dev
+    spec:
+      containers:
+      - env:
+        image: gcr.io/dcs-analytics-257714/flightplanning:dev
+        command: ['uvicorn', "server:app", "--host", "0.0.0.0", "--port", "8000"]
+        name: fp-site-dev
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          periodSeconds: 10
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 10
+          failureThreshold: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fp-site-dev-svc
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+  namespace: flightplanning
+  labels:
+    name: fp-site-dev
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    name: fp-site-dev
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fp-site-dev-ingress
+  namespace: flightplanning
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: flightplanning-dev
+    cert-manager.io/issuer: airplanesimulation-issuer
+  labels:
+    name: fp-site-ingress-dev
+spec:
+  rules:
+  - host: flightplanning-dev.airplanesimulations.com
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: fp-site-dev-svc
+            port:
+              number: 8000
+  tls: # < placing a host in the TLS config will indicate a certificate should be created
+  - hosts:
+    - flightplanning-dev.airplanesimulations.com
+    secretName: flightplantool-dev-tls

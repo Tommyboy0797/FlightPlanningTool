@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fp-site-prod
+  namespace: flightplanning
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: fp-site-prod
+  template:
+    metadata:
+      labels:
+        name: fp-site-prod
+    spec:
+      containers:
+      - env:
+        image: gcr.io/dcs-analytics-257714/flightplanning:latest
+        command: ['uvicorn', "server:app", "--host", "0.0.0.0", "--port", "8000"]
+        name: fp-site-prod
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          periodSeconds: 10
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 10
+          failureThreshold: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fp-site-svc
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+  namespace: flightplanning
+  labels:
+    name: fp-site-prod
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    name: fp-site-prod
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fp-site-ingress
+  namespace: flightplanning
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: flightplanning
+    cert-manager.io/issuer: airplanesimulation-issuer
+  labels:
+    name: fp-site-ingress
+spec:
+  rules:
+  - host: flightplanning.airplanesimulations.com
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: fp-site-svc
+            port:
+              number: 8000
+  tls: # < placing a host in the TLS config will indicate a certificate should be created
+  - hosts:
+    - flightplanning.airplanesimulations.com
+    secretName: flightplantool-tls
