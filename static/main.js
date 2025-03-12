@@ -319,7 +319,7 @@ document.getElementById("chooseArrStar").onchange = function () {
     fetch("/send_star_data", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({selected_star: {selected_star: this.value}, arrival_airfield: {arrival_field: arrivalairport}}), 
+        body: JSON.stringify({selected_star: {selected_star: this.value}, arrival_airfield: {arrival_field: arrivalairport}, arrival_runway: {arrival_runway: document.getElementById("chooseArrRw").value}}), 
     })
 
     .then(response => response.json())

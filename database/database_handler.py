@@ -145,7 +145,7 @@ def get_stars(arrival,runway):
 
 
 
-def send_star_data(procedure, airport):
+def send_star_data(procedure, airport, runway):
 
     database_path = "database/nav_data.db" # path to database
 
@@ -167,9 +167,10 @@ def send_star_data(procedure, airport):
             FROM stars
             WHERE procedure_identifier = ?
             AND airport_identifier = ?
+            AND transition_identifier = ?
             AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
             AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)                 
-                   """, (procedure, airport))
+                   """, (procedure, airport, runway))
 
 
 
