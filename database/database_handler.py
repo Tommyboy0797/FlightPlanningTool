@@ -164,15 +164,19 @@ def send_star_data(procedure, airport, runway):
             END AS longitude,
             waypoint_identifier, 
             seqno
+        FROM stars
+        WHERE procedure_identifier = ?
+        AND airport_identifier = ?
+        AND (transition_identifier = ? OR transition_identifier = (
+            SELECT transition_identifier 
             FROM stars
             WHERE procedure_identifier = ?
             AND airport_identifier = ?
-            AND transition_identifier = ?
-            AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
-            AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)                 
-                   """, (procedure, airport, runway))
-
-
+            LIMIT 1
+        ))
+        AND (waypoint_latitude IS NOT NULL OR center_waypoint_latitude IS NOT NULL)
+        AND (waypoint_longitude IS NOT NULL OR center_waypoint_longitude IS NOT NULL)
+    """, (procedure, airport, runway, procedure, airport))
 
     selected_star = cursor.fetchall()
 
