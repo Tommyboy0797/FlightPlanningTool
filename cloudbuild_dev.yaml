@@ -10,6 +10,8 @@ steps:
                 "-f", "${_DOCKERFILE_DIR}/Dockerfile",
                 "."]
 
+    - name: 'gcr.io/cloud-builders/docker'
+      args: ["push", "gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:dev"]
     - name: "gcr.io/cloud-builders/gke-deploy"
       args:
       - run
