@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: airplanesimulation-issuer
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: 'mcdelaney@gmail.com'
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - dns01:
+        cloudDNS:
+          # The ID of the GCP project
+          project: dcs-analytics-257714
+          # This is the secret used to access the service account
+          serviceAccountSecretRef:
+            name: clouddns-dns02-solver-svc-acct
+            key: key2.json
