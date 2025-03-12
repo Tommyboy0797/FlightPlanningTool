@@ -12,4 +12,10 @@ You can then access the application locally at `127.0.0.1:8000`.
 
 
 ### Deployment
-This will happen on an automated pipeline via gcp cloudbuild. Tomorrow.
+This project uses with GCP/GCR to build containers, and is deployed GKE programatically via Cloud Build integration.
+
+Deployments to dev (flightplanning-dev.airplanesimulations.com) are triggered by commits to the `dev` branch.
+
+Deployments to prod are triggered by commits to main.
+
+The development workflow should generally be feature-branch -> dev -> main.
