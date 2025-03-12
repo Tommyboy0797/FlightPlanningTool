@@ -105,15 +105,6 @@ class AirfieldData(BaseModel):
 class WindHdg(BaseModel):
     windhdg:str
 
-class RouteRequest(BaseModel):
-    waypoint: WaypointAppend
-    origin: Origin
-    runwy: Rwy
-    select_sid: Sid
-    selected_star: SelectedStar
-    selected_runway: ArrivalRunway
-    arrival_airfield: Arrival
-
 
 # endpoint to handle the origin
 @app.post("/set_origin")
@@ -167,10 +158,10 @@ def handle_stars(selected_runway: ArrivalRunway, arrival_airfield: Arrival):
     return star_data
 
 @app.post("/send_star_data")
-def send_star_data(selected_star: SelectedStar, arrival_airfield: Arrival):
+def send_star_data(selected_star: SelectedStar, arrival_airfield: Arrival, arrival_runway: ArrivalRunway):
 
     star_points = {
-        "selected_star_data": database_handler.send_star_data(selected_star.selected_star, arrival_airfield.arrival_field)
+        "selected_star_data": database_handler.send_star_data(selected_star.selected_star, arrival_airfield.arrival_field, arrival_runway.arrival_runway)
     }
     return star_points
 
