@@ -27,6 +27,10 @@ def read_root(request: Request):
     
     return respo
 
+@app.get("/healthz")
+def healthcheck():
+    # Dont remove this. If you do, the website will not deploy.
+    return 'ok'
 
 # endpoint to recieve value for gross weight
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
