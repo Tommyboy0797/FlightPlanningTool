@@ -11,3 +11,5 @@ This will build the container, and start the application with port 8000 forwarde
 You can then access the application locally at `127.0.0.1:8000`.
 
 
+### Deployment
+This will happen on an automated pipeline via gcp cloudbuild. Tomorrow.
