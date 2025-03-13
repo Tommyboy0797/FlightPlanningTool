@@ -212,3 +212,17 @@ def runway_heading(airfield, runway):
     runway_hdg = cursor.fetchall()
 
     return runway_hdg
+
+
+def get_airways(airway_number):
+    
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute(""" SELECT waypoint_latitude, waypoint_longitude, waypoint_identifier, outbound_course, inbound_course, inbound_distance, route_identifier, seqno FROM airways WHERE route_identifier = ?""",(airway_number,))
+
+    airway_info = cursor.fetchall()
+
+    return [{"lat": waypoint_latitude, "lng": waypoint_longitude, "ident": waypoint_identifier, "ob_course": outbound_course, "ib_course": inbound_course, "ib_dist": inbound_distance, "route_ident": route_identifier, "seqno": seqno} for waypoint_latitude, waypoint_longitude, waypoint_identifier, outbound_course, inbound_course, inbound_distance, route_identifier, seqno in airway_info]

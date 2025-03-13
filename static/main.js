@@ -467,3 +467,34 @@ function remove_wp_from_route(lat, lng) {
     display_waypoints();
     
 }
+
+document.getElementById("enter_airway_box").onchange = function () {
+
+    if (window.airway_markers && window.airway_markers.length > 0) {
+        window.airway_markers.forEach(marker => map.removeLayer(marker));
+    }
+
+    window.airway_markers = [];
+    
+    fetch("/get_airways", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, 
+        body: JSON.stringify({airway_value: this.value})
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        data.airway_info.sort((a, b) => a.seqno - b.seqno); // make sure data is sorted to avoid triangle stuff
+
+        data.airway_info.forEach(point => {
+            let waypoint_marker = L.marker([point.lat, point.lng])
+                .bindPopup(`<b>${point.ident}<br> ${point.route_ident}</b>`)
+                .addTo(map);
+            let airway_polyline = L.polyline(data.airway_info, {color: 'purple'}).addTo(map)
+            let new_view = map.panTo(new L.LatLng(point.lat, point.lng))
+            window.airway_markers.push(airway_polyline,waypoint_marker, new_view)
+        })
+
+    })
+    .catch(error => console.error("Error fetching airway data:", error));
+};

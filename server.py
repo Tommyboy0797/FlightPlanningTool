@@ -105,6 +105,9 @@ class AirfieldData(BaseModel):
 class WindHdg(BaseModel):
     windhdg:str
 
+class Airway(BaseModel):
+    airway_value:str
+
 
 # endpoint to handle the origin
 @app.post("/set_origin")
@@ -205,3 +208,13 @@ def handle_winds(windhdg: WindHdg, origin: Origin, runwy: Rwy ):
     }
 
     return wind_data
+
+
+@app.post("/get_airways")
+def get_airways(airway_value: Airway):
+
+    airways = {
+        "airway_info": database_handler.get_airways(airway_value.airway_value)
+    }
+
+    return airways
