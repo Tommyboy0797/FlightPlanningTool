@@ -493,18 +493,26 @@ document.getElementById("enter_airway_box").onchange = function () {
 };
 
 
-document.getElementById('routePlanningNav').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('routePlanningPage').className = 'active-page';
-    document.getElementById('toldPage').className = 'inactive-page';
-    document.getElementById('routePlanningNav').classList.add('active');
-    document.getElementById('toldNav').classList.remove('active');
-});
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('routePlanningNav').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('routePlanningPage').classList.add('active-page');
+        document.getElementById('routePlanningPage').classList.remove('inactive-page');
+        document.getElementById('toldPage').classList.add('inactive-page');
+        document.getElementById('toldPage').classList.remove('active-page');
 
-document.getElementById('toldNav').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('routePlanningPage').className = 'inactive-page';
-    document.getElementById('toldPage').className = 'active-page';
-    document.getElementById('routePlanningNav').classList.remove('active');
-    document.getElementById('toldNav').classList.add('active');
+        document.getElementById('routePlanningNav').classList.add('active');
+        document.getElementById('toldNav').classList.remove('active');
+    });
+
+    document.getElementById('toldNav').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('routePlanningPage').classList.add('inactive-page');
+        document.getElementById('routePlanningPage').classList.remove('active-page');
+        document.getElementById('toldPage').classList.add('active-page');
+        document.getElementById('toldPage').classList.remove('inactive-page');
+
+        document.getElementById('routePlanningNav').classList.remove('active');
+        document.getElementById('toldNav').classList.add('active');
+    });
 });
