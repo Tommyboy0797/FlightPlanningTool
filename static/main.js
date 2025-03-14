@@ -176,7 +176,6 @@ function set_origin_airfield(airportname){
             enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
         })
 
-        document.getElementById('available_runways').textContent = data.origin_runways.join(', ');
     })
     .catch(error => console.error('Error fetching runway data:', error));
     };
@@ -194,8 +193,6 @@ function set_origin_airfield(airportname){
             .then(response => response.json())
             .then(data => {
    
-                document.getElementById('sids_display').textContent = data.sids.join(', ');
-
                 enter_sid_dropdown.innerHTML = "";
 
                 data.sids.forEach(sids => {
@@ -498,3 +495,20 @@ document.getElementById("enter_airway_box").onchange = function () {
     })
     .catch(error => console.error("Error fetching airway data:", error));
 };
+
+
+document.getElementById('routePlanningNav').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('routePlanningPage').className = 'active-page';
+    document.getElementById('toldPage').className = 'inactive-page';
+    document.getElementById('routePlanningNav').classList.add('active');
+    document.getElementById('toldNav').classList.remove('active');
+});
+
+document.getElementById('toldNav').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('routePlanningPage').className = 'inactive-page';
+    document.getElementById('toldPage').className = 'active-page';
+    document.getElementById('routePlanningNav').classList.remove('active');
+    document.getElementById('toldNav').classList.add('active');
+});
