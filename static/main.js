@@ -149,9 +149,9 @@ loadAirports({ small_ap: true, medium_ap: true, large_ap: true, show_sids: true,
 enter_rwy_dropdown = document.getElementById("enterRwy");
 enter_sid_dropdown = document.getElementById("chooseSid");
 enter_arr_runway = document.getElementById("chooseArrRw");
-
+let dep_ap = "0";
 function set_origin_airfield(airportname){
-    document.getElementById("airport_dis").innerText = airportname
+    dep_ap = airportname;
 
     fetch("/set_origin", {
         method: "POST",
@@ -176,7 +176,6 @@ function set_origin_airfield(airportname){
             enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
         })
 
-        document.getElementById('available_runways').textContent = data.origin_runways.join(', ');
     })
     .catch(error => console.error('Error fetching runway data:', error));
     };
@@ -184,18 +183,15 @@ function set_origin_airfield(airportname){
 
     document.getElementById("enterRwy").onchange = function () {
         if (!this.value) return; // Prevent sending empty selections
-            console.log(JSON.stringify({selected_runway: this.value, airport_name: document.getElementById("airport_dis").innerText}));
             fetch("/return_runway", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({runwy: {selected_runway: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}}),
+                body: JSON.stringify({runwy: {selected_runway: this.value}, origin: {airport_name: dep_ap}}),
             })
 
             .then(response => response.json())
             .then(data => {
    
-                document.getElementById('sids_display').textContent = data.sids.join(', ');
-
                 enter_sid_dropdown.innerHTML = "";
 
                 data.sids.forEach(sids => {
@@ -206,7 +202,7 @@ function set_origin_airfield(airportname){
             fetch("/airfield_data", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({origin: {airport_name: document.getElementById("airport_dis").innerText},runwy: {selected_runway: document.getElementById("enterRwy").value}}),
+                body: JSON.stringify({origin: {airport_name: dep_ap},runwy: {selected_runway: document.getElementById("enterRwy").value}}),
             })
             .then(response => response.json())
             .then(data => {
@@ -216,18 +212,18 @@ function set_origin_airfield(airportname){
                     return;
                 }
         
-                document.getElementById("airfield_info").innerHTML = ""; // Clear previous data
-                console.log(data.runway_data);
-                data.runway_data.forEach(runway => {
-                    let runwayInfo = `
-                        <p><strong>Length:</strong> ${runway.length} ft</p>
-                        <p><strong>Width:</strong> ${runway.width} ft</p>
-                        <p><strong>Heading:</strong> ${runway.hdg}°</p>
-                        <p><strong>Surface:</strong> ${runway.surface}</p>
-                        <hr>
-                    `;
-                    document.getElementById("airfield_info").innerHTML += runwayInfo;
-                });
+                // document.getElementById("airfield_info").innerHTML = ""; // Clear previous data
+                // console.log(data.runway_data);
+                // data.runway_data.forEach(runway => {
+                //     let runwayInfo = `
+                //         <p><strong>Length:</strong> ${runway.length} ft</p>
+                //         <p><strong>Width:</strong> ${runway.width} ft</p>
+                //         <p><strong>Heading:</strong> ${runway.hdg}°</p>
+                //         <p><strong>Surface:</strong> ${runway.surface}</p>
+                //         <hr>
+                //     `;
+                //     document.getElementById("airfield_info").innerHTML += runwayInfo;
+                // });
             })
             .catch(error => console.error("Error fetching runway data:", error));
     };
@@ -237,14 +233,14 @@ function set_origin_airfield(airportname){
         if (window.sid_waypoints && window.sid_waypoints.length > 0) {
             window.sid_waypoints.forEach(marker => map.removeLayer(marker));
         }
-        console.log(JSON.stringify({select_sid: {selected_sid: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}}))
+
         // Reset the marker array
         window.sid_waypoints = [];
 
         fetch("/return_sid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({select_sid: {selected_sid: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}}),
+            body: JSON.stringify({select_sid: {selected_sid: this.value}, origin: {airport_name: dep_ap}, runwy: {selected_runway: document.getElementById("enterRwy").value}}),
         })
         
         .then(response => response.json())
@@ -378,7 +374,7 @@ function add_wp_to_route(waypoint_name) {
     fetch("/append_route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({waypoint: {waypoint: waypoint_name}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}, select_sid: {selected_sid: document.getElementById("chooseSid").value}, selected_star: {selected_star: document.getElementById("chooseArrStar").value},selected_runway: {arrival_runway: document.getElementById("chooseArrRw").value} ,arrival_airfield: {arrival_field: arrivalairport}}),
+        body: JSON.stringify({waypoint: {waypoint: waypoint_name}, origin: {airport_name: dep_ap}, runwy: {selected_runway: document.getElementById("enterRwy").value}, select_sid: {selected_sid: document.getElementById("chooseSid").value}, selected_star: {selected_star: document.getElementById("chooseArrStar").value},selected_runway: {arrival_runway: document.getElementById("chooseArrRw").value} ,arrival_airfield: {arrival_field: arrivalairport}}),
     })
     .then(response => response.json())
     .then(data => {
@@ -448,14 +444,11 @@ document.getElementById("enter_wind_box").onchange = function () {
     fetch("/handle_winds", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({windhdg: {windhdg: this.value}, origin: {airport_name: document.getElementById("airport_dis").innerText}, runwy: {selected_runway: document.getElementById("enterRwy").value}}), 
+        body: JSON.stringify({windhdg: {windhdg: this.value}, origin: {airport_name: dep_ap}, runwy: {selected_runway: document.getElementById("enterRwy").value}}), 
     })
     .then(response => response.json())
     .then(data => {
-        
-        document.getElementById("tail_or_head").innerHTML = data.head_or_tail_wind
-
-        
+             
     })
 }
 
@@ -498,3 +491,20 @@ document.getElementById("enter_airway_box").onchange = function () {
     })
     .catch(error => console.error("Error fetching airway data:", error));
 };
+
+
+document.getElementById('routePlanningNav').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('routePlanningPage').className = 'active-page';
+    document.getElementById('toldPage').className = 'inactive-page';
+    document.getElementById('routePlanningNav').classList.add('active');
+    document.getElementById('toldNav').classList.remove('active');
+});
+
+document.getElementById('toldNav').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('routePlanningPage').className = 'inactive-page';
+    document.getElementById('toldPage').className = 'active-page';
+    document.getElementById('routePlanningNav').classList.remove('active');
+    document.getElementById('toldNav').classList.add('active');
+});
