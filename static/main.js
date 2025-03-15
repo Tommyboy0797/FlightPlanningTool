@@ -35,7 +35,6 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
         asoper: document.getElementById("anti_skid_oper").checked,
         dragindex: document.getElementById("get_di").value,
         windspeed: document.getElementById("wind_speed").value,
-        tail_or_head: document.getElementById("tail_or_head").innerHTML,
     };
     
     const params = new URLSearchParams(formData);
