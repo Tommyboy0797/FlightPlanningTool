@@ -35,7 +35,7 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
         asoper: document.getElementById("anti_skid_oper").checked,
         dragindex: document.getElementById("get_di").value,
         windspeed: document.getElementById("wind_speed").value,
-        tail_or_head: document.getElementById("tail_or_head").innerHTML,
+        tail_or_head: wind_stg,
     };
     
     const params = new URLSearchParams(formData);
@@ -436,7 +436,7 @@ function display_waypoints() {
 }
 
 
-
+let wind_stg = "";
 
 document.getElementById("enter_wind_box").onchange = function () {
     stringified_wind_hdg = JSON.stringify({windhdg: this.value})
@@ -448,7 +448,8 @@ document.getElementById("enter_wind_box").onchange = function () {
     })
     .then(response => response.json())
     .then(data => {
-             
+
+        wind_stg = data.head_or_tail_wind;
     })
 }
 
