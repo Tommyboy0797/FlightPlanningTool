@@ -379,13 +379,15 @@ function add_wp_to_route(waypoint_name) {
     .then(response => response.json())
     .then(data => {
         document.getElementById("userRoute").innerHTML = data.route;
-        display_waypoints(); // Ensure waypoints are displayed after updating the route
+        display_waypoints(); 
     });
 }
 
 
 function display_waypoints() {
-    let fetchPromises = selected_waypoints.map(wp => {
+    let waypoint_data_values = []; 
+
+    let fetchPromises = selected_waypoints.map((wp, index) => {
         return fetch("/waypoint_info", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -394,39 +396,38 @@ function display_waypoints() {
         .then(response => response.json())
         .then(data => {
             if (data.waypointdata.length > 0) {
-                waypoint_data_values.push(data.waypointdata[0]); // Store only first waypoint object
+                waypoint_data_values.push({ 
+                    index: index, // this adds index as an option in the data
+                    ...data.waypointdata[0] // "..." is a spread operator which just makes the code cleaner
+                });
             }
         });
     });
 
-    // Wait for all fetches to complete before adding markers
     Promise.all(fetchPromises).then(() => {
-        // Remove existing markers before adding new ones
+        waypoint_data_values.sort((a, b) => a.index - b.index); // sorting waypoints by index to avoid the triangle issue
+
         if (window.waypoint_markers && window.waypoint_markers.length > 0) {
             window.waypoint_markers.forEach(marker => map.removeLayer(marker));
         }
-        
-        // Reset marker storage
+
         window.waypoint_markers = [];
 
-        // Add new markers
         waypoint_data_values.forEach(point => {
             let waypoint_marker = L.marker([point.lat, point.lng])
                 .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} 
                 <br> <button onclick="remove_wp_from_route('${point.lat}, ${point.lng}')">Remove</button></b>`)
                 .addTo(map);
 
-            // Store marker so it can be cleared later
             window.waypoint_markers.push(waypoint_marker);
         });
 
-        // Now add the polyline for the route
         if (window.routePolyline) {
             map.removeLayer(window.routePolyline);
         }
         
         let latlngs = waypoint_data_values.map(point => [point.lat, point.lng]);
-        
+
         if (latlngs.length > 1) {
             window.routePolyline = L.polyline(latlngs, { color: "green" }).addTo(map);
         }
