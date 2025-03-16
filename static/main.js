@@ -149,7 +149,10 @@ loadAirports({ small_ap: true, medium_ap: true, large_ap: true, show_sids: true,
 enter_rwy_dropdown = document.getElementById("enterRwy");
 enter_sid_dropdown = document.getElementById("chooseSid");
 enter_arr_runway = document.getElementById("chooseArrRw");
+
 let dep_ap = "0";
+let final_sid_point = "";
+
 function set_origin_airfield(airportname){
     dep_ap = airportname;
 
@@ -249,6 +252,9 @@ function set_origin_airfield(airportname){
             document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
 
             data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
+
+            final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
+            console.log(final_sid_point);
             console.log(data.selected_sid_points);
             data.selected_sid_points.forEach(point => {
                 let sid_waypoint = L.marker([point.lat, point.lng])
@@ -303,6 +309,8 @@ document.getElementById("chooseArrRw").onchange = function () {
     })
 }
 
+let star_init_point = "";
+
 document.getElementById("chooseArrStar").onchange = function () {
 
     if (window.star_waypoints && window.star_waypoints.length > 0) {
@@ -324,6 +332,9 @@ document.getElementById("chooseArrStar").onchange = function () {
         document.getElementById("userRoute").innerHTML = data.route
 
         data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
+
+        star_init_point = data.selected_star_data[0]; // access first STAR point
+        console.log(star_init_point);
 
         data.selected_star_data.forEach(point => {
             let star_waypoint = L.marker([point.lat, point.lng])
@@ -427,6 +438,14 @@ function display_waypoints() {
         }
         
         let latlngs = waypoint_data_values.map(point => [point.lat, point.lng]);
+
+        if (final_sid_point && final_sid_point.lat && final_sid_point.lng) {
+            latlngs.unshift([final_sid_point.lat, final_sid_point.lng]); // "unshift" adds to start of array 
+        }
+
+        if (star_init_point && star_init_point.lat && star_init_point.lng) {
+            latlngs.push([star_init_point.lat, star_init_point.lng]);
+        }
 
         if (latlngs.length > 1) {
             window.routePolyline = L.polyline(latlngs, { color: "green" }).addTo(map);
