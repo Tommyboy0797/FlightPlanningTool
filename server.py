@@ -218,3 +218,13 @@ def get_airways(airway_value: Airway):
     }
 
     return airways
+
+
+@app.post("/entered_airfield")
+def entered_airfield(airfield_name: Origin):
+
+    airfield = {
+        "airfield_data": database_handler.get_spec_airfield(airfield_name.airport_name)
+    }
+    print(database_handler.get_spec_airfield(airfield_name.airport_name))
+    return airfield

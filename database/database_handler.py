@@ -195,6 +195,8 @@ def waypoint_search(waypointname):
 
     waypoint_info = cursor.fetchall()
 
+    connect_to_db.close()
+
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_identifier, "name": waypoint_name, "usage": waypoint_usage, "icao": icao_code, "area": area_code} for latitude, longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code in waypoint_info]
 
 
@@ -211,6 +213,8 @@ def runway_heading(airfield, runway):
 
     runway_hdg = cursor.fetchall()
 
+    connect_to_db.close()
+
     return runway_hdg
 
 
@@ -225,4 +229,21 @@ def get_airways(airway_number):
 
     airway_info = cursor.fetchall()
 
+    connect_to_db.close()
+
     return [{"lat": waypoint_latitude, "lng": waypoint_longitude, "ident": waypoint_identifier, "ob_course": outbound_course, "ib_course": inbound_course, "ib_dist": inbound_distance, "route_ident": route_identifier, "seqno": seqno} for waypoint_latitude, waypoint_longitude, waypoint_identifier, outbound_course, inbound_course, inbound_distance, route_identifier, seqno in airway_info]
+
+
+def get_spec_airfield(airfield_name):
+    database_path = "database/nav_data.db" # path to database
+
+    connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
+    cursor = connect_to_db.cursor() # create a cursor, which allows us to execute SQL commands
+
+    cursor.execute("SELECT lat, lon, icao, type FROM airports WHERE icao = ?", (airfield_name,))
+
+    airfield = cursor.fetchall()
+
+    connect_to_db.close()
+
+    return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in airfield]
