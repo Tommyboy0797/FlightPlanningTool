@@ -537,3 +537,45 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('toldNav').classList.add('active');
     });
 });
+
+document.getElementById("enter_airfield_box").onchange = function () {
+    fetch("/entered_airfield", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ airport_name: this.value })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        let airfield = data.airfield_data[0]; // get the first and hopefully only result from array
+        let icon_type = null;
+
+        if (airfield.type === "large_airport") {
+            icon_type = largeAirportIcon;
+        } else if (airfield.type === "medium_airport") {
+            icon_type = mediumAirportIcon;
+        } else if (airfield.type === "small_airport") {
+            icon_type = smallAirportIcon;
+        }
+
+        data.airfield_data.forEach(point => {
+            let marker = L.marker([point.lat, point.lng], { icon: icon_type });
+
+            marker.bindPopup(`
+                <b>${point.name}</b> (${point.type})<br>
+                <button onclick="set_origin_airfield('${point.name}')">Set as Departure</button>
+                <br>
+                <button onclick="set_arrival_airfield('${point.name}')">Set as Arrival</button>
+            `);
+
+            marker.addTo(map);
+            map.setView(new L.LatLng(point.lat, point.lng), 10);
+            
+            if (!window.markers) {
+                window.markers = [];
+            }
+
+            window.markers.push(marker);
+        });
+    })
+};
