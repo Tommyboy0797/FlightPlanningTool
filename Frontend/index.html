@@ -62,6 +62,27 @@
         .filter-box {
             background-color: #f8f9fa;
         }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            width: 250px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .autocomplete-item:hover {
+            background: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -135,8 +156,8 @@
                         <h4>Route Planning</h4>
                         <p><strong>ROUTE:</strong> <span id="userRoute"></span></p>
                         <form id="enter_airfield" class="mb-3">
-                            <label class="form-label">Choose Airfield:</label>
-                            <input type = "text"name="enter_airfield_box" id="enter_airfield_box" class="form-control"></input>
+                            <input type="text" id="enter_airfield_box" placeholder="Enter airport name or ICAO">
+                            <div id="autocomplete_list" class="autocomplete-dropdown"></div>                            
                         </form>
                         <form id="enter_runway_sid" class="mb-3">
                             <label class="form-label">Choose Runway:</label>

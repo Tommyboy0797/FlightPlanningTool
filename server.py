@@ -228,3 +228,13 @@ def entered_airfield(airfield_name: Origin):
     }
     print(database_handler.get_spec_airfield(airfield_name.airport_name))
     return airfield
+
+
+@app.post("/airfield_autocomplete")
+def airfield_autocomplete(entered_text: Origin):
+
+    result = {
+        "autocorrect_data": database_handler.search_airport(entered_text.airport_name)
+    }
+
+    return result

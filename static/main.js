@@ -538,16 +538,59 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.getElementById("enter_airfield_box").onchange = function () {
+let debounceTimer;
+document.getElementById("enter_airfield_box").addEventListener("input", function () {
+    clearTimeout(debounceTimer);  // Reset the timer
+    
+    let query = this.value.trim();
+    if (query.length === 0) {
+        document.getElementById("autocomplete_list").style.display = "none";
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch("/airfield_autocomplete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ airport_name: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let list = document.getElementById("autocomplete_list");
+            list.innerHTML = "";
+
+            data.autocorrect_data.forEach(airport => {
+                let item = document.createElement("div");
+                item.classList.add("autocomplete-item");
+            
+                item.innerHTML = `<b>${airport.name || "Unknown"}</b> (${airport.icao || "N/A"})`;
+            
+                item.addEventListener("click", function () {
+                    document.getElementById("enter_airfield_box").value = airport.icao; // Autofill
+                    list.style.display = "none";
+            
+                    if (/^[A-Z]{4}$/.test(airport.icao)) { // If ICAO code
+                        fetchEnteredAirfield(airport.icao);
+                    }
+                });
+            
+                list.appendChild(item);
+            });
+            
+            list.style.display = data.autocorrect_data.length > 0 ? "block" : "none";
+        });
+    }, 200);
+});
+
+function fetchEnteredAirfield(icao) {
     fetch("/entered_airfield", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ airport_name: this.value })
+        body: JSON.stringify({ airport_name: icao })
     })
     .then(response => response.json())
     .then(data => {
-
-        let airfield = data.airfield_data[0]; // get the first and hopefully only result from array
+        let airfield = data.airfield_data[0]; 
         let icon_type = null;
 
         if (airfield.type === "large_airport") {
@@ -570,12 +613,18 @@ document.getElementById("enter_airfield_box").onchange = function () {
 
             marker.addTo(map);
             map.setView(new L.LatLng(point.lat, point.lng), 10);
-            
+
             if (!window.markers) {
                 window.markers = [];
             }
 
             window.markers.push(marker);
         });
-    })
-};
+    });
+}
+
+document.addEventListener("click", function (event) {
+    if (!event.target.closest("#enter_airfield_box") && !event.target.closest("#autocomplete_list")) {
+        document.getElementById("autocomplete_list").style.display = "none";
+    }
+});
