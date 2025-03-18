@@ -247,3 +247,28 @@ def get_spec_airfield(airfield_name):
     connect_to_db.close()
 
     return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in airfield]
+
+def search_airport(partial_name):
+    database_path = "database/nav_data.db"
+    connect_to_db = sqlite3.connect(database_path)
+    cursor = connect_to_db.cursor()
+
+    words = partial_name.split()
+    conditions = " AND ".join(["name LIKE ? COLLATE NOCASE" for _ in words])
+
+    query = f"""
+    SELECT name, icao,type
+    FROM airports 
+    WHERE {conditions} 
+    ORDER BY 
+        LENGTH(name), 
+        INSTR(LOWER(name), LOWER(?)) 
+    """
+
+    params = tuple(f"%{word}%" for word in words) + (words[0],)
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    connect_to_db.close()
+
+    return [{"name": name, "icao": icao, "type": type,} for name, icao, type in results]
