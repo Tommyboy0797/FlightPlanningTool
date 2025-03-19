@@ -397,6 +397,8 @@ function add_wp_to_route(waypoint_name) {
 
 function display_waypoints() {
     let waypoint_data_values = []; 
+    let distance = 0;
+    let previousPoint = null;
 
     let fetchPromises = selected_waypoints.map((wp, index) => {
         return fetch("/waypoint_info", {
@@ -424,12 +426,17 @@ function display_waypoints() {
 
         window.waypoint_markers = [];
 
-        waypoint_data_values.forEach(point => {
+        waypoint_data_values.forEach((point, index) => {
             let waypoint_marker = L.marker([point.lat, point.lng])
                 .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} 
                 <br> <button onclick="remove_wp_from_route('${point.lat}, ${point.lng}')">Remove</button></b>`)
                 .addTo(map);
-
+        
+            if (previousPoint) {
+                distance += L.latLng(point.lat, point.lng).distanceTo(L.latLng(previousPoint.lat, previousPoint.lng));
+            }
+        
+            previousPoint = point;
             window.waypoint_markers.push(waypoint_marker);
         });
 
@@ -452,6 +459,8 @@ function display_waypoints() {
         }
 
         console.log("Updated Route with Waypoints:", latlngs);
+        console.log("Distance:", distance / 1609.34);
+        
     });
 }
 
