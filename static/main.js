@@ -20,6 +20,7 @@ var largeAirportIcon = L.icon({
 
 let selected_waypoints = [];
 let waypoint_data_values = [];
+let distance = 0;
 
 document.getElementById('dataForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -397,7 +398,6 @@ function add_wp_to_route(waypoint_name) {
 
 function display_waypoints() {
     let waypoint_data_values = []; 
-    let distance = 0;
     let previousPoint = null;
 
     let fetchPromises = selected_waypoints.map((wp, index) => {
