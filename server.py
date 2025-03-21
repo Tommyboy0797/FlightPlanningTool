@@ -74,167 +74,136 @@ def fetch_airports():
         "large_airports": largeairports,
     })
 
-
-class Origin(BaseModel): # class base model so that it knows what to expect
-    airport_name:str #airport name set to string
-
-class Rwy(BaseModel):
-    selected_runway:str
-
-class Sid(BaseModel):
-    selected_sid:str
-
-class Arrival(BaseModel):
-    arrival_field:str
-
-class ArrivalRunway(BaseModel):
-    arrival_runway:str
-
-class SelectedStar(BaseModel):
-    selected_star:str
-
-class WaypointName(BaseModel):
-    waypointname:str
-
-class WaypointAppend(BaseModel):
-    waypoint:str
-
-class AirfieldData(BaseModel):
-    airfielddata:str
-
-class WindHdg(BaseModel):
-    windhdg:str
-
-class Airway(BaseModel):
-    airway_value:str
+class SendString(BaseModel):
+    send_str:str
 
 
 # endpoint to handle the origin
 @app.post("/set_origin")
-def set_origin(origin: Origin):
+def set_origin(origin: SendString):
  
     return 
 
 @app.post("/get_runways")
-def get_rwys(origin: Origin):
+def get_rwys(origin: SendString):
     runways = {
-        "origin_runways": database_handler.get_runways(origin.airport_name),
+        "origin_runways": database_handler.get_runways(origin.send_str),
     }
     return runways
 
 @app.post("/return_runway")
-def return_runway(runwy: Rwy, origin: Origin):
+def return_runway(runwy: SendString, origin: SendString):
 
     sids = {
-        "sids": database_handler.get_sids(origin.airport_name, runwy.selected_runway),
-        "runway_data": database_handler.get_runway_data(origin.airport_name, runwy.selected_runway)
+        "sids": database_handler.get_sids(origin.send_str, runwy.send_str),
+        "runway_data": database_handler.get_runway_data(origin.send_str, runwy.send_str)
     }
     return sids
 
 @app.post("/return_sid")
-def return_sid(select_sid: Sid, origin: Origin, runwy: Rwy,):
+def return_sid(select_sid: SendString, origin: SendString, runwy: SendString,):
 
     sid_waypoints = {
-        "selected_sid_points": database_handler.send_sid_points(select_sid.selected_sid, origin.airport_name, runwy.selected_runway),
+        "selected_sid_points": database_handler.send_sid_points(select_sid.send_str, origin.send_str, runwy.send_str),
     }
 
     return sid_waypoints
 
 @app.post("/return_arrival_airport")
-def return_arrival_airport(arrival_airfield: Arrival):
+def return_arrival_airport(arrival_airfield: SendString):
 
     arrival_data = {
-        "arrival_runways": database_handler.get_runways(arrival_airfield.arrival_field),
+        "arrival_runways": database_handler.get_runways(arrival_airfield.send_str),
     }
 
     return arrival_data
 
 
 @app.post("/handle_stars")
-def handle_stars(selected_runway: ArrivalRunway, arrival_airfield: Arrival):
+def handle_stars(selected_runway: SendString, arrival_airfield: SendString):
 
     star_data = {
-        "arrival_stars": database_handler.get_stars(arrival_airfield.arrival_field, selected_runway.arrival_runway),
+        "arrival_stars": database_handler.get_stars(arrival_airfield.send_str, selected_runway.send_str),
     }
 
 
     return star_data
 
 @app.post("/send_star_data")
-def send_star_data(selected_star: SelectedStar, arrival_airfield: Arrival, arrival_runway: ArrivalRunway):
+def send_star_data(selected_star: SendString, arrival_airfield: SendString, arrival_runway: SendString):
 
     star_points = {
-        "selected_star_data": database_handler.send_star_data(selected_star.selected_star, arrival_airfield.arrival_field, arrival_runway.arrival_runway)
+        "selected_star_data": database_handler.send_star_data(selected_star.send_str, arrival_airfield.send_str, arrival_runway.send_str)
     }
     return star_points
 
 
 @app.post("/waypoint_info")
-def waypoint_info(waypoint_name: WaypointName):
+def waypoint_info(waypoint_name: SendString):
 
     waypoint_info = {
-        "waypointdata": database_handler.waypoint_search(waypoint_name.waypointname),
+        "waypointdata": database_handler.waypoint_search(waypoint_name.send_str),
     }
 
     return waypoint_info
 
 
 @app.post("/append_route")
-def append_route(waypoint: WaypointAppend, origin: Origin, runwy: Rwy, select_sid: Sid,selected_star: SelectedStar,selected_runway: ArrivalRunway,arrival_airfield: Arrival):
+def append_route(waypoint: SendString, origin: SendString, runwy: SendString, select_sid: SendString, selected_star: SendString,selected_runway: SendString, arrival_airfield: SendString):
 
-    handle_route.add_waypoint(waypoint.waypoint)
+    handle_route.add_waypoint(waypoint.send_str)
 
     route_data = {
-        "route": handle_route.build_route(origin.airport_name, runwy.selected_runway, select_sid.selected_sid, selected_star.selected_star, selected_runway.arrival_runway, arrival_airfield.arrival_field)
+        "route": handle_route.build_route(origin.send_str, runwy.send_str, select_sid.send_str, selected_star.send_str, selected_runway.send_str, arrival_airfield.send_str)
     }
 
     return route_data
 
 
 @app.post("/airfield_data")
-def airfield_data(origin: Origin, runwy: Rwy ):
+def airfield_data(origin: SendString, runwy: SendString ):
 
     af_data = {
-        "runway_data": database_handler.get_runway_data(origin.airport_name, runwy.selected_runway)
+        "runway_data": database_handler.get_runway_data(origin.send_str, runwy.send_str)
     }
     return af_data
 
 @app.post("/handle_winds")
-def handle_winds(windhdg: WindHdg, origin: Origin, runwy: Rwy ):
+def handle_winds(windhdg: SendString, origin: SendString, runwy: SendString):
 
-    rwy_hdg = database_handler.runway_heading(origin.airport_name, runwy.selected_runway)
+    rwy_hdg = database_handler.runway_heading(origin.send_str, runwy.send_str)
     wind_data = {
-        "head_or_tail_wind": wind_calc.calc_winds(rwy_hdg, windhdg.windhdg)
+        "head_or_tail_wind": wind_calc.calc_winds(rwy_hdg, windhdg.send_str)
     }
 
     return wind_data
 
 
 @app.post("/get_airways")
-def get_airways(airway_value: Airway):
+def get_airways(airway_value: SendString):
 
     airways = {
-        "airway_info": database_handler.get_airways(airway_value.airway_value)
+        "airway_info": database_handler.get_airways(airway_value.send_str)
     }
 
     return airways
 
 
 @app.post("/entered_airfield")
-def entered_airfield(airfield_name: Origin):
+def entered_airfield(airfield_name: SendString):
 
     airfield = {
-        "airfield_data": database_handler.get_spec_airfield(airfield_name.airport_name)
+        "airfield_data": database_handler.get_spec_airfield(airfield_name.send_str)
     }
-    print(database_handler.get_spec_airfield(airfield_name.airport_name))
+    print(database_handler.get_spec_airfield(airfield_name.send_str))
     return airfield
 
 
 @app.post("/airfield_autocomplete")
-def airfield_autocomplete(entered_text: Origin):
+def airfield_autocomplete(entered_text: SendString):
 
     result = {
-        "autocorrect_data": database_handler.search_airport(entered_text.airport_name)
+        "autocorrect_data": database_handler.search_airport(entered_text.send_str)
     }
 
     return result

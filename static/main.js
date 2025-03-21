@@ -160,13 +160,13 @@ function set_origin_airfield(airportname){
     fetch("/set_origin", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({airport_name: airportname}), // send airport name as the body
+        body: JSON.stringify({send_str: airportname}), // send airport name as the body
     })
 
     fetch(`/get_runways`, {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({airport_name: airportname}), // send airport name as the body
+        body: JSON.stringify({send_str: airportname}), // send airport name as the body
     })
 
     .then(response => response.json())
@@ -190,7 +190,7 @@ function set_origin_airfield(airportname){
             fetch("/return_runway", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({runwy: {selected_runway: this.value}, origin: {airport_name: dep_ap}}),
+                body: JSON.stringify({runwy: {send_str: this.value}, origin: {send_str: dep_ap}}),
             })
 
             .then(response => response.json())
@@ -206,7 +206,7 @@ function set_origin_airfield(airportname){
             fetch("/airfield_data", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({origin: {airport_name: dep_ap},runwy: {selected_runway: document.getElementById("enterRwy").value}}),
+                body: JSON.stringify({origin: {send_str: dep_ap},runwy: {send_str: document.getElementById("enterRwy").value}}),
             })
             .then(response => response.json())
             .then(data => {
@@ -244,7 +244,7 @@ function set_origin_airfield(airportname){
         fetch("/return_sid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({select_sid: {selected_sid: this.value}, origin: {airport_name: dep_ap}, runwy: {selected_runway: document.getElementById("enterRwy").value}}),
+            body: JSON.stringify({select_sid: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}),
         })
         
         .then(response => response.json())
@@ -275,7 +275,7 @@ function set_arrival_airfield(arrival_field) {
     fetch("/return_arrival_airport", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({arrival_field: arrival_field}), // send airport name as the body
+        body: JSON.stringify({send_str: arrival_field}), // send airport name as the body
     })
     
     .then(response => response.json())
@@ -295,7 +295,7 @@ document.getElementById("chooseArrRw").onchange = function () {
     fetch("/handle_stars", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({selected_runway: {arrival_runway: this.value},arrival_airfield: {arrival_field: arrivalairport}}), 
+        body: JSON.stringify({selected_runway: {send_str: this.value},arrival_airfield: {send_str: arrivalairport}}), 
     })
      
     .then(response => response.json())
@@ -324,7 +324,7 @@ document.getElementById("chooseArrStar").onchange = function () {
     fetch("/send_star_data", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({selected_star: {selected_star: this.value}, arrival_airfield: {arrival_field: arrivalairport}, arrival_runway: {arrival_runway: document.getElementById("chooseArrRw").value}}), 
+        body: JSON.stringify({selected_star: {send_str: this.value}, arrival_airfield: {send_str: arrivalairport}, arrival_runway: {send_str: document.getElementById("chooseArrRw").value}}), 
     })
 
     .then(response => response.json())
@@ -361,7 +361,7 @@ document.getElementById("enter_waypoint_box").onchange = function () {
     fetch("/waypoint_info", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({waypointname: this.value}), 
+        body: JSON.stringify({send_str: this.value}), 
     })
     .then(response => response.json())
     .then(data => {
@@ -386,7 +386,7 @@ function add_wp_to_route(waypoint_name) {
     fetch("/append_route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({waypoint: {waypoint: waypoint_name}, origin: {airport_name: dep_ap}, runwy: {selected_runway: document.getElementById("enterRwy").value}, select_sid: {selected_sid: document.getElementById("chooseSid").value}, selected_star: {selected_star: document.getElementById("chooseArrStar").value},selected_runway: {arrival_runway: document.getElementById("chooseArrRw").value} ,arrival_airfield: {arrival_field: arrivalairport}}),
+        body: JSON.stringify({waypoint: {send_str: waypoint_name}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}, select_sid: {send_str: document.getElementById("chooseSid").value}, selected_star: {send_str: document.getElementById("chooseArrStar").value},selected_runway: {send_str: document.getElementById("chooseArrRw").value} ,arrival_airfield: {send_str: arrivalairport}}),
     })
     .then(response => response.json())
     .then(data => {
@@ -404,7 +404,7 @@ function display_waypoints() {
         return fetch("/waypoint_info", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ waypointname: wp }),
+            body: JSON.stringify({ send_str: wp }),
         })
         .then(response => response.json())
         .then(data => {
@@ -473,7 +473,7 @@ document.getElementById("enter_wind_box").onchange = function () {
     fetch("/handle_winds", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({windhdg: {windhdg: this.value}, origin: {airport_name: dep_ap}, runwy: {selected_runway: document.getElementById("enterRwy").value}}), 
+        body: JSON.stringify({windhdg: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}), 
     })
     .then(response => response.json())
     .then(data => {
@@ -502,7 +502,7 @@ document.getElementById("enter_airway_box").onchange = function () {
     fetch("/get_airways", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, 
-        body: JSON.stringify({airway_value: this.value})
+        body: JSON.stringify({send_str: this.value})
     })
     .then(response => response.json())
     .then(data => {
@@ -561,7 +561,7 @@ document.getElementById("enter_airfield_box").addEventListener("input", function
         fetch("/airfield_autocomplete", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ airport_name: query })
+            body: JSON.stringify({ send_str: query })
         })
         .then(response => response.json())
         .then(data => {
@@ -595,7 +595,7 @@ function fetchEnteredAirfield(icao) {
     fetch("/entered_airfield", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ airport_name: icao })
+        body: JSON.stringify({ send_str: icao })
     })
     .then(response => response.json())
     .then(data => {
