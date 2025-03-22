@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from Backend import handle_route as handle_route
 from pydantic import BaseModel 
 from Backend import wind_calc
+import requests
 
 app = FastAPI()
 
@@ -34,8 +35,12 @@ def healthcheck():
 
 # endpoint to recieve value for gross weight
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
-def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, rsc, rcr, atcsoper, asoper, dragindex,windspeed,tail_or_head):
+def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, rsc, rcr, atcsoper, asoper, dragindex, origin, runwy):
     gwt = float(gwt)
+
+    rwy_hdg = database_handler.runway_heading(origin, runwy)
+    windspeed = wind_calc.get_wind_speed(origin)
+    tail_or_head = wind_calc.calc_winds(rwy_hdg, wind_calc.get_wind_hdg(origin))
 
     p1 = refusal.get_refusal_p1(get_to_factor, get_rwy_available)
     p2 = refusal.get_refusal_p2(p1, gwt)
@@ -167,17 +172,6 @@ def airfield_data(origin: SendString, runwy: SendString ):
         "runway_data": database_handler.get_runway_data(origin.send_str, runwy.send_str)
     }
     return af_data
-
-@app.post("/handle_winds")
-def handle_winds(windhdg: SendString, origin: SendString, runwy: SendString):
-
-    rwy_hdg = database_handler.runway_heading(origin.send_str, runwy.send_str)
-    wind_data = {
-        "head_or_tail_wind": wind_calc.calc_winds(rwy_hdg, windhdg.send_str)
-    }
-
-    return wind_data
-
 
 @app.post("/get_airways")
 def get_airways(airway_value: SendString):
