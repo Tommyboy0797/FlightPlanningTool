@@ -1,5 +1,6 @@
 from database import database_handler
 from Backend import handle_route
+import requests
 
 def calc_winds(runwayhdg,windhdg):
 
@@ -24,4 +25,23 @@ def calc_winds(runwayhdg,windhdg):
         return "Crosswind"
 
 
+def get_wind_hdg(icao):
+    url = f"https://avwx.rest/api/metar/{icao}"
+    headers = {"Authorization": "NqeMiDKymD4VjT9epVakwJrQgBkDLutjqymAw2vFkoM"}
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return data["wind_direction"]["value"]
+    return 0
+
+def get_wind_speed(icao):
+    url = f"https://avwx.rest/api/metar/{icao}"
+    headers = {"Authorization": "NqeMiDKymD4VjT9epVakwJrQgBkDLutjqymAw2vFkoM"}
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return data["wind_speed"]["value"]
+    return 0
 
