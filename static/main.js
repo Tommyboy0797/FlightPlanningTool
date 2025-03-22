@@ -35,8 +35,8 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
         atcsoper: document.getElementById("atcs_oper").checked,
         asoper: document.getElementById("anti_skid_oper").checked,
         dragindex: document.getElementById("get_di").value,
-        windspeed: document.getElementById("wind_speed").value,
-        tail_or_head: wind_stg,
+        origin: dep_ap,
+        runwy: document.getElementById("enterRwy").value,
     };
     
     const params = new URLSearchParams(formData);
@@ -464,23 +464,20 @@ function display_waypoints() {
     });
 }
 
+// document.getElementById("enter_wind_box").onchange = function () {
+//     stringified_wind_hdg = JSON.stringify({windhdg: this.value})
 
-let wind_stg = "";
+//     fetch("/handle_winds", {
+//         method: "POST",
+//         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+//         body: JSON.stringify({windhdg: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}), 
+//     })
+//     .then(response => response.json())
+//     .then(data => {
 
-document.getElementById("enter_wind_box").onchange = function () {
-    stringified_wind_hdg = JSON.stringify({windhdg: this.value})
-
-    fetch("/handle_winds", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({windhdg: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}), 
-    })
-    .then(response => response.json())
-    .then(data => {
-
-        wind_stg = data.head_or_tail_wind;
-    })
-}
+//         wind_stg = data.head_or_tail_wind;
+//     })
+// }
 
 
 function remove_wp_from_route(lat, lng) {
