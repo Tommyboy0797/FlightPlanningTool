@@ -163,6 +163,29 @@ function set_origin_airfield(airportname){
         body: JSON.stringify({send_str: airportname}), // send airport name as the body
     })
 
+    fetch("/weather_info", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: JSON.stringify({send_str: airportname}), // send airport name as the body
+    })
+
+    .then(response => response.json())
+    .then(data => {
+
+        document.getElementById("rawMetar").innerText = data.raw_metar
+        document.getElementById("metarTime").innerText = data.time
+        document.getElementById("metarRemarks").innerText = data.remarks
+        document.getElementById("metarStation").innerText = data.station
+        document.getElementById("metarAltimeter").innerText = data.altimeter
+        document.getElementById("metarTemp").innerHTML = data.temp
+        document.getElementById("metarHumidity").innerText = data.humidity
+        document.getElementById("metarDewpoint").innerText = data.dewpoint
+        document.getElementById("metarVisibility").innerText = data.visibility
+        document.getElementById("metarClouds").innerText = data.clouds
+        document.getElementById("metarWind").innerText = data.wind
+    })
+
+
     fetch(`/get_runways`, {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
@@ -541,6 +564,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById('routePlanningNav').classList.remove('active');
         document.getElementById('toldNav').classList.add('active');
+    });
+    document.getElementById('flightInfoNav').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('routePlanningPage').classList.add('inactive-page');
+        document.getElementById('routePlanningPage').classList.remove('active-page');
+        document.getElementById('toldPage').classList.add('inactive-page');
+        document.getElementById('toldPage').classList.remove('active-page');
+        document.getElementById('flightInfoPage').classList.add('active-page');
+        document.getElementById('flightInfoPage').classList.remove('inactive-page');
+
+        document.getElementById('routePlanningNav').classList.remove('active');
+        document.getElementById('toldNav').classList.remove('active');
+        document.getElementById('flightInfoNav').classList.add('active');
     });
 });
 
