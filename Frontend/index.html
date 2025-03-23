@@ -83,10 +83,19 @@
         .autocomplete-item:hover {
             background: #f0f0f0;
         }
+        
+        #rawMetar {
+            text-align: center;
+            font-family: monospace;
+            font-size: 1rem;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Flight Planning Tool</a>
@@ -100,6 +109,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="toldNav">TOLD</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="flightInfoNav">Flight Info</a>
                     </li>
                 </ul>
             </div>
@@ -243,6 +255,33 @@
                             <p><strong>Uncorrected max effort takeoff distance:</strong> <span id="uncorrected_max_eff_TO_dist_text"> feet</span></p>
                             <p><strong>AMAX Rotation Speed:</strong> <span id="rotation_speed_calculated_text"> knots</span></p>
                             <p><strong>Fully Corrected Refusal Speed:</strong> <span id="corrected_refusal_speed"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="flightInfoPage" class="inactive-page">
+        <div class="container-fluid">
+            <div class="section-box">
+                <h4>Weather Information</h4>
+                <button id="toggleMetar" class="btn btn-secondary">Toggle Departure/Arrival</button>
+                <div id="metarBox" class="mt-3 p-3 border rounded">
+                    <p id="rawMetar">Loading...</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Wind:</strong> <span id="metarWind"></span></p>
+                            <p><strong>Clouds:</strong> <span id="metarClouds"></span></p>
+                            <p><strong>Visibility:</strong> <span id="metarVisibility"></span></p>
+                            <p><strong>Dewpoint:</strong> <span id="metarDewpoint"></span></p>
+                            <p><strong>Humidity:</strong> <span id="metarHumidity"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Temperature:</strong> <span id="metarTemp"></span></p>
+                            <p><strong>Altimeter:</strong> <span id="metarAltimeter"></span></p>
+                            <p><strong>Station:</strong> <span id="metarStation"></span></p>
+                            <p><strong>Time:</strong> <span id="metarTime"></span></p>
+                            <p><strong>Remarks:</strong> <span id="metarRemarks"></span></p>
                         </div>
                     </div>
                 </div>

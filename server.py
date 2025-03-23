@@ -11,6 +11,7 @@ from Backend import handle_route as handle_route
 from pydantic import BaseModel 
 from Backend import wind_calc
 import requests
+from Backend import weather
 
 app = FastAPI()
 
@@ -201,3 +202,21 @@ def airfield_autocomplete(entered_text: SendString):
     }
 
     return result
+
+@app.post("/weather_info")
+def weather_info(station_icao: SendString):
+
+    weather_data = {
+        "raw_metar": weather.get_metar(station_icao.send_str),
+        "time": weather.get_wx_info(station_icao.send_str, "time"),
+        "remarks": weather.get_wx_info(station_icao.send_str, "remarks"),
+        "station": station_icao.send_str,
+        "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} hPa", 
+        "temp": f"{weather.get_wx_info(station_icao.send_str, 'temperature')}°C",
+        "humidity": weather.get_wx_info(station_icao.send_str, "humidity"),
+        "dewpoint": f"{weather.get_wx_info(station_icao.send_str, 'dew_point')}°C", 
+        "visibility": f"{weather.get_wx_info(station_icao.send_str, 'visibility')} SM", 
+        "clouds": weather.get_wx_info(station_icao.send_str, "clouds"),
+        "wind": f"{wind_calc.get_wind_hdg(station_icao.send_str)} / {wind_calc.get_wind_speed(station_icao.send_str)}"
+    }
+    return weather_data
