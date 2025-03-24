@@ -550,6 +550,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('routePlanningPage').classList.remove('inactive-page');
         document.getElementById('toldPage').classList.add('inactive-page');
         document.getElementById('toldPage').classList.remove('active-page');
+        document.getElementById('flightInfoPage').classList.add('inactive-page');
+        document.getElementById('flightInfoPage').classList.remove('active-page');
 
         document.getElementById('routePlanningNav').classList.add('active');
         document.getElementById('toldNav').classList.remove('active');
@@ -561,6 +563,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('routePlanningPage').classList.remove('active-page');
         document.getElementById('toldPage').classList.add('active-page');
         document.getElementById('toldPage').classList.remove('inactive-page');
+        document.getElementById('flightInfoPage').classList.add('inactive-page');
+        document.getElementById('flightInfoPage').classList.remove('active-page');
 
         document.getElementById('routePlanningNav').classList.remove('active');
         document.getElementById('toldNav').classList.add('active');
