@@ -4,6 +4,9 @@ import requests
 
 def calc_winds(runwayhdg,windhdg):
 
+    if windhdg == None: # variable wind direction
+        windhdg = "0"
+
     runwayhdg = int(runwayhdg[0][0]) # runwayhdg is a list, we get out a tuple with the first [0], then the value with the second
 
     windhdg = int(windhdg)
