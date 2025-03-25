@@ -195,13 +195,34 @@ function set_origin_airfield(airportname){
     .then(response => response.json())
     .then(data => {
 
+        function drawCircle(center, radiusMiles) {
+            let radiusMeters = radiusMiles * 1609.34; // Convert miles to meters
+
+            if (window.originCircle) {
+                map.removeLayer(window.originCircle);
+            }
+        
+            window.originCircle = L.circle([center.lat, center.lng], {
+                color: "black",
+                fillColor: "white",
+                fillOpacity: 0,
+                radius: radiusMeters
+            }).addTo(map);
+        }
+
+
         let runways_list = data.origin_runways;
 
-        enter_rwy_dropdown.innerHTML = ""
+        let range = 2486;
+
+        enter_rwy_dropdown.innerHTML = "";
 
         runways_list.forEach(runway => {
             enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
         })
+
+        let center = { lat: data.af_latlng[0].lat, lng: data.af_latlng[0].lng };
+        drawCircle(center, range);
 
     })
     .catch(error => console.error('Error fetching runway data:', error));
