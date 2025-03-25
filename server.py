@@ -87,13 +87,14 @@ class SendString(BaseModel):
 # endpoint to handle the origin
 @app.post("/set_origin")
 def set_origin(origin: SendString):
- 
+
     return 
 
 @app.post("/get_runways")
 def get_rwys(origin: SendString):
     runways = {
         "origin_runways": database_handler.get_runways(origin.send_str),
+        "af_latlng": database_handler.get_spec_airfield(origin.send_str)
     }
     return runways
 
