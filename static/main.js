@@ -213,7 +213,7 @@ function set_origin_airfield(airportname){
 
         let runways_list = data.origin_runways;
 
-        let range = 2486;
+        let range = 2440 * (document.getElementById("fuel_slider").value / 100);
 
         enter_rwy_dropdown.innerHTML = "";
 
@@ -223,6 +223,13 @@ function set_origin_airfield(airportname){
 
         let center = { lat: data.af_latlng[0].lat, lng: data.af_latlng[0].lng };
         drawCircle(center, range);
+
+        document.getElementById("fuel_slider").oninput = function(){
+            document.getElementById("fuel_value").innerText = document.getElementById("fuel_slider").value;
+            let range = 2440 * (document.getElementById("fuel_slider").value / 100);
+            drawCircle(center, range);
+        }
+        
 
     })
     .catch(error => console.error('Error fetching runway data:', error));
