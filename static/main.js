@@ -139,7 +139,6 @@ document.getElementById('filterForm').addEventListener('submit', function(event)
         small_ap: document.getElementById('small_ap').checked,
         medium_ap: document.getElementById('medium_ap').checked,
         large_ap: document.getElementById('large_ap').checked,
-        show_sids: document.getElementById("show_sids").checked
     };
     loadAirports(filters);
 });
@@ -222,14 +221,26 @@ function set_origin_airfield(airportname){
         })
 
         let center = { lat: data.af_latlng[0].lat, lng: data.af_latlng[0].lng };
-        drawCircle(center, range);
+
+        document.getElementById("show_rr").onchange = function () {
+            if (this.checked) {
+                let range = 2440 * (document.getElementById("fuel_slider").value / 100);
+                drawCircle(center,range);
+            }
+            else {
+                if (window.originCircle) {
+                    map.removeLayer(window.originCircle);
+                }
+            }
+        }
 
         document.getElementById("fuel_slider").oninput = function(){
             document.getElementById("fuel_value").innerText = document.getElementById("fuel_slider").value;
             let range = 2440 * (document.getElementById("fuel_slider").value / 100);
-            drawCircle(center, range);
+            if (document.getElementById("show_rr").checked) {
+                drawCircle(center,range);
+            }
         }
-        
 
     })
     .catch(error => console.error('Error fetching runway data:', error));
