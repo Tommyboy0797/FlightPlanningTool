@@ -1,5 +1,6 @@
 import sqlite3
 from Backend import handle_route 
+from math import cos, asin, sqrt, pi
 
 
 def get_small_airfields():
@@ -272,3 +273,24 @@ def search_airport(partial_name):
     connect_to_db.close()
 
     return [{"name": name, "icao": icao, "type": type,} for name, icao, type in results]
+
+def nearby_points(point_lat, point_lng, area_code):
+    database_path = "database/nav_data.db"
+    connect_to_db = sqlite3.connect(database_path)
+    cursor = connect_to_db.cursor()
+
+    cursor.execute("SELECT waypoint_identifier, waypoint_latitude, waypoint_longitude FROM waypoints WHERE area_code = ?", (area_code,))
+
+    data = cursor.fetchall()
+
+    def distance(lat1, lon1, lat2, lon2):
+        r = 6371 # km
+        p = pi / 180
+
+        a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p) * cos(lat2*p) * (1-cos((lon2-lon1)*p))/2
+        return 2 * r * asin(sqrt(a))
+    
+    for waypoint in data:
+        waypoint_id, waypoint_lat, waypoint_lng = waypoint
+        dist = distance(point_lat, point_lng, waypoint_lat, waypoint_lng)
+        print(f"Distance to waypoint {waypoint_id}: {dist} km")
