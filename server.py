@@ -83,6 +83,9 @@ def fetch_airports():
 class SendString(BaseModel):
     send_str:str
 
+class SendNum(BaseModel):
+    send_int:float
+
 
 # endpoint to handle the origin
 @app.post("/set_origin")
@@ -221,3 +224,11 @@ def weather_info(station_icao: SendString):
         "wind": f"{wind_calc.get_wind_hdg(station_icao.send_str)} / {wind_calc.get_wind_speed(station_icao.send_str)}"
     }
     return weather_data
+
+
+@app.post("/nearest_waypoints")
+def nearest_waypoints(lat: SendNum, lng: SendNum):
+    nearby = {
+        "waypoints": database_handler.nearby_points(lat.send_int, lng.send_int)
+    }
+    return nearby

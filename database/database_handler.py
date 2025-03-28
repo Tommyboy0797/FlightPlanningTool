@@ -274,12 +274,12 @@ def search_airport(partial_name):
 
     return [{"name": name, "icao": icao, "type": type,} for name, icao, type in results]
 
-def nearby_points(point_lat, point_lng, area_code):
+def nearby_points(point_lat, point_lng):
     database_path = "database/nav_data.db"
     connect_to_db = sqlite3.connect(database_path)
     cursor = connect_to_db.cursor()
 
-    cursor.execute("SELECT waypoint_identifier, waypoint_latitude, waypoint_longitude FROM waypoints WHERE area_code = ?", (area_code,))
+    cursor.execute("SELECT waypoint_identifier, waypoint_latitude, waypoint_longitude FROM waypoints")
 
     close_wp = []
 

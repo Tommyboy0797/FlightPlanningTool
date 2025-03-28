@@ -713,3 +713,22 @@ document.addEventListener("click", function (event) {
         document.getElementById("autocomplete_list").style.display = "none";
     }
 });
+
+
+map.on('click', function(e){
+
+    fetch("/nearest_waypoints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat: {send_int: e.latlng.lat}, lng:{send_int: e.latlng.lng} })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        console.log(data.waypoints);
+
+
+
+    })
+
+})
