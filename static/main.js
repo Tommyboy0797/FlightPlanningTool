@@ -731,7 +731,7 @@ document.addEventListener("DOMContentLoaded", function (){ // make sure tghe pag
                 data.waypoints.forEach((wp) => {
                     let item = document.createElement("div");
                     item.classList.add("waypoint-item");
-                    item.textContent = `${wp.name} - ${wp.dist}`;
+                    item.textContent = `${wp.name} - ${wp.dist} miles`;
                     document.getElementById("waypointList").appendChild(item);
                 });
 
