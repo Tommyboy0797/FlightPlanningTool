@@ -299,5 +299,5 @@ def nearby_points(point_lat, point_lng):
         if dist < 20:
             close_wp.append([waypoint_id,waypoint_lat,waypoint_lng, dist])
     
-    return close_wp
+    return [{"name": name, "lat": lat, "lng": lng, "dist": dist} for name, lat, lng, dist in close_wp]
 
