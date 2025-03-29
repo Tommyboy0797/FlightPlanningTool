@@ -93,6 +93,43 @@
             background-color: #f8f9fa;
             border-radius: 4px;
         }
+        .scrollable-box {
+            max-height: 200px; 
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .waypoint-box {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+            width: 250px;
+            max-height: 300px; /* Set max height */
+            overflow-y: auto; /* Make it scrollable when needed */
+            border-radius: 5px;
+        }
+
+        .waypoint-list {
+            max-height: 250px; /* Limit inner height */
+            overflow-y: auto; /* Scroll if many waypoints */
+        }
+
+        .waypoint-item {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .waypoint-item:hover {
+            background: #f0f0f0;
+        }
+
     </style>
 </head>
 <body>
@@ -177,6 +214,8 @@
                         <b>Airway Viewer</b>
                         <input type="text" class="form-control" id="enter_airway_box" placeholder="Enter Airway Name">
                         <input type="range" min="0" max="100" value="100" id="fuel_slider"><b>Fuel:</b><b id="fuel_value">100</b>
+                        <br>
+                        <button id="nearest_waypoint_button" class="btn btn-secondary mt-2 w-100">Find Nearby Waypoints</button>
                     </div>
                 </div>
             
@@ -290,7 +329,12 @@
             </div>
         </div>
     </div>
-    
+    <!-- Floating Box -->
+    <div id="waypointBox" class="waypoint-box">
+        <h5>Nearby Waypoints</h5>
+        <div id="waypointList" class="waypoint-list"></div>
+    </div>
+
     <script src="static/main.js"></script>
 
 </body>
