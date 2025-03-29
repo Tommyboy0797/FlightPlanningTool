@@ -526,22 +526,6 @@ function display_waypoints() {
     });
 }
 
-// document.getElementById("enter_wind_box").onchange = function () {
-//     stringified_wind_hdg = JSON.stringify({windhdg: this.value})
-
-//     fetch("/handle_winds", {
-//         method: "POST",
-//         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-//         body: JSON.stringify({windhdg: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}), 
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-
-//         wind_stg = data.head_or_tail_wind;
-//     })
-// }
-
-
 function remove_wp_from_route(lat, lng) {
 
     waypoint_data_values = waypoint_data_values.filter(wp => wp != lat,lng);
@@ -714,21 +698,69 @@ document.addEventListener("click", function (event) {
     }
 });
 
+document.addEventListener("DOMContentLoaded", function (){ // make sure tghe page is loaded before the function can be done
+    document.getElementById("nearest_waypoint_button").onclick = function () {
 
-map.on('click', function(e){
+        document.getElementById("map").style.cursor = "crosshair"; // set the cursor to a crosshair so people know theyre in that mode
+    
+        map.once('click', function(e){ // only fires once so they need to click the button again to go again
+    
+            fetch("/nearest_waypoints", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ lat: {send_int: e.latlng.lat}, lng:{send_int: e.latlng.lng} })
+            })
+            .then(response => response.json())
+            .then(data => {
+        
+                console.log(data.waypoints);
+                document.getElementById("waypointList").innerText = "";
+                
+                // Clear existing markers
+                window.nearbywaypoint_markers = window.nearbywaypoint_markers || [];
+                window.nearbywaypoint_markers.forEach(marker => marker.remove());
+                window.nearbywaypoint_markers = [];
 
-    fetch("/nearest_waypoints", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lat: {send_int: e.latlng.lat}, lng:{send_int: e.latlng.lng} })
-    })
-    .then(response => response.json())
-    .then(data => {
+                data.waypoints.forEach((point) => {
+                    let waypoint_marker = L.marker([point.lat, point.lng])
+                        .bindPopup(`<b>${point.name} <br> <button onclick="add_wp_to_route('${point.name}')">Add to Route</button></b>`) // call the function + send WP name
+                        .addTo(map);
+                    window.nearbywaypoint_markers.push(waypoint_marker)
+                });
 
-        console.log(data.waypoints);
+                data.waypoints.forEach((wp) => {
+                    let item = document.createElement("div");
+                    item.classList.add("waypoint-item");
+                    item.textContent = `${wp.name} - ${wp.dist}`;
+                    document.getElementById("waypointList").appendChild(item);
+                });
 
+                const mapContainer = document.getElementById("map");
+                const boxWidth = document.getElementById("waypointBox").offsetWidth;
+                const boxHeight = document.getElementById("waypointBox").offsetHeight;
 
+                const posX = e.originalEvent.clientX + 10; 
+                const posY = e.originalEvent.clientY + 10; 
 
-    })
+                document.getElementById("waypointBox").style.left = `${posX}px`;
+                document.getElementById("waypointBox").style.top = `${posY}px`;
+
+                document.getElementById("waypointBox").style.display = "block";
+                
+            })
+            .finally(() => {
+                document.getElementById("map").style.cursor = "auto"; // reset the cursor to whatever it was before
+
+                map.on('contextmenu', function(e) {
+                    document.getElementById("waypointBox").style.display = "none";
+                    window.nearbywaypoint_markers = window.nearbywaypoint_markers || [];
+                    window.nearbywaypoint_markers.forEach(marker => marker.remove());
+                    window.nearbywaypoint_markers = [];
+                })
+            });
+        
+        })
+    
+    }
 
 })
