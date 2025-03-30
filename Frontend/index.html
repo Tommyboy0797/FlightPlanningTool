@@ -12,7 +12,9 @@
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <!-- MarkerCluster CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.Default.css" />
@@ -129,6 +131,43 @@
         .waypoint-item:hover {
             background: #f0f0f0;
         }
+        #mapToolbar {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .toolbar-btn {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .toolbar-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .toolbar-btn i {
+            color: #333;
+        }
 
     </style>
 </head>
@@ -215,7 +254,6 @@
                         <input type="text" class="form-control" id="enter_airway_box" placeholder="Enter Airway Name">
                         <input type="range" min="0" max="100" value="100" id="fuel_slider"><b>Fuel:</b><b id="fuel_value">100</b>
                         <br>
-                        <button id="nearest_waypoint_button" class="btn btn-secondary mt-2 w-100">Find Nearby Waypoints</button>
                     </div>
                 </div>
             
@@ -223,6 +261,14 @@
                 <!-- Right Side (70%) -->
                 <div class="col-md-10">
                     <div id="map" class="section-box"></div>
+                    <!-- Vertical Toolbar -->
+                        <div id="mapToolbar">
+                            <button class="toolbar-btn" id="clearMap"title="INOP"><i class="fas fa-trash"></i></button>
+                            <button class="toolbar-btn" title="INOP"><i class="fas fa-minus"></i></button>
+                            <button class="toolbar-btn" id= "nearest_waypoint_button" title="Nearby Waypoints"><i class="fas fa-crosshairs"></i></button>
+                            <button class="toolbar-btn" title="INOP"><i class="fas fa-plane"></i></button>
+                            <button class="toolbar-btn" title="INOP"><i class="fas fa-map-marker-alt"></i></button>
+                        </div>
                 </div>
             </div>
         </div>
