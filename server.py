@@ -115,6 +115,7 @@ def return_sid(select_sid: SendString, origin: SendString, runwy: SendString,):
 
     sid_waypoints = {
         "selected_sid_points": database_handler.send_sid_points(select_sid.send_str, origin.send_str, runwy.send_str),
+        "origin_latlng": database_handler.get_spec_airfield(origin.send_str)
     }
 
     return sid_waypoints
@@ -174,7 +175,8 @@ def append_route(waypoint: SendString, origin: SendString, runwy: SendString, se
 def airfield_data(origin: SendString, runwy: SendString ):
 
     af_data = {
-        "runway_data": database_handler.get_runway_data(origin.send_str, runwy.send_str)
+        "runway_data": database_handler.get_runway_data(origin.send_str, runwy.send_str),
+        "origin_latlng": database_handler.get_spec_airfield(origin.send_str)
     }
     return af_data
 

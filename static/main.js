@@ -277,19 +277,13 @@ function set_origin_airfield(airportname){
                     document.getElementById("airfield_info").textContent = "No airfield or runway selected.";
                     return;
                 }
-        
-                // document.getElementById("airfield_info").innerHTML = ""; // Clear previous data
-                // console.log(data.runway_data);
-                // data.runway_data.forEach(runway => {
-                //     let runwayInfo = `
-                //         <p><strong>Length:</strong> ${runway.length} ft</p>
-                //         <p><strong>Width:</strong> ${runway.width} ft</p>
-                //         <p><strong>Heading:</strong> ${runway.hdg}°</p>
-                //         <p><strong>Surface:</strong> ${runway.surface}</p>
-                //         <hr>
-                //     `;
-                //     document.getElementById("airfield_info").innerHTML += runwayInfo;
-                // });
+
+                if (data.origin_latlng.length > 0){
+                    final_sid_point = {
+                        lat: data.origin_latlng[0].lat,
+                        lng: data.origin_latlng[0].lng
+                    };
+                };
             })
             .catch(error => console.error("Error fetching runway data:", error));
     };
@@ -307,18 +301,19 @@ function set_origin_airfield(airportname){
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({select_sid: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}),
-        })
+        })  
         
         .then(response => response.json())
         .then(data => {
             
             document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
 
-            data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
+            if (data.selected_sid_points.length >= 1) {
+                console.log("There is a SID!");
+                data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
+                final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
+            };
 
-            final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
-            console.log(final_sid_point);
-            console.log(data.selected_sid_points);
             data.selected_sid_points.forEach(point => {
                 let sid_waypoint = L.marker([point.lat, point.lng])
                     .bindPopup(`<b>${point.ident}</b>`)
