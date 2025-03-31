@@ -125,6 +125,7 @@ def return_arrival_airport(arrival_airfield: SendString):
 
     arrival_data = {
         "arrival_runways": database_handler.get_runways(arrival_airfield.send_str),
+        "arrival_latlng": database_handler.get_spec_airfield(arrival_airfield.send_str)
     }
 
     return arrival_data
