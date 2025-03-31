@@ -277,19 +277,13 @@ function set_origin_airfield(airportname){
                     document.getElementById("airfield_info").textContent = "No airfield or runway selected.";
                     return;
                 }
-        
-                // document.getElementById("airfield_info").innerHTML = ""; // Clear previous data
-                // console.log(data.runway_data);
-                // data.runway_data.forEach(runway => {
-                //     let runwayInfo = `
-                //         <p><strong>Length:</strong> ${runway.length} ft</p>
-                //         <p><strong>Width:</strong> ${runway.width} ft</p>
-                //         <p><strong>Heading:</strong> ${runway.hdg}°</p>
-                //         <p><strong>Surface:</strong> ${runway.surface}</p>
-                //         <hr>
-                //     `;
-                //     document.getElementById("airfield_info").innerHTML += runwayInfo;
-                // });
+
+                if (data.origin_latlng.length > 0){ // if there is no SID available for that airfield, just connect the route to the center of it
+                    final_sid_point = {
+                        lat: data.origin_latlng[0].lat,
+                        lng: data.origin_latlng[0].lng
+                    };
+                };
             })
             .catch(error => console.error("Error fetching runway data:", error));
     };
@@ -307,18 +301,19 @@ function set_origin_airfield(airportname){
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({select_sid: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}),
-        })
+        })  
         
         .then(response => response.json())
         .then(data => {
             
             document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
 
-            data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
+            if (data.selected_sid_points.length >= 1) { // only do this when there IS infact a SID
+                console.log("There is a SID!");
+                data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
+                final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
+            };
 
-            final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
-            console.log(final_sid_point);
-            console.log(data.selected_sid_points);
             data.selected_sid_points.forEach(point => {
                 let sid_waypoint = L.marker([point.lat, point.lng])
                     .bindPopup(`<b>${point.ident}</b>`)
@@ -331,7 +326,9 @@ function set_origin_airfield(airportname){
         })
     };
 
-let arrivalairport = ""
+let arrivalairport = "";
+let star_init_point = "";
+
 function set_arrival_airfield(arrival_field) {
     arrivalairport = arrival_field
     fetch("/return_arrival_airport", {
@@ -347,6 +344,14 @@ function set_arrival_airfield(arrival_field) {
 
         data.arrival_runways.forEach(runway => {
             enter_arr_runway.options[enter_arr_runway.options.length] = new Option(runway, runway);
+
+        
+        if (data.arrival_latlng.length > 0){ // if there is no STAR available for that airfield, just connect the route to the center of it
+            star_init_point = {
+                lat: data.arrival_latlng[0].lat,
+                lng: data.arrival_latlng[0].lng
+            };
+        };
         })
     })
 }
@@ -372,8 +377,6 @@ document.getElementById("chooseArrRw").onchange = function () {
     })
 }
 
-let star_init_point = "";
-
 document.getElementById("chooseArrStar").onchange = function () {
 
     if (window.star_waypoints && window.star_waypoints.length > 0) {
@@ -394,10 +397,11 @@ document.getElementById("chooseArrStar").onchange = function () {
      
         document.getElementById("userRoute").innerHTML = data.route
 
-        data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
-
-        star_init_point = data.selected_star_data[0]; // access first STAR point
-        console.log(star_init_point);
+        
+        if (data.selected_star_data.length >= 1){ // only do this when there is STARs
+            data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
+            star_init_point = data.selected_star_data[0]; // access first STAR point
+        };
 
         data.selected_star_data.forEach(point => {
             let star_waypoint = L.marker([point.lat, point.lng])
