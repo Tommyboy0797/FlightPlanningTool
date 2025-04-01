@@ -773,3 +773,39 @@ document.getElementById("clearMap").addEventListener("click", function() {
     location.reload();
 });
 
+document.getElementById("toggleMetar").addEventListener("click", function(){
+
+    document.getElementById("rawMetar").innerText = "Loading..." // these sets the text to loading before it fetches data
+    document.getElementById("metarTime").innerText = "Loading..."
+    document.getElementById("metarRemarks").innerText = "Loading..."
+    document.getElementById("metarStation").innerText = "Loading..."
+    document.getElementById("metarAltimeter").innerText = "Loading..."
+    document.getElementById("metarTemp").innerHTML = "Loading..."
+    document.getElementById("metarHumidity").innerText = "Loading..."
+    document.getElementById("metarDewpoint").innerText = "Loading..."
+    document.getElementById("metarVisibility").innerText = "Loading..."
+    document.getElementById("metarClouds").innerText = "Loading..."
+    document.getElementById("metarWind").innerText = "Loading..."
+    fetch("/weather_info", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+        body: JSON.stringify({send_str: arrivalairport}), // send airport name as the body
+    })
+
+    .then(response => response.json())
+    .then(data => {
+
+        document.getElementById("rawMetar").innerText = data.raw_metar
+        document.getElementById("metarTime").innerText = data.time
+        document.getElementById("metarRemarks").innerText = data.remarks
+        document.getElementById("metarStation").innerText = data.station
+        document.getElementById("metarAltimeter").innerText = data.altimeter
+        document.getElementById("metarTemp").innerHTML = data.temp
+        document.getElementById("metarHumidity").innerText = data.humidity
+        document.getElementById("metarDewpoint").innerText = data.dewpoint
+        document.getElementById("metarVisibility").innerText = data.visibility
+        document.getElementById("metarClouds").innerText = data.clouds
+        document.getElementById("metarWind").innerText = data.wind
+    })
+
+})
