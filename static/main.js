@@ -768,3 +768,8 @@ document.addEventListener("DOMContentLoaded", function (){ // make sure tghe pag
     }
 
 })
+
+document.getElementById("clearMap").addEventListener("click", function() {
+    location.reload();
+});
+
