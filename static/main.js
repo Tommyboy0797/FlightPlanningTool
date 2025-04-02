@@ -773,39 +773,47 @@ document.getElementById("clearMap").addEventListener("click", function() {
     location.reload();
 });
 
-document.getElementById("toggleMetar").addEventListener("click", function(){
+let toggle_type = "departure";
 
-    document.getElementById("rawMetar").innerText = "Loading..." // these sets the text to loading before it fetches data
-    document.getElementById("metarTime").innerText = "Loading..."
-    document.getElementById("metarRemarks").innerText = "Loading..."
-    document.getElementById("metarStation").innerText = "Loading..."
-    document.getElementById("metarAltimeter").innerText = "Loading..."
-    document.getElementById("metarTemp").innerHTML = "Loading..."
-    document.getElementById("metarHumidity").innerText = "Loading..."
-    document.getElementById("metarDewpoint").innerText = "Loading..."
-    document.getElementById("metarVisibility").innerText = "Loading..."
-    document.getElementById("metarClouds").innerText = "Loading..."
-    document.getElementById("metarWind").innerText = "Loading..."
+document.getElementById("toggleMetar").addEventListener("click", function () {
+
+    toggle_type = toggle_type === "departure" ? "arrival" : "departure"; // "ternary operator", shorthand for if-else statement, If toggle_type is "departure", it changes it to "arrival". Otherwise, it sets toggle_type to "departure"
+
+    document.getElementById("rawMetar").innerText = "Loading..."; // change the text to loading so they know its working when they toggle and not just frozen
+    document.getElementById("metarTime").innerText = "Loading...";
+    document.getElementById("metarRemarks").innerText = "Loading...";
+    document.getElementById("metarStation").innerText = "Loading...";
+    document.getElementById("metarAltimeter").innerText = "Loading...";
+    document.getElementById("metarTemp").innerText = "Loading...";
+    document.getElementById("metarHumidity").innerText = "Loading...";
+    document.getElementById("metarDewpoint").innerText = "Loading...";
+    document.getElementById("metarVisibility").innerText = "Loading...";
+    document.getElementById("metarClouds").innerText = "Loading...";
+    document.getElementById("metarWind").innerText = "Loading...";
+
+    let airport_code = toggle_type === "arrival" ? arrivalairport : dep_ap; // send data depending on if departure or arrival is set
+
     fetch("/weather_info", {
         method: "POST",
-        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({send_str: arrivalairport}), // send airport name as the body
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ send_str: airport_code }), // Send the correct airport code
     })
-
-    .then(response => response.json())
-    .then(data => {
-
-        document.getElementById("rawMetar").innerText = data.raw_metar
-        document.getElementById("metarTime").innerText = data.time
-        document.getElementById("metarRemarks").innerText = data.remarks
-        document.getElementById("metarStation").innerText = data.station
-        document.getElementById("metarAltimeter").innerText = data.altimeter
-        document.getElementById("metarTemp").innerHTML = data.temp
-        document.getElementById("metarHumidity").innerText = data.humidity
-        document.getElementById("metarDewpoint").innerText = data.dewpoint
-        document.getElementById("metarVisibility").innerText = data.visibility
-        document.getElementById("metarClouds").innerText = data.clouds
-        document.getElementById("metarWind").innerText = data.wind
-    })
-
-})
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("rawMetar").innerText = data.raw_metar; // display data
+            document.getElementById("metarTime").innerText = data.time;
+            document.getElementById("metarRemarks").innerText = data.remarks;
+            document.getElementById("metarStation").innerText = data.station;
+            document.getElementById("metarAltimeter").innerText = data.altimeter;
+            document.getElementById("metarTemp").innerText = data.temp;
+            document.getElementById("metarHumidity").innerText = data.humidity;
+            document.getElementById("metarDewpoint").innerText = data.dewpoint;
+            document.getElementById("metarVisibility").innerText = data.visibility;
+            document.getElementById("metarClouds").innerText = data.clouds;
+            document.getElementById("metarWind").innerText = data.wind;
+        })
+        .catch(error => {
+            console.error("Error fetching METAR data:", error);
+            document.getElementById("rawMetar").innerText = "Error loading data";
+        });
+});
