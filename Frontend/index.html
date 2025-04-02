@@ -56,7 +56,29 @@
         }
         .navbar {
             margin-bottom: 15px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .profile-btn {
+            background: #0d6dfd00;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s ease;
+        }
+        .profile-btn:hover {
+            background: #0057b300;
+        }
+
+        .dropdown-menu {
+            min-width: 200px;
+        }
+
         .results-section {
             background-color: #f8f9fa;
             border-left: 4px solid #0d6efd;
@@ -168,7 +190,6 @@
         .toolbar-btn i {
             color: #333;
         }
-
     </style>
 </head>
 <body>
@@ -191,8 +212,62 @@
                     </li>
                 </ul>
             </div>
+            <!-- Profile Dropdown Button -->
+            <div class="dropdown">
+                <button class="profile-btn btn btn-secondary" id="profileBtn" title="Profile" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-circle-user"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileBtn">
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#authModal">Log In/Sign Up</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
+
+    <!-- Modal for Login/Signup -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Authentication</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="auth-card">
+                        <!-- Nav Tabs -->
+                        <ul class="nav nav-pills mb-3" id="authTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="login-tab" data-bs-toggle="pill" href="#login" role="tab" aria-controls="login" aria-selected="true">Log In</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="signup-tab" data-bs-toggle="pill" href="#signup" role="tab" aria-controls="signup" aria-selected="false">Sign Up</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="authTabContent">
+                            <!-- Login Form -->
+                            <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+                                <form>
+                                    <input type="email" class="form-control" placeholder="Email Address" required>
+                                    <input type="password" class="form-control" placeholder="Password" required>
+                                    <button type="submit" class="btn btn-primary">Log In</button>
+                                </form>
+                            </div>
+                            <!-- Signup Form -->
+                            <div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
+                                <form>
+                                    <input type="email" class="form-control" placeholder="Email Address" required>
+                                    <input type="password" class="form-control" placeholder="Password" required>
+                                    <input type="password" class="form-control" placeholder="Confirm Password" required>
+                                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="routePlanningPage" class="active-page">
         <div class="container-fluid">
@@ -380,6 +455,9 @@
         <h5>Nearby Waypoints</h5>
         <div id="waypointList" class="waypoint-list"></div>
     </div>
+
+
+
 
     <script src="static/main.js"></script>
 
