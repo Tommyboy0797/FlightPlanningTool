@@ -4,6 +4,15 @@ import sqlite3
 from jose import jwt
 from passlib.context import CryptContext
 ## ----------------------------------------------- ## AUTHENTICATION ## ----------------------------------------------- ##
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.INFO)
+logFormatter = logging.Formatter(
+        "%(asctime)s [%(name)s] [%(levelname)-5.5s]  %(message)s"
+    )
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+LOGGER.addHandler(consoleHandler)
+LOGGER.propagate = False
 
 # Secret key for JWT
 SECRET_KEY = "your_secret_key"
@@ -14,7 +23,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Initialize database
 def init_db():
-    logging.info('Initializing database')
+    LOGGER.info('Initializing database')
     conn = sqlite3.connect("database/users.db")
     cursor = conn.cursor()
     cursor.execute("""
@@ -25,7 +34,7 @@ def init_db():
     """)
     conn.commit()
     conn.close()
-    logging.info('Database setup complete')
+    LOGGER.info('Database setup complete')
 
 def decode_token(token: str) ->str:
     return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
