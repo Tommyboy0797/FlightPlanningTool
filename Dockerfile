@@ -1,4 +1,5 @@
 FROM python:3.13.2-slim
+RUN apt-get update && apt-get install gcc
 
 # Set working directory
 WORKDIR /app/
