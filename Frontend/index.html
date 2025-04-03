@@ -218,6 +218,7 @@
                     <i class="fa fa-circle-user"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileBtn">
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">Profile</a></li>
                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#authModal">Log In/Sign Up</a></li>
                 </ul>
             </div>
@@ -246,20 +247,20 @@
 
                         <div class="tab-content" id="authTabContent">
                             <!-- Login Form -->
-                            <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+                            <div class="tab-pane fade show active" id="login" role="tabpanel"  aria-labelledby="login-tab">
                                 <form>
-                                    <input type="email" class="form-control" placeholder="Email Address" required>
-                                    <input type="password" class="form-control" placeholder="Password" required>
-                                    <button type="submit" class="btn btn-primary">Log In</button>
+                                    <input type="username" id="login_username" class="form-control mb-3" placeholder="Username" required>
+                                    <input type="password" id="login_password" class="form-control mb-3" placeholder="Password" required>
+                                    <button type="submit" id="login_submit" class="btn btn-primary w-100">Log In</button>
                                 </form>
                             </div>
                             <!-- Signup Form -->
                             <div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
                                 <form>
-                                    <input type="email" class="form-control" placeholder="Email Address" required>
-                                    <input type="password" class="form-control" placeholder="Password" required>
-                                    <input type="password" class="form-control" placeholder="Confirm Password" required>
-                                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                                    <input type="username" id="signup_username" class="form-control mb-3" placeholder="Username" required>
+                                    <input type="password" id="signup_password" class="form-control mb-3" placeholder="Password" required>
+                                    <input type="password" class="form-control mb-3" placeholder="Confirm Password" required>
+                                    <button type="submit" id="signup_submit" class="btn btn-primary w-100">Sign Up</button>
                                 </form>
                             </div>
                         </div>
@@ -455,7 +456,83 @@
         <h5>Nearby Waypoints</h5>
         <div id="waypointList" class="waypoint-list"></div>
     </div>
-
+        <!-- Modal for Profile Page -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileModalLabel">User Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <!-- User Info Section -->
+                            <div class="col-md-4 mb-3">
+                                <div class="section-box text-center">
+                                    <div class="mb-3">
+                                        <i class="fa fa-circle-user fa-6x text-primary"></i>
+                                    </div>
+                                    <h4 id="profileUsername">Username</h4>
+                                    <p id="profileMemberSince">Member since: March 2025</p>
+                                    <button class="btn btn-outline-secondary btn-sm mt-2" id="editProfileBtn">
+                                        <i class="fas fa-edit"></i> Edit Profile
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <!-- Statistics Section -->
+                            <div class="col-md-8">
+                                <div class="section-box">
+                                    <h4>Flight Statistics</h4>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 mx-auto">
+                                            <div class="card bg-light">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">Saved Routes</h5>
+                                                    <p class="card-text display-6" id="savedRoutes">0</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Saved Routes Section -->
+                    <div class="section-box mt-3">
+                        <h4>Saved Routes</h4>
+                        <div class="scrollable-box">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Route Name</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Last Used</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="savedRoutesTable">
+                                    <tr>
+                                        <td>No saved routes</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 

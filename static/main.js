@@ -817,3 +817,55 @@ document.getElementById("toggleMetar").addEventListener("click", function () {
             document.getElementById("rawMetar").innerText = "Error loading data";
         });
 });
+
+
+document.getElementById("login_submit").addEventListener("click", function (event) {
+
+    const formData = new FormData();
+    formData.append("username", document.getElementById("login_username").value);
+    formData.append("password", document.getElementById("login_password").value);
+
+    fetch("/login", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => {
+        if (response.redirected) {
+            console.log("pw exists")
+            window.location.href = response.url; // Redirect if login is successful
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (data?.detail) {
+            alert("Login failed: " + data.detail); // Show error message
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+document.getElementById("signup_submit").addEventListener("click", function (event) {
+
+    const formData = new FormData();
+    formData.append("username", document.getElementById("signup_username").value);
+    formData.append("password", document.getElementById("signup_password").value);
+
+    fetch("/signup", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url; // Redirect if login is successful
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (data?.detail) {
+            alert("Login failed: " + data.detail); // Show error message
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
