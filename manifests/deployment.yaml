@@ -4,7 +4,7 @@ metadata:
   name: fp-site-prod
   namespace: flightplanning
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       name: fp-site-prod
