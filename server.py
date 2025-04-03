@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -22,6 +23,13 @@ from datetime import datetime, timedelta
 from fastapi import Request, Depends
 
 app = FastAPI()
+
+class EndpointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.getMessage().find("/healthz") == -1
+
+# Filter out /endpoint
+logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
 templates = Jinja2Templates(directory="Frontend")
 app.mount("/static", StaticFiles(directory="static"), name="static")
