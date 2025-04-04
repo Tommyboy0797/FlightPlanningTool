@@ -263,7 +263,7 @@ def nearest_waypoints(lat: SendNum, lng: SendNum):
 # Signup Route
 @app.post("/signup")
 async def signup(username: str = Form(...), password: str = Form(...)):
-    conn = sqlite3.connect("data/users.db")
+    conn = sqlite3.connect(db_tools.DB_PATH)
     cursor = conn.cursor()
     
     cursor.execute("SELECT username FROM users WHERE username=?", (username,))
@@ -281,7 +281,7 @@ async def signup(username: str = Form(...), password: str = Form(...)):
 # Login Route
 @app.post("/login")
 async def login(username: str = Form(...), password: str = Form(...)):
-    conn = sqlite3.connect("data/users.db")
+    conn = sqlite3.connect(db_tools.DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("SELECT hashed_password FROM users WHERE username=?", (username,))

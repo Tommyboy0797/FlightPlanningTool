@@ -19,12 +19,14 @@ SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_MINUTES = 30
 
+DB_PATH = "/data/users.db"
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Initialize database
 def init_db():
     LOGGER.info('Initializing database')
-    conn = sqlite3.connect("data/users.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
