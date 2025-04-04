@@ -37,6 +37,26 @@ spec:
           timeoutSeconds: 5
           periodSeconds: 10
           failureThreshold: 2
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data/
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: fp-site-dev-pvc          
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fp-site-dev-pvc
+  namespace: flightplanning
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: standard
 ---
 apiVersion: v1
 kind: Service

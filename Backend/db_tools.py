@@ -24,7 +24,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Initialize database
 def init_db():
     LOGGER.info('Initializing database')
-    conn = sqlite3.connect("database/users.db")
+    conn = sqlite3.connect("data/users.db")
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
