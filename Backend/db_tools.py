@@ -19,7 +19,8 @@ SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_MINUTES = 30
 
-DB_PATH = "/data/users.db"
+#DB_PATH = "/data/users.db"
+DB_PATH = "database/users.db"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -34,6 +35,7 @@ def init_db():
             hashed_password TEXT
         )
     """)
+    cursor.execute("CREATE TABLE IF NOT EXISTS users (signup_date TEXT)")
     conn.commit()
     conn.close()
     LOGGER.info('Database setup complete')

@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-
+from datetime import date
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -272,7 +272,11 @@ async def signup(username: str = Form(...), password: str = Form(...)):
         raise HTTPException(status_code=400, detail="Username already exists")
 
     hashed_password = db_tools.hash_password(password)
-    cursor.execute("INSERT INTO users (username, hashed_password) VALUES (?, ?)", (username, hashed_password))
+    signup_date = str(date.today())
+    cursor.execute(
+        "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)",
+        (username, hashed_password, signup_date)
+    )
     conn.commit()
     conn.close()
 
@@ -312,3 +316,22 @@ def verify_token(request: Request): # verify that they have a valid token and ca
 def get_dashboard_page(username: str = Depends(verify_token)):
     with open("Frontend/index.html", "r") as file:
         return HTMLResponse(content=file.read())
+
+@app.post("/account_info")
+def account_info(username: SendString):
+
+    def get_account_info(username):
+        conn = sqlite3.connect(db_tools.DB_PATH)
+        cursor = conn.cursor()
+    
+        cursor.execute("SELECT username, signup_date FROM users WHERE username=?", (username,))
+        data = cursor.fetchall()
+        return [{user, signup_date} for user, signup_date in data]
+
+    accountdata = {
+        "userinfo": get_account_info(username.send_str)
+
+
+    }
+
+    return accountdata
