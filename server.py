@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-
+from datetime import date
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -8,7 +8,7 @@ from Backend import perf_calc as perf_calc
 from Backend import rotation_calc as rotation_calc
 from Backend import refusal as refusal
 from database import database_handler
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from Backend import handle_route as handle_route
 from pydantic import BaseModel 
 from Backend import wind_calc
@@ -19,7 +19,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import sqlite3
 from jose import jwt
-
+import json
 
 from fastapi import Request, Depends
 
@@ -272,7 +272,11 @@ async def signup(username: str = Form(...), password: str = Form(...)):
         raise HTTPException(status_code=400, detail="Username already exists")
 
     hashed_password = db_tools.hash_password(password)
-    cursor.execute("INSERT INTO users (username, hashed_password) VALUES (?, ?)", (username, hashed_password))
+    signup_date = str(date.today())
+    cursor.execute(
+        "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)",
+        (username, hashed_password, signup_date)
+    )
     conn.commit()
     conn.close()
 
@@ -288,11 +292,17 @@ async def login(username: str = Form(...), password: str = Form(...)):
     row = cursor.fetchone()
     conn.close()
 
-    if not row or not db_tools.verify_password(password, row[0]):
+    if not row:
+        db_tools.LOGGER.info("No password record found for user")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not db_tools.verify_password(password, row[0]):
+        db_tools.LOGGER.info("Invalid password for user")
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = db_tools.create_access_token(username)
-    response = RedirectResponse(url="/", status_code=303)
+    data = json.dumps(db_tools.get_account_info(username))
+    response = Response(content=data, media_type="application/json")
     response.set_cookie(key="token", value=token, httponly=True)
     return response
 

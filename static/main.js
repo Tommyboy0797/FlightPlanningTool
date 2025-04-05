@@ -829,18 +829,11 @@ document.getElementById("login_submit").addEventListener("click", function (even
         method: "POST",
         body: formData,
     })
-    .then(response => {
-        if (response.redirected) {
-            console.log("pw exists")
-            window.location.href = response.url; // Redirect if login is successful
-        } else {
-            return response.json();
-        }
-    })
-    .then(data => {
-        if (data?.detail) {
-            alert("Login failed: " + data.detail); // Show error message
-        }
+    .then(response => response.json())
+    .then(data =>{
+        console.log(data);
+        localStorage.setItem("username", data.user); // Store data
+        localStorage.setItem("signup_date", data.signup_date); // Store data
     })
     .catch(error => console.error("Error:", error));
 });
@@ -868,4 +861,18 @@ document.getElementById("signup_submit").addEventListener("click", function (eve
         }
     })
     .catch(error => console.error("Error:", error));
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    console.log("Trying to get profile data")
+    const username = localStorage.getItem("username");
+
+    if (username) {
+        document.getElementById("profileUsername").innerText = username;
+
+        const signup_date = localStorage.getItem("signup_date");
+        document.getElementById("profileMemberSince").innerText = signup_date;
+    } else {
+        console.warn("Profile data is missing from localStorage");
+    }
 });

@@ -19,6 +19,9 @@ spec:
         command: ['uvicorn', "server:app", "--host", "0.0.0.0", "--port", "8000"]
         name: fp-site-dev
         imagePullPolicy: Always
+        env:
+        - name: IS_PROD
+          value: "true"
         ports:
         - containerPort: 8000
         livenessProbe:
