@@ -25,6 +25,7 @@ try:
     # Check for environment var. This will only be set 
     # in prod. Otherwise, leave user db path alone.
     if os.environ["IS_PROD"]:
+        LOGGER.info("Database is running in prod... setting to /data/users.db")
         DB_PATH = "/data/users.db"
 except KeyError:
     pass
