@@ -292,7 +292,12 @@ async def login(username: str = Form(...), password: str = Form(...)):
     row = cursor.fetchone()
     conn.close()
 
-    if not row or not db_tools.verify_password(password, row[0]):
+    if not row:
+        db_tools.LOGGER.info("No password record found for user")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not db_tools.verify_password(password, row[0]):
+        db_tools.LOGGER.info("Invalid password for user")
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = db_tools.create_access_token(username)
