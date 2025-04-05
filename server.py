@@ -8,7 +8,7 @@ from Backend import perf_calc as perf_calc
 from Backend import rotation_calc as rotation_calc
 from Backend import refusal as refusal
 from database import database_handler
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from Backend import handle_route as handle_route
 from pydantic import BaseModel 
 from Backend import wind_calc
@@ -19,7 +19,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import sqlite3
 from jose import jwt
-
+import json
 
 from fastapi import Request, Depends
 
@@ -296,7 +296,8 @@ async def login(username: str = Form(...), password: str = Form(...)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = db_tools.create_access_token(username)
-    response = RedirectResponse(url="/", status_code=303)
+    data = json.dumps(db_tools.get_account_info(username))
+    response = Response(content=data, media_type="application/json")
     response.set_cookie(key="token", value=token, httponly=True)
     return response
 
@@ -316,22 +317,3 @@ def verify_token(request: Request): # verify that they have a valid token and ca
 def get_dashboard_page(username: str = Depends(verify_token)):
     with open("Frontend/index.html", "r") as file:
         return HTMLResponse(content=file.read())
-
-@app.post("/account_info")
-def account_info(username: SendString):
-
-    def get_account_info(username):
-        conn = sqlite3.connect(db_tools.DB_PATH)
-        cursor = conn.cursor()
-    
-        cursor.execute("SELECT username, signup_date FROM users WHERE username=?", (username,))
-        data = cursor.fetchall()
-        return [{user, signup_date} for user, signup_date in data]
-
-    accountdata = {
-        "userinfo": get_account_info(username.send_str)
-
-
-    }
-
-    return accountdata

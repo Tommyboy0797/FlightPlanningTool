@@ -825,25 +825,15 @@ document.getElementById("login_submit").addEventListener("click", function (even
     formData.append("username", document.getElementById("login_username").value);
     formData.append("password", document.getElementById("login_password").value);
 
-    user = document.getElementById("login_username").value;
-    console.log("log", user);
-    fetch_user_profile(user);
-
     fetch("/login", {
         method: "POST",
         body: formData,
     })
-    .then(response => {
-        if (response.redirected) {
-            window.location.href = response.url; // Redirect if login is successful
-        } else {
-            return response.json();
-        }
-    })
-    .then(data => {
-        if (data?.detail) {
-            alert("Login failed: " + data.detail); // Show error message
-        }
+    .then(response => response.json())
+    .then(data =>{
+        console.log(data);
+        localStorage.setItem("username", data.user); // Store data
+        localStorage.setItem("signup_date", data.signup_date); // Store data
     })
     .catch(error => console.error("Error:", error));
 });
@@ -873,34 +863,15 @@ document.getElementById("signup_submit").addEventListener("click", function (eve
     .catch(error => console.error("Error:", error));
 });
 
-function fetch_user_profile(username) {
-
-    fetch("/account_info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({send_str: username}),
-    })
-    .then(response => response.json())
-    .then(data => {
-
-        profiledata = data.userinfo[0];
-        console.log(profiledata);
-
-        localStorage.setItem("profile_data", profiledata); // Store data
-
-        console.log("username ", profiledata.user);
-        console.log("signup ", profiledata.signup_date);
-        
-    })
-}
-
-
 window.addEventListener("DOMContentLoaded", () => {
-    const profiledata = localStorage.getItem("profile_data");
+    console.log("Trying to get profile data")
+    const username = localStorage.getItem("username");
 
-    if (profiledata) {
-        document.getElementById("profileUsername").innerText = profiledata.user;
-        document.getElementById("profileMemberSince").innerText = profiledata.signup_date;
+    if (username) {
+        document.getElementById("profileUsername").innerText = username;
+
+        const signup_date = localStorage.getItem("signup_date");
+        document.getElementById("profileMemberSince").innerText = signup_date;
     } else {
         console.warn("Profile data is missing from localStorage");
     }

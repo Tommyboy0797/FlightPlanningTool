@@ -3,6 +3,7 @@ import logging
 import sqlite3
 from jose import jwt
 from passlib.context import CryptContext
+import os
 ## ----------------------------------------------- ## AUTHENTICATION ## ----------------------------------------------- ##
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
@@ -19,8 +20,14 @@ SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_MINUTES = 30
 
-DB_PATH = "/data/users.db"
-# DB_PATH = "database/users.db"
+DB_PATH = "database/users.db"
+try:
+    # Check for environment var. This will only be set 
+    # in prod. Otherwise, leave user db path alone.
+    if os.environ["IS_PROD"]:
+        DB_PATH = "/data/users.db"
+except KeyError:
+    pass
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -54,3 +61,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(username: str):
     expire = datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
     return jwt.encode({"sub": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+
+def get_account_info(username: str):
+    """
+    Get signup date for a single username
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT signup_date FROM users WHERE username=?", (username,))
+    data = cursor.fetchone()
+    return {"user": username, "signup_date": data[0]}
+    
