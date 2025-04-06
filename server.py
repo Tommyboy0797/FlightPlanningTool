@@ -280,7 +280,11 @@ async def signup(username: str = Form(...), password: str = Form(...)):
     conn.commit()
     conn.close()
 
-    return RedirectResponse(url="/", status_code=303)
+    token = db_tools.create_access_token(username)
+    data = json.dumps(db_tools.get_account_info(username))
+    response = Response(content=data, media_type="application/json")
+    response.set_cookie(key="token", value=token, httponly=True)
+    return response
 
 # Login Route
 @app.post("/login")

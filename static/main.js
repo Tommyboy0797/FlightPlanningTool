@@ -848,17 +848,11 @@ document.getElementById("signup_submit").addEventListener("click", function (eve
         method: "POST",
         body: formData,
     })
-    .then(response => {
-        if (response.redirected) {
-            window.location.href = response.url; // Redirect if login is successful
-        } else {
-            return response.json();
-        }
-    })
+    .then(response => response.json())
     .then(data => {
-        if (data?.detail) {
-            alert("Login failed: " + data.detail); // Show error message
-        }
+        console.log(data);
+        localStorage.setItem("username", data.user); // Store data
+        localStorage.setItem("signup_date", data.signup_date); 
     })
     .catch(error => console.error("Error:", error));
 });
