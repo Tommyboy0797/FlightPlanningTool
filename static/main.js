@@ -866,7 +866,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const signup_date = localStorage.getItem("signup_date");
         document.getElementById("profileMemberSince").innerText = signup_date;
+
+        const authLink = document.getElementById("loginsignupbutton");
+        if (authLink) {
+            authLink.style.display = "none";
+        }
+
     } else {
         console.warn("Profile data is missing from localStorage");
+        const profile = document.getElementById("profile_button");
+        if (profile) {
+            profile.style.display = "none";
+        }
     }
 });
