@@ -880,3 +880,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     }
 });
+
+document.getElementById("logoutBtn").addEventListener("click", function () {
+    localStorage.clear(); // remove all user data
+    location.reload(); // reload the page to update UI
+});
+
