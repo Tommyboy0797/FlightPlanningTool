@@ -267,6 +267,35 @@ def nearest_waypoints(lat: SendNum, lng: SendNum):
     }
     return nearby
 
+@app.post("/store_route")
+def store_route(route: SendString, username: SendString):
+
+    db_tools.store_route(route.send_str, username.send_str)
+    saved_routes = {
+        "info": db_tools.get_saved_routes(username.send_str)
+    }
+
+    return saved_routes
+
+@app.post("/show_routes")
+def store_route(route: SendString, username: SendString):
+
+    saved_routes = {
+        "info": db_tools.get_saved_routes(username.send_str)
+    }
+
+    return saved_routes
+
+@app.post("/remove_route")
+def remove_route(routenumber: SendString, username: SendString):
+
+    db_tools.remove_route(username.send_str, routenumber.send_str)
+
+    data = {
+        "info": db_tools.get_saved_routes(username.send_str)
+    }
+
+    return data
 
 # Signup Route
 @app.post("/signup")

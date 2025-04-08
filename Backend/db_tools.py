@@ -43,6 +43,15 @@ def init_db():
             hashed_password TEXT
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_routes (
+            username TEXT,
+            route_number INTEGER,
+            route_data TEXT,
+            PRIMARY KEY(username, route_number),
+            FOREIGN KEY(username) REFERENCES users(username)
+        )
+    """)
     cursor.execute("CREATE TABLE IF NOT EXISTS users (signup_date TEXT)")
     conn.commit()
     conn.close()
@@ -73,3 +82,81 @@ def get_account_info(username: str):
     data = cursor.fetchone()
     return {"user": username, "signup_date": data[0]}
     
+def store_route(route, username):
+
+    freeslot = None
+    taken_slots = set() # needs to be an empty set not "None"
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT route_number FROM user_routes WHERE username = ?", (username,)) # gets all taken slots in db for that user
+    for row in cursor.fetchall():
+        taken_slots.add(row[0])
+        print(f"row: {row}")
+        print(f"taken slots: {taken_slots}") # puts all taken slots in a variable
+
+    for slot in range(1,11):
+        if slot not in taken_slots:
+            freeslot = slot # finds the next free slot
+            print(f"free slot is: {freeslot}")
+            break # escape loop
+
+    if freeslot == None: # if there is no free spaces
+        print("NO FREE SLOT FOUND IN DB TO SAVE ROUTE")
+
+    cursor.execute("INSERT INTO user_routes (username, route_number, route_data) VALUES (?,?,?)", (username, freeslot, route)) # put the data in 
+
+    conn.commit()
+    conn.close()
+    
+    return freeslot
+
+
+def get_saved_routes(username):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT route_number, route_data FROM user_routes WHERE username = ? ORDER BY route_number", (username,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    routes = []
+    for route_number, route_data in rows:
+        route_parts = route_data.strip().split()
+        from_airport = route_parts[0] if len(route_parts) > 0 else ""
+        to_airport = route_parts[-1] if len(route_parts) > 1 else ""
+
+        routes.append({
+            "route_name": f"Route {route_number}",
+            "from": from_airport,
+            "to": to_airport,
+            "last_used": "Just now",  # update later with timestamb
+            "route_data": route_data
+        })
+
+    return {"routes": routes}
+
+import sqlite3
+
+def remove_route(username, routename):
+    # Check if the routename is in the expected format (e.g., "Route 1")
+    if not routename.startswith("Route ") or len(routename.split()) != 2:
+        return {"status": "error", "message": "Invalid route name format."}
+    
+    # Extract the route number from the routename (e.g., "Route 1" becomes 1)
+    try:
+        route_number = int(routename.split()[1])
+    except ValueError:
+        return {"status": "error", "message": "Invalid route number."}
+    
+    # Connect to the database
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Delete the route from the user_routes table
+    cursor.execute("DELETE FROM user_routes WHERE username = ? AND route_number = ?", (username, route_number))
+    
+    # Commit the changes and close the connection
+    conn.commit()
+    conn.close()
+
+    return {"status": "success", "message": f"Route {route_number} deleted."}
