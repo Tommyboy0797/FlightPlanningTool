@@ -867,7 +867,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const signup_date = localStorage.getItem("signup_date");
         document.getElementById("profileMemberSince").innerText = signup_date;
-
+        display_user_routes();
         const authLink = document.getElementById("loginsignupbutton");
         if (authLink) {
             authLink.style.display = "none";
@@ -887,3 +887,103 @@ document.getElementById("logoutBtn").addEventListener("click", function () {
     location.reload(); // reload the page to update UI
 });
 
+document.getElementById("saveRoute").addEventListener("click", function(){
+    store_routes();
+});
+
+function store_routes(){
+    fetch("/store_route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({route: {send_str: document.getElementById("userRoute").innerText}, username: {send_str: localStorage.getItem("username")}})
+    })
+    .then(response => response.json())
+    .then(data => {
+        display_user_routes();
+    });
+}
+
+function display_user_routes () {
+    fetch("/show_routes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({route: {send_str: document.getElementById("userRoute").innerText}, username: {send_str: localStorage.getItem("username")}})
+    })
+    .then(response => response.json())
+    .then(data => {
+    
+        console.log(data.info.routes);
+    
+        
+        document.getElementById("savedRoutesTable").innerHTML = '';
+        
+        if (data.info.routes.length === 0){ // if there is no saved routes, say so
+            document.getElementById("savedRoutesTable").innerHTML = `<td colspan="5" class="text-center text-muted">No saved routes</td>`
+            return;
+        }
+    
+        data.info.routes.forEach(route => { 
+            console.log("log")
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${route.route_name}</td>
+                <td>${route.from}</td>
+                <td>${route.to}</td>
+                <td>${route.last_used}</td>
+                <td>
+                    <button class="use-route-btn" data-route-id="${route.route_name}">Use Route</button>
+                    <button class="delete-route-btn" data-route-id="${route.route_name}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;  
+            document.getElementById("savedRoutesTable").appendChild(row); // add row to table
+        });
+    });
+}
+
+// Use event delegation for both "use-route-btn" and "delete-route-btn"
+document.getElementById("savedRoutesTable").addEventListener("click", function(event) {
+    // Handle "Use Route" button click
+    if (event.target.classList.contains("use-route-btn")) {
+        const routeId = event.target.getAttribute("data-route-id");
+        console.log("Using route with ID:", routeId);
+    }
+    
+    // Handle "Delete Route" button click
+    if (event.target.classList.contains("delete-route-btn")) {
+        const routeId = event.target.getAttribute("data-route-id");
+        console.log("Deleting route with ID:", routeId);
+
+        // Disable the delete button to prevent multiple clicks
+        event.target.disabled = true;
+        event.target.innerText = "Deleting...";  // Change text to indicate action
+
+        fetch("/remove_route", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                routenumber: { send_str: routeId },
+                username: { send_str: localStorage.getItem("username") }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Route removed.");
+            display_user_routes();
+            console.log("Routes updated");
+
+            // Re-enable the button after the request is complete
+            event.target.disabled = false;
+            event.target.innerText = "Delete";  // Reset button text
+        })
+        .catch(error => {
+            // Handle any errors in the fetch process
+            console.error("Error removing route:", error);
+
+            // Re-enable the button in case of error
+            event.target.disabled = false;
+            event.target.innerText = "Delete";
+        });
+    }
+});
