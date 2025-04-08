@@ -1,14 +1,8 @@
-
-waypoints = []  # Store multiple waypoints
-
-def add_waypoint(waypoint):
-    waypoints.append(waypoint)
-
-def build_route(origin_airfield, selected_runway,selected_sid,selected_star,selected_runway_arrival,arrival_airfield):
+def build_route(origin_airfield, waypoint, selected_runway,selected_sid,selected_star,selected_runway_arrival,arrival_airfield):
     route_parts = []
     waypoints = [] 
     route = ""
-    
+
     if origin_airfield:
         route_parts.append(origin_airfield)
         if selected_runway:
@@ -16,8 +10,9 @@ def build_route(origin_airfield, selected_runway,selected_sid,selected_star,sele
         if selected_sid:
             route_parts.append(selected_sid)
 
-    if waypoints:
-        route_parts.extend(waypoints)
+    if waypoint:
+
+        route_parts.extend(waypoint)
 
     if selected_star:
         route_parts.append(selected_star)
@@ -26,5 +21,5 @@ def build_route(origin_airfield, selected_runway,selected_sid,selected_star,sele
     if arrival_airfield:
         route_parts.append(arrival_airfield)
 
-    route = " -> ".join(route_parts)
+    route = " ".join(route_parts)
     return route

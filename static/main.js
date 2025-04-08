@@ -449,10 +449,11 @@ document.getElementById("enter_waypoint_box").onchange = function () {
 function add_wp_to_route(waypoint_name) {
 
     selected_waypoints.push(waypoint_name);
+    console.log(selected_waypoints);
     fetch("/append_route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({waypoint: {send_str: waypoint_name}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}, select_sid: {send_str: document.getElementById("chooseSid").value}, selected_star: {send_str: document.getElementById("chooseArrStar").value},selected_runway: {send_str: document.getElementById("chooseArrRw").value} ,arrival_airfield: {send_str: arrivalairport}}),
+        body: JSON.stringify({waypoint: selected_waypoints, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}, select_sid: {send_str: document.getElementById("chooseSid").value}, selected_star: {send_str: document.getElementById("chooseArrStar").value},selected_runway: {send_str: document.getElementById("chooseArrRw").value} ,arrival_airfield: {send_str: arrivalairport}}),
     })
     .then(response => response.json())
     .then(data => {

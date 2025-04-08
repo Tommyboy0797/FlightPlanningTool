@@ -20,6 +20,7 @@ from fastapi.staticfiles import StaticFiles
 import sqlite3
 from jose import jwt
 import json
+from typing import List
 
 from fastapi import Request, Depends
 
@@ -109,6 +110,15 @@ class SendString(BaseModel):
 class SendNum(BaseModel):
     send_int:float
 
+class RouteRequest(BaseModel):
+    waypoint: List[str] # standalone list
+    origin: SendString
+    runwy: SendString
+    select_sid: SendString
+    selected_star: SendString
+    selected_runway: SendString
+    arrival_airfield: SendString
+
 
 # endpoint to handle the origin
 @app.post("/set_origin")
@@ -184,12 +194,10 @@ def waypoint_info(waypoint_name: SendString):
 
 
 @app.post("/append_route")
-def append_route(waypoint: SendString, origin: SendString, runwy: SendString, select_sid: SendString, selected_star: SendString,selected_runway: SendString, arrival_airfield: SendString):
-
-    handle_route.add_waypoint(waypoint.send_str)
+def append_route(data: RouteRequest):
 
     route_data = {
-        "route": handle_route.build_route(origin.send_str, runwy.send_str, select_sid.send_str, selected_star.send_str, selected_runway.send_str, arrival_airfield.send_str)
+        "route": handle_route.build_route(data.origin.send_str, data.waypoint, data.runwy.send_str, data.select_sid.send_str, data.selected_star.send_str, data.selected_runway.send_str, data.arrival_airfield.send_str)
     }
 
     return route_data
