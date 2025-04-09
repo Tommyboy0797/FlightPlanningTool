@@ -244,87 +244,78 @@ function set_origin_airfield(airportname){
 
     })
     .catch(error => console.error('Error fetching runway data:', error));
-    };
+};
 
-
-    document.getElementById("enterRwy").onchange = function () {
-        if (!this.value) return; // Prevent sending empty selections
-            fetch("/return_runway", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({runwy: {send_str: this.value}, origin: {send_str: dep_ap}}),
-            })
-
-            .then(response => response.json())
-            .then(data => {
-   
-                enter_sid_dropdown.innerHTML = "";
-
-                data.sids.forEach(sids => {
-                    enter_sid_dropdown.options[enter_sid_dropdown.options.length] = new Option(sids, sids);
-                })
-            })
-            
-            fetch("/airfield_data", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({origin: {send_str: dep_ap},runwy: {send_str: document.getElementById("enterRwy").value}}),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error("Error:", data.error);
-                    document.getElementById("airfield_info").textContent = "No airfield or runway selected.";
-                    return;
-                }
-
-                if (data.origin_latlng.length > 0){ // if there is no SID available for that airfield, just connect the route to the center of it
-                    final_sid_point = {
-                        lat: data.origin_latlng[0].lat,
-                        lng: data.origin_latlng[0].lng
-                    };
-                };
-            })
-            .catch(error => console.error("Error fetching runway data:", error));
-    };
-
-    document.getElementById("chooseSid").onchange = function () {
-
-        if (window.sid_waypoints && window.sid_waypoints.length > 0) {
-            window.sid_waypoints.forEach(marker => map.removeLayer(marker));
-        }
-
-        // Reset the marker array
-        window.sid_waypoints = [];
-
-        fetch("/return_sid", {
+function dep_rwy_change () {
+    if (!this.value) return; // Prevent sending empty selections
+        fetch("/return_runway", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({select_sid: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}),
-        })  
-        
+            body: JSON.stringify({runwy: {send_str: this.value}, origin: {send_str: dep_ap}}),
+        })
         .then(response => response.json())
         .then(data => {
-            
-            document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
 
-            if (data.selected_sid_points.length >= 1) { // only do this when there IS infact a SID
-                console.log("There is a SID!");
-                data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
-                final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
-            };
-
-            data.selected_sid_points.forEach(point => {
-                let sid_waypoint = L.marker([point.lat, point.lng])
-                    .bindPopup(`<b>${point.ident}</b>`)
-                    .addTo(map);
-                let sid_lines = L.polyline(data.selected_sid_points, { color: "blue"}).addTo(map);
-                window.sid_waypoints.push(sid_waypoint, sid_lines);
-                
-            });
-
+            enter_sid_dropdown.innerHTML = "";
+            data.sids.forEach(sids => {
+                enter_sid_dropdown.options[enter_sid_dropdown.options.length] = new Option(sids, sids);
+            })
         })
-    };
+        
+        fetch("/airfield_data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({origin: {send_str: dep_ap},runwy: {send_str: this.value}}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Error:", data.error);
+                document.getElementById("airfield_info").textContent = "No airfield or runway selected.";
+                return;
+            }
+            if (data.origin_latlng.length > 0){ // if there is no SID available for that airfield, just connect the route to the center of it
+                final_sid_point = {
+                    lat: data.origin_latlng[0].lat,
+                    lng: data.origin_latlng[0].lng
+                };
+            };
+        })
+        .catch(error => console.error("Error fetching runway data:", error));
+};
+document.getElementById("enterRwy").onchange = dep_rwy_change;
+
+document.getElementById("chooseSid").onchange = function () {
+    if (window.sid_waypoints && window.sid_waypoints.length > 0) {
+        window.sid_waypoints.forEach(marker => map.removeLayer(marker));
+    }
+    // Reset the marker array
+    window.sid_waypoints = [];
+    fetch("/return_sid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({select_sid: {send_str: this.value}, origin: {send_str: dep_ap}, runwy: {send_str: document.getElementById("enterRwy").value}}),
+    })  
+    
+    .then(response => response.json())
+    .then(data => {
+        
+        document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
+        if (data.selected_sid_points.length >= 1) { // only do this when there IS infact a SID
+            console.log("There is a SID!");
+            data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
+            final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
+        };
+        data.selected_sid_points.forEach(point => {
+            let sid_waypoint = L.marker([point.lat, point.lng])
+                .bindPopup(`<b>${point.ident}</b>`)
+                .addTo(map);
+            let sid_lines = L.polyline(data.selected_sid_points, { color: "blue"}).addTo(map);
+            window.sid_waypoints.push(sid_waypoint, sid_lines);
+            
+        });
+    })
+};
 
 let arrivalairport = "";
 let star_init_point = "";
@@ -931,7 +922,7 @@ function display_user_routes () {
                 <td>${route.to}</td>
                 <td>${route.last_used}</td>
                 <td>
-                    <button class="use-route-btn" data-route-id="${route.route_name}">Use Route</button>
+                    <button class="use-route-btn" data-route-id="${route.route_name}" data-route-data="${route.route_data}">Use Route</button>
                     <button class="delete-route-btn" data-route-id="${route.route_name}">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -947,7 +938,30 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
     // Handle "Use Route" button click
     if (event.target.classList.contains("use-route-btn")) {
         const routeId = event.target.getAttribute("data-route-id");
+        const routeData = event.target.getAttribute("data-route-data");
+        console.log("route data:",routeData);
+
         console.log("Using route with ID:", routeId);
+        fetch("/route_data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({send_str: routeData})
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            console.log(data); // all the data
+            console.log(data[0].dep_rwy); // how to access just one part of the data
+            // what needs to be done:
+            // airfield set.
+            // runway set from dropdown
+            // if there is a SID, display it
+            // same for arrival runway and airfield
+            // plot STAR
+            // display waypoints
+            // join everything up + check colours
+
+        })
     }
     
     // Handle "Delete Route" button click

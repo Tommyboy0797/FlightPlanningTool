@@ -135,8 +135,6 @@ def get_saved_routes(username):
 
     return {"routes": routes}
 
-import sqlite3
-
 def remove_route(username, routename):
     # Check if the routename is in the expected format (e.g., "Route 1")
     if not routename.startswith("Route ") or len(routename.split()) != 2:
