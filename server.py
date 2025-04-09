@@ -243,13 +243,19 @@ def airfield_autocomplete(entered_text: SendString):
 
 @app.post("/weather_info")
 def weather_info(station_icao: SendString):
+    altimeter = weather.get_wx_info(station_icao.send_str, 'altimeter')
+
+    if altimeter < 50:
+        altimeter_val = "inHg"
+    else:
+        altimeter_val = "hPa"
 
     weather_data = {
         "raw_metar": weather.get_metar(station_icao.send_str),
         "time": weather.get_wx_info(station_icao.send_str, "time"),
         "remarks": weather.get_wx_info(station_icao.send_str, "remarks"),
         "station": station_icao.send_str,
-        "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} hPa", 
+        "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} {altimeter_val}", 
         "temp": f"{weather.get_wx_info(station_icao.send_str, 'temperature')}°C",
         "humidity": weather.get_wx_info(station_icao.send_str, "humidity"),
         "dewpoint": f"{weather.get_wx_info(station_icao.send_str, 'dew_point')}°C", 
