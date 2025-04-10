@@ -284,7 +284,7 @@ def store_route(route: SendString, username: SendString):
     return saved_routes
 
 @app.post("/show_routes")
-def store_route(route: SendString, username: SendString):
+def store_route(route: SendString,username: SendString):
 
     saved_routes = {
         "info": db_tools.get_saved_routes(username.send_str)
@@ -302,6 +302,52 @@ def remove_route(routenumber: SendString, username: SendString):
     }
 
     return data
+
+@app.post("/route_data")
+def route_data(route: SendString):
+    route_list = route.send_str.split() # list of the route parts
+
+    departure = route_list[0] # get first word, departure field
+    departure_runway = route_list[1]
+    sid = route_list[2]
+    is_sid = False
+
+    arrival = route_list[-1] # last word
+    arrival_runway = route_list[-2] # second to last word (which is the runway in every case)
+    star = route_list[-3]
+    is_star = False
+
+    sidsdata = return_runway(SendString(send_str=departure_runway), SendString(send_str=departure))
+    starsdata = handle_stars(SendString(send_str=arrival_runway), SendString(send_str=arrival))
+
+    sids_list = [sid[0] for sid in sidsdata["sids"]]
+    stars_list = [star[0] for star in starsdata["arrival_stars"]]
+
+    if sid in sids_list: # check if there is a sid
+        sid = route_list[2]
+        is_sid = True
+    else:
+        sid = ""
+
+    if star in stars_list: # check if there is a star
+        star = route_list[-3]
+        is_star = True
+    else:
+        star = ""   
+
+    waypoints = []
+    if is_sid and is_star:
+        waypoints = route_list[3:-3]  # From 3rd to 3rd-to-last
+    elif is_sid and not is_star:
+        waypoints = route_list[3:-2]  # From 3rd to 2nd-to-last
+    elif not is_sid and is_star:
+        waypoints = route_list[2:-3]  # From 2nd to 3rd-to-last
+    elif not is_sid and not is_star:
+        waypoints = route_list[3:-2]  # From 2nd to 2nd-to-last
+
+    
+    print(f"departure: {departure}, dep rwy: {departure_runway}, SID: {sid}, waypoints: {waypoints}, STAR: {star}, arrival rwy: {arrival_runway}, arrival: {arrival}")
+    return [{"departure": departure, "dep_rwy": departure_runway, "SID": {sid}, "waypoints": waypoints, "STAR": star, "arrival_rwy": arrival_runway, "arrival": arrival}]
 
 # Signup Route
 @app.post("/signup")
