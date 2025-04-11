@@ -309,12 +309,12 @@ def route_data(route: SendString):
 
     departure = route_list[0] # get first word, departure field
     departure_runway = route_list[1]
-    sid = route_list[2]
+    sid = str(route_list[2])
     is_sid = False
 
     arrival = route_list[-1] # last word
     arrival_runway = route_list[-2] # second to last word (which is the runway in every case)
-    star = route_list[-3]
+    star = str(route_list[-3])
     is_star = False
 
     sidsdata = return_runway(SendString(send_str=departure_runway), SendString(send_str=departure))
@@ -347,7 +347,7 @@ def route_data(route: SendString):
 
     
     print(f"departure: {departure}, dep rwy: {departure_runway}, SID: {sid}, waypoints: {waypoints}, STAR: {star}, arrival rwy: {arrival_runway}, arrival: {arrival}")
-    return [{"departure": departure, "dep_rwy": departure_runway, "SID": {sid}, "waypoints": waypoints, "STAR": star, "arrival_rwy": arrival_runway, "arrival": arrival}]
+    return [{"departure": departure, "dep_rwy": departure_runway, "SID": sid, "waypoints": waypoints, "STAR": star, "arrival_rwy": arrival_runway, "arrival": arrival}]
 
 # Signup Route
 @app.post("/signup")
