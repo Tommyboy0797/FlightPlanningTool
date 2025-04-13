@@ -510,6 +510,8 @@ function display_waypoints() {
 
         if (star_init_point && star_init_point.lat && star_init_point.lng) {
             latlngs.push([star_init_point.lat, star_init_point.lng]);
+            console.log("Star INIT point pushed". latlngs)
+            console.log([star_init_point.lat, star_init_point.lng])
         }
 
         if (latlngs.length > 1) {
@@ -812,7 +814,6 @@ document.getElementById("toggleMetar").addEventListener("click", function () {
 
 
 document.getElementById("login_submit").addEventListener("click", function (event) {
-
     const formData = new FormData();
     formData.append("username", document.getElementById("login_username").value);
     formData.append("password", document.getElementById("login_password").value);
@@ -821,17 +822,26 @@ document.getElementById("login_submit").addEventListener("click", function (even
         method: "POST",
         body: formData,
     })
-    .then(response => response.json())
-    .then(data =>{
+    .then(async response => {
+        if (!response.ok) {
+            const error = await response.json();
+            alert("Login failed: " + error.detail);
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data) return; // In case login failed
+
         console.log(data);
-        localStorage.setItem("username", data.user); // Store data
-        localStorage.setItem("signup_date", data.signup_date); // Store data
+        localStorage.setItem("username", data.user);
+        localStorage.setItem("signup_date", data.signup_date);
+        location.reload(); // Reload the page to reflect login state
     })
     .catch(error => console.error("Error:", error));
 });
 
 document.getElementById("signup_submit").addEventListener("click", function (event) {
-
     const formData = new FormData();
     formData.append("username", document.getElementById("signup_username").value);
     formData.append("password", document.getElementById("signup_password").value);
@@ -840,11 +850,21 @@ document.getElementById("signup_submit").addEventListener("click", function (eve
         method: "POST",
         body: formData,
     })
-    .then(response => response.json())
+    .then(async response => {
+        if (!response.ok) {
+            const error = await response.json();
+            alert("Signup failed: " + error.detail);
+            return;
+        }
+        return response.json();
+    })
     .then(data => {
+        if (!data) return; // In case signup failed
+
         console.log(data);
-        localStorage.setItem("username", data.user); // Store data
-        localStorage.setItem("signup_date", data.signup_date); 
+        localStorage.setItem("username", data.user);
+        localStorage.setItem("signup_date", data.signup_date);
+        location.reload(); // Reload the page to reflect login state
     })
     .catch(error => console.error("Error:", error));
 });
