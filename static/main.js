@@ -946,6 +946,7 @@ function display_user_routes () {
                 <td>
                     <button class="use-route-btn" data-route-id="${route.route_name}" data-route-data="${route.route_data}">Use Route</button>
                     <button class="delete-route-btn" data-route-id="${route.route_name}">
+                        <span class="visually-hidden">Delete Route</span>
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
