@@ -914,6 +914,8 @@ function store_routes(){
     });
 }
 
+let saved_route_count = 0;
+
 function display_user_routes () {
     fetch("/show_routes", {
         method: "POST",
@@ -922,10 +924,9 @@ function display_user_routes () {
     })
     .then(response => response.json())
     .then(data => {
-    
+        saved_route_count = 0;
         console.log(data.info.routes);
     
-        
         document.getElementById("savedRoutesTable").innerHTML = '';
         
         if (data.info.routes.length === 0){ // if there is no saved routes, say so
@@ -935,6 +936,7 @@ function display_user_routes () {
     
         data.info.routes.forEach(route => { 
             console.log("log")
+            saved_route_count = saved_route_count + 1;
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${route.route_name}</td>
@@ -949,6 +951,7 @@ function display_user_routes () {
                 </td>
             `;  
             document.getElementById("savedRoutesTable").appendChild(row); // add row to table
+            document.getElementById("savedRoutes").innerText = saved_route_count;
         });
     });
 }
@@ -1069,7 +1072,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
     if (event.target.classList.contains("delete-route-btn")) {
         const routeId = event.target.getAttribute("data-route-id");
         console.log("Deleting route with ID:", routeId);
-
         // Disable the delete button to prevent multiple clicks
         event.target.disabled = true;
         event.target.innerText = "Deleting...";  // Change text to indicate action
