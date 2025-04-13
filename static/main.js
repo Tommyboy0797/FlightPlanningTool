@@ -510,6 +510,8 @@ function display_waypoints() {
 
         if (star_init_point && star_init_point.lat && star_init_point.lng) {
             latlngs.push([star_init_point.lat, star_init_point.lng]);
+            console.log("Star INIT point pushed".latlngs)
+            console.log([star_init_point.lat, star_init_point.lng])
         }
 
         if (latlngs.length > 1) {
@@ -812,7 +814,6 @@ document.getElementById("toggleMetar").addEventListener("click", function () {
 
 
 document.getElementById("login_submit").addEventListener("click", function (event) {
-
     const formData = new FormData();
     formData.append("username", document.getElementById("login_username").value);
     formData.append("password", document.getElementById("login_password").value);
@@ -821,17 +822,26 @@ document.getElementById("login_submit").addEventListener("click", function (even
         method: "POST",
         body: formData,
     })
-    .then(response => response.json())
-    .then(data =>{
+    .then(async response => {
+        if (!response.ok) {
+            const error = await response.json();
+            alert("Login failed: " + error.detail);
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data) return; // In case login failed
+
         console.log(data);
-        localStorage.setItem("username", data.user); // Store data
-        localStorage.setItem("signup_date", data.signup_date); // Store data
+        localStorage.setItem("username", data.user);
+        localStorage.setItem("signup_date", data.signup_date);
+        location.reload(); // Reload the page to reflect login state
     })
     .catch(error => console.error("Error:", error));
 });
 
 document.getElementById("signup_submit").addEventListener("click", function (event) {
-
     const formData = new FormData();
     formData.append("username", document.getElementById("signup_username").value);
     formData.append("password", document.getElementById("signup_password").value);
@@ -840,11 +850,21 @@ document.getElementById("signup_submit").addEventListener("click", function (eve
         method: "POST",
         body: formData,
     })
-    .then(response => response.json())
+    .then(async response => {
+        if (!response.ok) {
+            const error = await response.json();
+            alert("Signup failed: " + error.detail);
+            return;
+        }
+        return response.json();
+    })
     .then(data => {
+        if (!data) return; // In case signup failed
+
         console.log(data);
-        localStorage.setItem("username", data.user); // Store data
-        localStorage.setItem("signup_date", data.signup_date); 
+        localStorage.setItem("username", data.user);
+        localStorage.setItem("signup_date", data.signup_date);
+        location.reload(); // Reload the page to reflect login state
     })
     .catch(error => console.error("Error:", error));
 });
@@ -959,6 +979,7 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                 window.sid_waypoints.forEach(marker => map.removeLayer(marker));
             }
             console.log(JSON.stringify({select_sid: {send_str: data[0].SID}, origin: {send_str: data[0].departure}, runwy: {send_str: data[0].dep_rwy}}));
+            let arrivalfield = data[0].arrival;
             // Reset the marker array
             window.sid_waypoints = [];
             fetch("/return_sid", {
@@ -987,12 +1008,12 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             })
             // runway set from dropdown TODO
             // same for arrival runway and airfield
-            set_arrival_airfield(data[0].arrival)
+            //set_arrival_airfield(data[0].arrival)
             // plot STAR
             if (window.star_waypoints && window.star_waypoints.length > 0) {
                 window.star_waypoints.forEach(marker => map.removeLayer(marker));
             }
-        
+            
             // Reset the marker array
             window.star_waypoints = [];
         
@@ -1005,22 +1026,36 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             .then(response => response.json())
             .then(data => {
              
-                
+                console.log(data)
                 if (data.selected_star_data.length > 0){ // only do this when there is STARs
                     data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
                     star_init_point = data.selected_star_data[0]; // access first STAR point
                     console.log(star_init_point)
-                };
-        
+                }
+                else { // if there is no star data
+                    fetch("/return_arrival_airport", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+                        body: JSON.stringify({send_str: arrivalfield}), // send airport name as the body
+                    })
+                    
+                    .then(response => response.json())
+                    .then(data => {
+                        star_init_point = {
+                            lat: data.arrival_latlng[0].lat,
+                            lng: data.arrival_latlng[0].lng
+                        };
+                        display_waypoints(); // needs to be called here too, else lines arent drawn
+                    })
+                }
+
                 data.selected_star_data.forEach(point => {
                     let star_waypoint = L.marker([point.lat, point.lng])
                         .bindPopup(`<b>${point.ident}</b>`)
                         .addTo(map);
                     let star_lines = L.polyline(data.selected_star_data, { color: "red"}).addTo(map);
-                    window.star_waypoints.push(star_waypoint, star_lines)
-        
-                });
-        
+                    window.star_waypoints.push(star_waypoint, star_lines)});
+            
             })
             // display waypoints
             selected_waypoints = "";
