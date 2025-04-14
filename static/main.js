@@ -289,6 +289,7 @@ document.getElementById("chooseSid").onchange = function () {
     if (window.sid_waypoints && window.sid_waypoints.length > 0) {
         window.sid_waypoints.forEach(marker => map.removeLayer(marker));
     }
+    let previousPoint = null;
     // Reset the marker array
     window.sid_waypoints = [];
     fetch("/return_sid", {
@@ -311,6 +312,11 @@ document.getElementById("chooseSid").onchange = function () {
                 .bindPopup(`<b>${point.ident}</b>`)
                 .addTo(map);
             let sid_lines = L.polyline(data.selected_sid_points, { color: "blue"}).addTo(map);
+            if (previousPoint) {
+                distance += L.latLng(point.lat, point.lng).distanceTo(L.latLng(previousPoint.lat, previousPoint.lng));
+            }
+        
+            previousPoint = point;
             window.sid_waypoints.push(sid_waypoint, sid_lines);
             
         });
@@ -373,7 +379,7 @@ document.getElementById("chooseArrStar").onchange = function () {
     if (window.star_waypoints && window.star_waypoints.length > 0) {
         window.star_waypoints.forEach(marker => map.removeLayer(marker));
     }
-
+    let previousPoint = null;
     // Reset the marker array
     window.star_waypoints = [];
 
@@ -399,6 +405,11 @@ document.getElementById("chooseArrStar").onchange = function () {
                 .bindPopup(`<b>${point.ident}</b>`)
                 .addTo(map);
             let star_lines = L.polyline(data.selected_star_data, { color: "red"}).addTo(map);
+            if (previousPoint) {
+                distance += L.latLng(point.lat, point.lng).distanceTo(L.latLng(previousPoint.lat, previousPoint.lng));
+            }
+        
+            previousPoint = point;
             window.star_waypoints.push(star_waypoint, star_lines)
 
         });
@@ -984,6 +995,7 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             }
             console.log(JSON.stringify({select_sid: {send_str: data[0].SID}, origin: {send_str: data[0].departure}, runwy: {send_str: data[0].dep_rwy}}));
             let arrivalfield = data[0].arrival;
+            let previousPoint = null;
             // Reset the marker array
             window.sid_waypoints = [];
             fetch("/return_sid", {
@@ -1006,6 +1018,11 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                         .bindPopup(`<b>${point.ident}</b>`)
                         .addTo(map);
                     let sid_lines = L.polyline(data.selected_sid_points, { color: "blue"}).addTo(map);
+                    if (previousPoint) {
+                        distance += L.latLng(point.lat, point.lng).distanceTo(L.latLng(previousPoint.lat, previousPoint.lng));
+                    }
+                
+                    previousPoint = point;
                     window.sid_waypoints.push(sid_waypoint, sid_lines);
                     
                 });
@@ -1020,7 +1037,7 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             
             // Reset the marker array
             window.star_waypoints = [];
-        
+            
             fetch("/send_star_data", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
@@ -1058,6 +1075,11 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                         .bindPopup(`<b>${point.ident}</b>`)
                         .addTo(map);
                     let star_lines = L.polyline(data.selected_star_data, { color: "red"}).addTo(map);
+                    if (previousPoint) {
+                        distance += L.latLng(point.lat, point.lng).distanceTo(L.latLng(previousPoint.lat, previousPoint.lng));
+                    }
+                
+                    previousPoint = point;
                     window.star_waypoints.push(star_waypoint, star_lines)});
             
             })
