@@ -21,6 +21,8 @@ var largeAirportIcon = L.icon({
 let selected_waypoints = [];
 let waypoint_data_values = [];
 let distance = 0;
+let custom_waypoint_store = []; // stores custom points { name, lat, lng }
+
 
 document.getElementById('dataForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -470,6 +472,22 @@ function display_waypoints() {
     let previousPoint = null;
 
     let fetchPromises = selected_waypoints.map((wp, index) => {
+        // Try to find it in the custom waypoint store first
+        let custom_wp = custom_waypoint_store.find(cwp => cwp.name === wp);
+        if (custom_wp) {
+            waypoint_data_values.push({
+                index: index,
+                lat: custom_wp.lat,
+                lng: custom_wp.lng,
+                name: custom_wp.name,
+                usage: custom_wp.usage,
+                icao: "CTM",
+                area: "",
+                notes: custom_wp.notes,
+                is: "Custom Waypoint"
+            });
+            return Promise.resolve(); // skip server call
+        }
         return fetch("/waypoint_info", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -496,11 +514,26 @@ function display_waypoints() {
         window.waypoint_markers = [];
 
         waypoint_data_values.forEach((point, index) => {
-            let waypoint_marker = L.marker([point.lat, point.lng])
-                .bindPopup(`<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area} 
-                <br> <button onclick="remove_wp_from_route('${point.lat}, ${point.lng}')">Remove</button></b>`)
-                .addTo(map);
-        
+            let waypoint_marker = L.marker([point.lat, point.lng]);
+            // Check if the waypoint is a custom one
+            if (point.is === "Custom Waypoint") {
+                // For custom waypoints, display the custom format
+                waypoint_marker = waypoint_marker.bindPopup(
+                    `<b>${point.name}</b><br>` +
+                    `<i>${point.usage}</i><br>` +
+                    `<b>Lat:</b> ${point.lat.toFixed(6)}<br>` +
+                    `<b>Lng:</b> ${point.lng.toFixed(6)}<br>` +
+                    (point.notes ? `<b>Notes:</b> ${point.notes}` : "")
+                );
+            } else {
+                // For normal waypoints, use the default format
+                waypoint_marker = waypoint_marker.bindPopup(
+                    `<b>${point.name}<br> ${point.usage}<br>${point.icao}${point.area}<br>` +
+                    `<button onclick="remove_wp_from_route('${point.lat}, ${point.lng}')">Remove</button>`
+                );
+            }
+
+            waypoint_marker.addTo(map);
             if (previousPoint) {
                 distance += L.latLng(point.lat, point.lng).distanceTo(L.latLng(previousPoint.lat, previousPoint.lng));
             }
@@ -970,6 +1003,7 @@ function display_user_routes () {
 
 // Use event delegation for both "use-route-btn" and "delete-route-btn"
 document.getElementById("savedRoutesTable").addEventListener("click", function(event) {
+    distance = 0;
     // Handle "Use Route" button click
     if (event.target.classList.contains("use-route-btn")) {
         const routeId = event.target.getAttribute("data-route-id");
@@ -1126,4 +1160,60 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             event.target.innerText = "Delete";
         });
     }
+});
+
+
+document.getElementById("custom_waypoint").addEventListener("click", function () {
+    document.getElementById("map").style.cursor = "crosshair";
+
+    // Wait for user to click the map
+    map.once("click", function (e) {
+        // Set lat/lng into the form fields
+        document.getElementById("customWaypointBox").style.display = "block";
+        document.getElementById("ctmwaypointLat").value = e.latlng.lat.toFixed(6);
+        document.getElementById("ctmwaypointLong").value = e.latlng.lng.toFixed(6);
+
+        // Attach the submit event only once
+        const form = document.getElementById("customWaypointForm");
+        const saveBtn = document.getElementById("saveCustomWaypoint");
+
+        // Remove previous listener if it exists
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+
+        newForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("ctmwaypointName").value;
+            const type = document.getElementById("waypointType").value;
+            const lat = parseFloat(document.getElementById("ctmwaypointLat").value).toFixed(6);
+            const lng = parseFloat(document.getElementById("ctmwaypointLong").value).toFixed(6);
+            const notes = document.getElementById("waypointNotes").value;
+
+            const customwaypoint = L.marker([lat, lng])
+                .bindPopup(
+                    `<b>${name}</b><br>` +
+                    `<i>${type}</i><br>` +
+                    `<b>Lat:</b> ${lat}<br>` +
+                    `<b>Lng:</b> ${lng}<br>` +
+                    (notes ? `<b>Notes:</b> ${notes}` : "")
+                )
+                .addTo(map);
+
+            custom_waypoint_store.push({ name, lat: parseFloat(lat), lng: parseFloat(lng), notes: notes, usage: type });
+
+            selected_waypoints.push(name);
+
+            display_waypoints();
+
+            // Hide the form and reset
+            document.getElementById("customWaypointBox").style.display = "none";
+            newForm.reset();
+        });
+    });
+
+    // Reset cursor
+    map.once("click", () => {
+        document.getElementById("map").style.cursor = "auto";
+    });
 });
