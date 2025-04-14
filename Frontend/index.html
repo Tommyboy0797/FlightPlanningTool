@@ -190,6 +190,36 @@
         .toolbar-btn i {
             color: #333;
         }
+
+        /* Add these styles to your existing CSS */
+        #customWaypointBox {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+            width: 300px;
+            border-radius: 5px;
+            top: 100px;
+            left: 100px;
+        }
+
+        #customWaypointBox h5 {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        #customWaypointBox .form-label {
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        #customWaypointBox small.text-muted {
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -342,7 +372,7 @@
                             <button class="toolbar-btn" id="clearMap"title="Clear Map"><i class="fas fa-trash"></i></button>
                             <button class="toolbar-btn" id="saveRoute" title="Save Route"><i class="fas fa-save"></i></button>
                             <button class="toolbar-btn" id= "nearest_waypoint_button" title="Nearby Waypoints"><i class="fas fa-crosshairs"></i></button>
-                            <button class="toolbar-btn" title="INOP"><i class="fas fa-plane"></i></button>
+                            <button class="toolbar-btn" id="custom_waypoint" title="Custom Waypoint"><i class="fas fa-map-marker"></i></button>
                             <button class="toolbar-btn" title="INOP"><i class="fas fa-map-marker-alt"></i></button>
                         </div>
                 </div>
@@ -542,6 +572,51 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- Custom Waypoint Box -->
+    <div id="customWaypointBox" class="waypoint-box">
+        <h5>Create Custom Waypoint</h5>
+        <form id="customWaypointForm">
+            <div class="mb-2">
+                <label for="waypointType" class="form-label">Waypoint Type:</label>
+                <select class="form-select form-select-sm" id="waypointType">
+                    <option value="Navigation">Navigation</option>
+                    <option value="Drop">Drop Point</option>
+                    <option value="Marshall">Marshall Point</option>
+                    <option value="AAR">AAR Point</option>
+                    <option value="Initial">Initial Point</option>
+                    <option value="Target">Target Point</option>
+                    <option value="Ingress">Ingress Point</option>
+                    <option value="Egress">Egress Point</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label for="waypointName" class="form-label">Waypoint Name:</label>
+                <input type="text" class="form-control form-control-sm" id="ctmwaypointName" placeholder="Enter a name" required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Coordinates:</label>
+                <div class="d-flex">
+                    <div class="me-1">
+                        <label for="waypointLat" class="form-label small">Latitude:</label>
+                        <input type="text" class="form-control form-control-sm" id="ctmwaypointLat" value="" readonly>
+                    </div>
+                    <div>
+                        <label for="waypointLong" class="form-label small">Longitude:</label>
+                        <input type="text" class="form-control form-control-sm" id="ctmwaypointLong" readonly>
+                    </div>
+                </div>
+                <small class="text-muted">Click on the map to set coordinates</small>
+            </div>
+            <div class="mb-2">
+                <label for="waypointNotes" class="form-label">Notes (optional):</label>
+                <textarea class="form-control form-control-sm" id="waypointNotes" rows="2" placeholder="Add additional information"></textarea>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-sm btn-secondary" id="cancelCustomWaypoint">Cancel</button>
+                <button type="submit" class="btn btn-sm btn-primary" id="saveCustomWaypoint">Add Waypoint</button>
+            </div>
+        </form>
     </div>
 
 
