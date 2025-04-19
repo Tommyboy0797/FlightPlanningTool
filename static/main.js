@@ -222,6 +222,8 @@ function set_origin_airfield(airportname){
             enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
         })
 
+        dep_rwy_change.call(enter_rwy_dropdown); // make sure the function calls straight away so that the user doesnt have to select a runway, then back to their desired to display SIDs
+
         let center = { lat: data.af_latlng[0].lat, lng: data.af_latlng[0].lng };
 
         document.getElementById("show_rr").onchange = function () {
@@ -343,7 +345,8 @@ function set_arrival_airfield(arrival_field) {
 
         data.arrival_runways.forEach(runway => {
             enter_arr_runway.options[enter_arr_runway.options.length] = new Option(runway, runway);
-
+        
+        display_star.call(enter_arr_runway);
         
         if (data.arrival_latlng.length > 0){ // if there is no STAR available for that airfield, just connect the route to the center of it
             star_init_point = {
@@ -355,8 +358,9 @@ function set_arrival_airfield(arrival_field) {
     })
 }
 
+document.getElementById("chooseArrRw").onchange = display_star;
 
-document.getElementById("chooseArrRw").onchange = function () {
+function display_star () {
 
     fetch("/handle_stars", {
         method: "POST",
