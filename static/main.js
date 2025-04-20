@@ -305,7 +305,6 @@ document.getElementById("chooseSid").onchange = function () {
     .then(response => response.json())
     .then(data => {
         
-        document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
         if (data.selected_sid_points.length >= 1) { // only do this when there IS infact a SID
             console.log("There is a SID!");
             data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
@@ -1045,7 +1044,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             .then(response => response.json())
             .then(data => {
                 
-                document.getElementById("chosen_sid").textContent = document.getElementById("chooseSid").value;
                 if (data.selected_sid_points.length >= 1) { // only do this when there IS infact a SID
                     console.log("There is a SID!");
                     data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
