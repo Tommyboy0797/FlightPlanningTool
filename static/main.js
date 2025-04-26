@@ -1219,3 +1219,10 @@ document.getElementById("custom_waypoint").addEventListener("click", function ()
         document.getElementById("map").style.cursor = "auto";
     });
 });
+
+
+document.getElementById("cancelCustomWaypoint").addEventListener("click", function(){
+
+    document.getElementById("customWaypointBox").style.display = "none";
+
+})
