@@ -372,7 +372,7 @@
                             <button class="toolbar-btn" id="saveRoute" title="Save Route"><i class="fas fa-save"></i></button>
                             <button class="toolbar-btn" id= "nearest_waypoint_button" title="Nearby Waypoints"><i class="fas fa-crosshairs"></i></button>
                             <button class="toolbar-btn" id="custom_waypoint" title="Custom Waypoint"><i class="fas fa-map-marker"></i></button>
-                            <button class="toolbar-btn" title="INOP"><i class="fas fa-map-marker-alt"></i></button>
+                            <button class="toolbar-btn" id="ppt_bttn" title="PPT"><i class="fas fa-map-marker-alt"></i></button>
                         </div>
                 </div>
             </div>
@@ -617,6 +617,55 @@
             </div>
         </form>
     </div>
+    <!-- Pre-Planned Threat (PPT) Box -->
+    <div id="pptBox" class="waypoint-box" style="top: 100px; left: 100px; display: none;">
+        <h5>Create Pre-Planned Threat</h5>
+        <form id="pptForm">
+            <div class="mb-2">
+                <label for="pptName" class="form-label">Threat Name:</label>
+                <input type="text" class="form-control form-control-sm" id="pptName" placeholder="Enter threat name" required>
+            </div>
+
+            <div class="mb-2">
+                <label for="pptPreset" class="form-label">Preset Threat:</label>
+                <select class="form-select form-select-sm" id="pptPreset">
+                    <option value="">-- Select a Preset --</option>
+                    <option value="SA-2">SA-2</option>
+                    <option value="SA-3">SA-3</option>
+                    <option value="SA-5">SA-5</option>
+                    <option value="SA-6">SA-6</option>
+                    <option value="SA-10">SA-10</option>
+                </select>
+                <small class="text-muted">Selecting a preset will auto-fill range.</small>
+            </div>
+
+            <div class="mb-2">
+                <label for="pptRange" class="form-label">Custom Range (NM):</label>
+                <input type="number" class="form-control form-control-sm" id="pptRange" placeholder="Enter range" min="1">
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">Coordinates:</label>
+                <div class="d-flex">
+                    <div class="me-1">
+                        <label for="pptLat" class="form-label small">Latitude:</label>
+                        <input type="text" class="form-control form-control-sm" id="pptLat" readonly>
+                    </div>
+                    <div>
+                        <label for="pptLng" class="form-label small">Longitude:</label>
+                        <input type="text" class="form-control form-control-sm" id="pptLng" readonly>
+                    </div>
+                </div>
+                <small class="text-muted">Click on the map to set coordinates.</small>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-sm btn-secondary" id="cancelPPT">Cancel</button>
+                <button type="submit" id="add_ppt" class="btn btn-sm btn-primary">Add Threat</button>
+            </div>
+        </form>
+    </div>
+
 
 
 
