@@ -1227,52 +1227,72 @@ document.getElementById("cancelCustomWaypoint").addEventListener("click", functi
 
 })
 
-document.getElementById("ppt_bttn").addEventListener("click", function(){
+let currentPPTLocation = null; // Store the clicked location globally
 
-    const ppt_presets = {
-        "SA-2": 25,  // 25 NM
-        "SA-3": 15,  // 15 NM
-        "SA-5": 50,  // 50 NM
-        "SA-6": 20,  // 20 NM
-        "SA-10": 50  // 50 NM
-    };
-    
-
+document.getElementById("ppt_bttn").addEventListener("click", function() {
     document.getElementById("map").style.cursor = "crosshair";
 
-    function drawCircle(center, radiusMiles) {
-        let radiusMeters = radiusMiles * 1609.34; // Convert miles to meters
-
-        if (window.originCircle) {
-            map.removeLayer(window.originCircle);
-        }
-    
-        window.originCircle = L.circle([center.lat, center.lng], {
-            color: "red",
-            fillColor: "white",
-            fillOpacity: 0,
-            radius: radiusMeters
-        }).addTo(map);
-    }
-    map.once("click", function (e) {
+    map.once("click", function(e) {
+        currentPPTLocation = e.latlng; // Save the clicked location
         document.getElementById("pptBox").style.display = "block";
         document.getElementById("pptLat").value = e.latlng.lat;
         document.getElementById("pptLng").value = e.latlng.lng;
+    });
+});
 
-        document.getElementById("pptPreset").addEventListener("change", function() {
-            const selectedPreset = this.value;
-            if (ppt_presets[selectedPreset]) {
-                document.getElementById("pptRange").value = ppt_presets[selectedPreset];
-            }
-        });
+document.getElementById("pptPreset").addEventListener("change", function() {
+    const ppt_presets = {
+        "SA-2": 28,  // 25 NM
+        "SA-3": 13.5,  // 15 NM
+        "SA-5": 140,  // 50 NM
+        "SA-6": 19.2,  // 20 NM
+        "SA-10": 50,  // 50 NM
+        "SA-11": 19.2,
+        "SA-13": 2.8,
+        "SA-15": 6.5,
+        "SA-19": 4,
+        "MIM-23": 25.6,
+        "MIM-104": 86,
+        "SA-8": 7.5
+    };
+    const selectedPreset = this.value;
+    if (ppt_presets[selectedPreset]) {
+        document.getElementById("pptRange").value = ppt_presets[selectedPreset];
+    }
+});
 
-        document.getElementById("add_ppt").addEventListener("click", function(event){
-            event.preventDefault(); // stops the page refreshing when the person clicks submit
-            drawCircle(e.latlng, document.getElementById("pptRange").value);
-            document.getElementById("map").style.cursor = "auto";
-        })
+document.getElementById("add_ppt").addEventListener("click", function(event) {
+    event.preventDefault();
+    if (currentPPTLocation) {
+        drawCircle(currentPPTLocation, document.getElementById("pptRange").value);
+        document.getElementById("pptBox").style.display = "none";
+        document.getElementById("map").style.cursor = "auto";
+        currentPPTLocation = null; // Clear the saved location after use
+    }
+});
 
-    })
+document.getElementById("cancelPPT").addEventListener("click", function(event) {
+    event.preventDefault();
+    document.getElementById("pptBox").style.display = "none";
+    document.getElementById("map").style.cursor = "auto";
+    currentPPTLocation = null; // Clear location if canceled
+});
 
-})
+function drawCircle(center, radiusMiles) {
+    let radiusMeters = radiusMiles * 1609.34; // Convert miles to meters
+
+    L.circle([center.lat, center.lng], {
+        color: "red",
+        fillColor: "white",
+        fillOpacity: 0,
+        radius: radiusMeters
+    }).addTo(map);
+
+    L.marker([center.lat, center.lng])
+        .bindPopup(
+            `<b>${document.getElementById("pptName").value}</b><br>` +
+            `<i>${document.getElementById("pptRange").value}</i><br>`
+        )
+        .addTo(map);
+}
 
