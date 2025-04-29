@@ -570,13 +570,12 @@ function display_waypoints() {
         
     });
 }
-
 function remove_wp_from_route(lat, lng) {
-
-    waypoint_data_values = waypoint_data_values.filter(wp => wp != lat,lng);
+    waypoint_data_values = waypoint_data_values.filter(
+        wp => wp.lat !== lat || wp.lng !== lng
+    );
     console.log(waypoint_data_values, "removed from route");
     display_waypoints();
-    
 }
 
 document.getElementById("enter_airway_box").onchange = function () {
