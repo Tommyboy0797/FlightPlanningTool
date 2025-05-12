@@ -1072,7 +1072,12 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             
             // Reset the marker array
             window.star_waypoints = [];
-            
+            arrivalairport = data[0].arrival
+            set_arrival_airfield(data[0].arrival);
+            display_star.call(data[0].arrival_rwy)
+            document.getElementById("chooseArrStar").value = data[0].STAR;
+            document.getElementById("chooseArrRw").value = data[0].arrival_rwy;
+
             fetch("/send_star_data", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
@@ -1081,7 +1086,7 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
         
             .then(response => response.json())
             .then(data => {
-             
+
                 console.log(data)
                 if (data.selected_star_data.length > 0){ // only do this when there is STARs
                     data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
