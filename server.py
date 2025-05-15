@@ -257,7 +257,7 @@ def weather_info(station_icao: SendString):
         "station": station_icao.send_str,
         "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} {altimeter_val}", 
         "temp": f"{weather.get_wx_info(station_icao.send_str, 'temperature')}°C",
-        "humidity": weather.get_wx_info(station_icao.send_str, "humidity"),
+        "humidity": round(weather.get_wx_info(station_icao.send_str, "humidity"), 3),
         "dewpoint": f"{weather.get_wx_info(station_icao.send_str, 'dew_point')}°C", 
         "visibility": f"{weather.get_wx_info(station_icao.send_str, 'visibility')} SM", 
         "clouds": weather.get_wx_info(station_icao.send_str, "clouds"),
