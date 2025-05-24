@@ -78,7 +78,7 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
     p9 = refusal.get_refusal_p9(p8, asoper) 
     respo = {
         "uncorrected_max_eff_TO_dist_text": "Uncorrected maximum effort takeoff distance: ",
-        "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(gwt, get_to_factor, perf_calc.data),
+        "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(gwt, get_to_factor),
         "gross_weight_text": round(gwt * 1000),
         "takeoff_factor_text": get_to_factor,
         "rotation_speed_calculated": rotation_calc.get_rotation_speed(gwt, get_to_factor),
