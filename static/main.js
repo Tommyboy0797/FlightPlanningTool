@@ -1062,9 +1062,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                     
                 });
             })
-            // runway set from dropdown TODO
-            // same for arrival runway and airfield
-            //set_arrival_airfield(data[0].arrival)
             // plot STAR
             if (window.star_waypoints && window.star_waypoints.length > 0) {
                 window.star_waypoints.forEach(marker => map.removeLayer(marker));
