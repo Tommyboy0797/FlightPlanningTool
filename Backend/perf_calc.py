@@ -7,22 +7,24 @@ from Backend.py_utils import *
 
 def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
 
-    TOP_FOLDER = "Backend/chart_dig/completed-takeoff/min-field-length-for-max-effort-to"
-    DIG_FILE_NAME = "amax-eff-uncorr-field-length.dig"
+TOP_FOLDER = "Backend/chart_dig/completed-takeoff/min-field-length-for-max-effort-to"
+DIG_FILE_NAME = "amax-eff-uncorr-field-length.dig"
 
     data = {}
 
-    chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
-    for c in  chart.curveNames():
-        yVector = [row [1] for row in chart.curve(c)]
-        xVector = [row [0] for row in chart.curve(c)]
-        scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
+chart = ParseDig(f'./{TOP_FOLDER}/dig/{DIG_FILE_NAME}')
+for c in  chart.curveNames():
+    yVector = [row [1] for row in chart.curve(c)]
+    xVector = [row [0] for row in chart.curve(c)]
+    scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
     
-        data[scale_number] = {
-            "x": xVector,
-            "y": yVector
-        }
+    data[scale_number] = {
+        "x": xVector,
+        "y": yVector
+    }
 
+def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
+        
     x_values = []
     y_values = []
     

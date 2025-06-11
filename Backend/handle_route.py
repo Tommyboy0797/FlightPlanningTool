@@ -1,6 +1,5 @@
 def build_route(origin_airfield, waypoint, selected_runway,selected_sid,selected_star,selected_runway_arrival,arrival_airfield):
-    route_parts = []
-    waypoints = [] 
+    route_parts = [] 
     route = ""
 
     if origin_airfield:

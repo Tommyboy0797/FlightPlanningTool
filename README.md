@@ -50,12 +50,6 @@ The development workflow should generally be `feature-branch` -> `dev` -> `main`
     - Remarks
     - METAR time
 
-
-## Lessons Learned
-
-As this was my first proper website, I learned several things. Big thanks to [@mcdelaney](https://github.com/mcdelaney) and [@papiplanes](https://github.com/papiplanes) for the help along the way - wouldn't have been able to do it otherwise. Also, being my first time using JavaScript, I have discovered how much I hate it.
-
-
 ## Roadmap
 
 - Export flight plans to MSFS and DCS
@@ -69,4 +63,10 @@ As this was my first proper website, I learned several things. Big thanks to [@m
 - Collaborative editing of flight plans
 
 - Save PPTs and custom route points
+
+# LICENSE
+
+This project is not open source.
+The code is provided for educational and reference purposes only.
+Do not copy, modify, distribute, or use it in any form without express permission.
 
