@@ -598,7 +598,7 @@ document.getElementById("enter_airway_box").onchange = function () {
 
         data.airway_info.forEach(point => {
             let waypoint_marker = L.marker([point.lat, point.lng])
-                .bindPopup(`<b>${point.ident}<br> ${point.route_ident}</b>`)
+                .bindPopup(`<b>${point.ident} <br> <button onclick="add_wp_to_route('${point.route_ident}')">Add to Route</button></b>`)
                 .addTo(map);
             let airway_polyline = L.polyline(data.airway_info, {color: 'purple'}).addTo(map)
             let new_view = map.panTo(new L.LatLng(point.lat, point.lng))
