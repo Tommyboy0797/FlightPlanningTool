@@ -274,6 +274,35 @@ def search_airport(partial_name):
 
     return [{"name": name, "icao": icao, "type": type,} for name, icao, type in results]
 
+
+# autocorrect suggestions for gps waypoint box
+def search_waypoint(partial_name):
+    database_path = "database/nav_data.db"
+    connect_to_db = sqlite3.connect(database_path)
+    cursor = connect_to_db.cursor()
+
+    words = partial_name.split()
+    conditions = " AND ".join(["waypoint_name LIKE ? COLLATE NOCASE" for _ in words])
+
+    query = f"""
+    SELECT waypoint_latitude, waypoint_longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code
+    FROM waypoints 
+    WHERE {conditions} 
+    ORDER BY 
+        LENGTH(waypoint_name), 
+        INSTR(LOWER(waypoint_name), LOWER(?)) 
+    """
+
+    params = tuple(f"{word}%" for word in words) + (words[0],) # only get waypoints that START with partial_name
+
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    connect_to_db.close()
+
+    return [{"lat": latitude, "lng": longitude, "ident": waypoint_identifier, "name": waypoint_name, "usage": waypoint_usage, "icao": icao_code, "area": area_code} for latitude, longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code in results]
+
+
+
 def nearby_points(point_lat, point_lng):
     database_path = "database/nav_data.db"
     connect_to_db = sqlite3.connect(database_path)

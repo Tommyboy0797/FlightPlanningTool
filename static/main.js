@@ -1297,3 +1297,54 @@ function drawCircle(center, radiusMiles) {
         .addTo(map);
 }
 
+
+// autocomplete GPS waypoint box
+document.getElementById("enter_waypoint_box").addEventListener("input", function () {
+    clearTimeout(debounceTimer);  // Reset the timer
+    
+    let query = this.value.trim();
+    if (query.length === 0) {
+        document.getElementById("autocomplete_list_wpt").style.display = "none";
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch("/waypoint_autocomplete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ send_str: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let list = document.getElementById("autocomplete_list_wpt");
+            list.innerHTML = "";
+
+            data.autocorrect_data.forEach(airport => {
+                let item = document.createElement("div");
+                item.classList.add("autocomplete-item");
+            
+                item.innerHTML = `<b>${airport.name || "Unknown"}</b>`;
+            
+            item.addEventListener("click", function () {
+                document.getElementById("enter_waypoint_box").value = airport.name;
+                list.style.display = "none";
+            
+                let waypoint_marker = L.marker([airport.lat, airport.lng])
+                    .bindPopup(`<b>${airport.name} <br> <button onclick="add_wp_to_route('${airport.name}')">Add to Route</button></b>`)
+                    .addTo(map)
+            
+                window.waypoint_markers.push(waypoint_marker);
+                map.panTo([airport.lat, airport.lng]);
+
+            });
+
+            
+                list.appendChild(item);
+            });
+            
+            list.style.display = data.autocorrect_data.length > 0 ? "block" : "none";
+        });
+    }, 200);
+});
+
+//recent update TEST 15/06/25
