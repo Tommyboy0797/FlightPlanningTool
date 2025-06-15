@@ -6,19 +6,19 @@ steps:
       args: ["buildx", "build", '--push',
                 '--cache-to', 'type=inline,mode=max',
                 '--cache-from', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_IMAGE_NAME}/${_IMAGE_NAME}:dev',
-                "-t", "us-central1-docker.pkg.dev/${PROJECT_ID}/${PROJECT_ID}/${_IMAGE_NAME}:${SHORT_SHA}",
-                "-t", "us-central1-docker.pkg.dev/${PROJECT_ID}/${PROJECT_ID}/${_IMAGE_NAME}:dev",
+                "-t", "us-central1-docker.pkg.dev/${PROJECT_ID}/${_IMAGE_NAME}/${_IMAGE_NAME}:${SHORT_SHA}",
+                "-t", "us-central1-docker.pkg.dev/${PROJECT_ID}/${_IMAGE_NAME}/${_IMAGE_NAME}:dev",
                 "-f", "${_DOCKERFILE_DIR}/Dockerfile",
                 "."]
 
     - name: 'gcr.io/cloud-builders/docker'
-      args: ["push", "us-central1-docker.pkg.dev/${PROJECT_ID}/${PROJECT_ID}/${_IMAGE_NAME}:dev"]
+      args: ["push", "us-central1-docker.pkg.dev/${PROJECT_ID}/${_IMAGE_NAME}/${_IMAGE_NAME}:dev"]
       
     - name: "gcr.io/cloud-builders/gke-deploy"
       args:
       - run
       - --filename=./manifests/deployment_dev.yaml
-      - --image=us-central1-docker.pkg.dev//${PROJECT_ID}/${PROJECT_ID}/${_IMAGE_NAME}:${SHORT_SHA}
+      - --image=us-central1-docker.pkg.dev//${PROJECT_ID}/${_IMAGE_NAME}/${_IMAGE_NAME}:${SHORT_SHA}
       - --location=us-central1-a
       - --cluster=gaw
 
