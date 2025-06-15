@@ -1,3 +1,3 @@
 
-podman build -t flightplanning:prod . ;
-podman push flightplanning:prod us-central1-docker.pkg.dev/dcs-analytics-257714/flightplanning/flightplanning:prod;
+podman build -t flightplanning:latest . ;
+podman push flightplanning:latest us-central1-docker.pkg.dev/dcs-analytics-257714/flightplanning/flightplanning:latest;
