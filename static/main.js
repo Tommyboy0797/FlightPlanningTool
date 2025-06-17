@@ -1351,4 +1351,45 @@ document.getElementById("enter_waypoint_box").addEventListener("input", function
     }, 200);
 });
 
+// autocomplete airway box
+document.getElementById("enter_airway_box").addEventListener("input", function () {
+    clearTimeout(debounceTimer);  // Reset the timer
+    
+    let query = this.value.trim();
+    if (query.length === 0) {
+        document.getElementById("autocomplete_list_airway").style.display = "none";
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch("/airway_autocomplete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ send_str: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let list = document.getElementById("autocomplete_list_airway");
+            list.innerHTML = "";
+
+            data.autocorrect_data.forEach(airport => {
+                let item = document.createElement("div");
+                item.classList.add("autocomplete-item");
+            
+                item.innerHTML = `<b>${airport.name || "Unknown"}</b>`;
+            
+            item.addEventListener("click", function () {
+                document.getElementById("enter_airway_box").value = airport.name;
+                list.style.display = "none";
+            });
+
+            
+                list.appendChild(item);
+            });
+            
+            list.style.display = data.autocorrect_data.length > 0 ? "block" : "none";
+        });
+    }, 200);
+});
+
 //recent update TEST 15/06/25
