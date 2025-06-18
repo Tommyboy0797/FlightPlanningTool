@@ -570,13 +570,12 @@ function display_waypoints() {
         
     });
 }
-
 function remove_wp_from_route(lat, lng) {
-
-    waypoint_data_values = waypoint_data_values.filter(wp => wp != lat,lng);
+    waypoint_data_values = waypoint_data_values.filter(
+        wp => wp.lat !== lat || wp.lng !== lng
+    );
     console.log(waypoint_data_values, "removed from route");
     display_waypoints();
-    
 }
 
 document.getElementById("enter_airway_box").onchange = function () {
@@ -1063,9 +1062,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                     
                 });
             })
-            // runway set from dropdown TODO
-            // same for arrival runway and airfield
-            //set_arrival_airfield(data[0].arrival)
             // plot STAR
             if (window.star_waypoints && window.star_waypoints.length > 0) {
                 window.star_waypoints.forEach(marker => map.removeLayer(marker));
