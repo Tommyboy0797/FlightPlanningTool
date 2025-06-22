@@ -380,10 +380,14 @@ async def signup(username: str = Form(...), password: str = Form(...)):
         raise HTTPException(status_code=400, detail="Username already exists")
 
     hashed_password = db_tools.hash_password(password)
-    signup_date = str(date.today())
-    cursor.execute(
-        "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)",
-        (username, hashed_password, signup_date)
+    #signup_date = str(date.today())
+    # cursor.execute(
+    #     "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)", ## signup date not working on pod persistent volume
+    #     (username, hashed_password, signup_date)
+    # )
+    cursor.execute( 
+        "INSERT INTO users (username, hashed_password) VALUES (?, ?)",
+        (username, hashed_password)
     )
     conn.commit()
     conn.close()
