@@ -570,13 +570,12 @@ function display_waypoints() {
         
     });
 }
-
 function remove_wp_from_route(lat, lng) {
-
-    waypoint_data_values = waypoint_data_values.filter(wp => wp != lat,lng);
+    waypoint_data_values = waypoint_data_values.filter(
+        wp => wp.lat !== lat || wp.lng !== lng
+    );
     console.log(waypoint_data_values, "removed from route");
     display_waypoints();
-    
 }
 
 document.getElementById("enter_airway_box").onchange = function () {
@@ -1063,9 +1062,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                     
                 });
             })
-            // runway set from dropdown TODO
-            // same for arrival runway and airfield
-            //set_arrival_airfield(data[0].arrival)
             // plot STAR
             if (window.star_waypoints && window.star_waypoints.length > 0) {
                 window.star_waypoints.forEach(marker => map.removeLayer(marker));
@@ -1340,6 +1336,47 @@ document.getElementById("enter_waypoint_box").addEventListener("input", function
                 window.waypoint_markers.push(waypoint_marker);
                 map.panTo([airport.lat, airport.lng]);
 
+            });
+
+            
+                list.appendChild(item);
+            });
+            
+            list.style.display = data.autocorrect_data.length > 0 ? "block" : "none";
+        });
+    }, 200);
+});
+
+// autocomplete airway box
+document.getElementById("enter_airway_box").addEventListener("input", function () {
+    clearTimeout(debounceTimer);  // Reset the timer
+    
+    let query = this.value.trim();
+    if (query.length === 0) {
+        document.getElementById("autocomplete_list_airway").style.display = "none";
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch("/airway_autocomplete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ send_str: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let list = document.getElementById("autocomplete_list_airway");
+            list.innerHTML = "";
+
+            data.autocorrect_data.forEach(airport => {
+                let item = document.createElement("div");
+                item.classList.add("autocomplete-item");
+            
+                item.innerHTML = `<b>${airport.name || "Unknown"}</b>`;
+            
+            item.addEventListener("click", function () {
+                document.getElementById("enter_airway_box").value = airport.name;
+                list.style.display = "none";
             });
 
             

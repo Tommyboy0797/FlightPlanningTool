@@ -12,7 +12,7 @@ steps:
                 "."]
 
     - name: 'gcr.io/cloud-builders/docker'
-      args: ["push", "us-central1-docker.pkg.dev//${PROJECT_ID}/${_IMAGE_NAME}/${_IMAGE_NAME}:latest"]
+      args: ["push", "us-central1-docker.pkg.dev/${PROJECT_ID}/${_IMAGE_NAME}/${_IMAGE_NAME}:latest"]
 
     - name: "gcr.io/cloud-builders/gke-deploy"
       args:

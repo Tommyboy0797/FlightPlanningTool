@@ -5,7 +5,8 @@ import numpy as np
 print(os.getcwd())
 from Backend.py_utils import *
 
-def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor):
+def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
+
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/min-field-length-for-max-effort-to"
     DIG_FILE_NAME = "amax-eff-uncorr-field-length.dig"
 
@@ -16,12 +17,13 @@ def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor):
         yVector = [row [1] for row in chart.curve(c)]
         xVector = [row [0] for row in chart.curve(c)]
         scale_number = float(re.sub('[^0-9]','', c.replace("-", "_")))
-
+    
         data[scale_number] = {
             "x": xVector,
             "y": yVector
         }
 
+                
     x_values = []
     y_values = []
     
@@ -30,7 +32,7 @@ def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor):
         x_values.append(this_gross_weight)
         y_values.append(round(np.interp(takeoff_factor, this_scales_data["x"], this_scales_data["y"]), 2))       
     return round(np.interp(gross_wt, x_values, y_values), 2) * 1000
-    
 
+    
 
     

@@ -250,6 +250,16 @@ def airfield_autocomplete(entered_text: SendString):
 
     return result
 
+
+@app.post("/airway_autocomplete") # autocomplete airway text
+def airway_autocomplete(entered_text: SendString):
+
+    result = {
+        "autocorrect_data": database_handler.search_airway(entered_text.send_str)
+    }
+
+    return result
+
 @app.post("/weather_info")
 def weather_info(station_icao: SendString):
     altimeter = weather.get_wx_info(station_icao.send_str, 'altimeter')
@@ -266,7 +276,7 @@ def weather_info(station_icao: SendString):
         "station": station_icao.send_str,
         "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} {altimeter_val}", 
         "temp": f"{weather.get_wx_info(station_icao.send_str, 'temperature')}°C",
-        "humidity": weather.get_wx_info(station_icao.send_str, "humidity"),
+        "humidity": round(weather.get_wx_info(station_icao.send_str, "humidity"), 3),
         "dewpoint": f"{weather.get_wx_info(station_icao.send_str, 'dew_point')}°C", 
         "visibility": f"{weather.get_wx_info(station_icao.send_str, 'visibility')} SM", 
         "clouds": weather.get_wx_info(station_icao.send_str, "clouds"),
