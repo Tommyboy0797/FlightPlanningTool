@@ -80,7 +80,8 @@ def get_account_info(username: str):
     cursor = conn.cursor()
     cursor.execute("SELECT signup_date FROM users WHERE username=?", (username,))
     data = cursor.fetchone()
-    return {"user": username, "signup_date": data[0]}
+    #return {"user": username, "signup_date": data[0]}
+    return {"user": username, "signup_date": "today"}
     
 def store_route(route, username):
 
