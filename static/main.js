@@ -1044,7 +1044,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             .then(data => {
                 
                 if (data.selected_sid_points.length >= 1) { // only do this when there IS infact a SID
-                    console.log("There is a SID!");
                     data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
                     final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
                 };
@@ -1088,7 +1087,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                 if (data.selected_star_data.length > 0){ // only do this when there is STARs
                     data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
                     star_init_point = data.selected_star_data[0]; // access first STAR point
-                    console.log(star_init_point)
                 }
                 else { // if there is no star data
                     fetch("/return_arrival_airport", {
