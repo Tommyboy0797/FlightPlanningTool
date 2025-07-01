@@ -241,6 +241,25 @@ def airfield_autocomplete(entered_text: SendString):
 
     return result
 
+@app.post("/waypoint_autocomplete") # autocomplete waypoint text
+def airfield_autocomplete(entered_text: SendString):
+
+    result = {
+        "autocorrect_data": database_handler.search_waypoint(entered_text.send_str)
+    }
+
+    return result
+
+
+@app.post("/airway_autocomplete") # autocomplete airway text
+def airway_autocomplete(entered_text: SendString):
+
+    result = {
+        "autocorrect_data": database_handler.search_airway(entered_text.send_str)
+    }
+
+    return result
+
 @app.post("/weather_info")
 def weather_info(station_icao: SendString):
     altimeter = weather.get_wx_info(station_icao.send_str, 'altimeter')
@@ -361,10 +380,14 @@ async def signup(username: str = Form(...), password: str = Form(...)):
         raise HTTPException(status_code=400, detail="Username already exists")
 
     hashed_password = db_tools.hash_password(password)
-    signup_date = str(date.today())
-    cursor.execute(
-        "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)",
-        (username, hashed_password, signup_date)
+    #signup_date = str(date.today())
+    # cursor.execute(
+    #     "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)", ## signup date not working on pod persistent volume
+    #     (username, hashed_password, signup_date)
+    # )
+    cursor.execute( 
+        "INSERT INTO users (username, hashed_password) VALUES (?, ?)",
+        (username, hashed_password)
     )
     conn.commit()
     conn.close()

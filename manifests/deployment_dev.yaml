@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - env:
-        image: gcr.io/dcs-analytics-257714/flightplanning:dev
+        image: us-central1-docker.pkg.dev/dcs-analytics-257714/flightplanning/flightplanning:dev
         command: ['uvicorn', "server:app", "--host", "0.0.0.0", "--port", "8000"]
         name: fp-site-dev
         imagePullPolicy: Always

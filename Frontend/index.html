@@ -353,10 +353,16 @@
                         </form>
 
                         <b>GPS Waypoint Viewer</b>
-                        <input type="text" class="form-control mb-2" id="enter_waypoint_box" placeholder="Enter Waypoint Name">
+                        <form id="enter_wpt" class="mb-3">
+                            <input type="text" id="enter_waypoint_box" placeholder="Enter waypoint name">
+                            <div id="autocomplete_list_wpt" class="autocomplete-dropdown"></div>                            
+                        </form>
 
                         <b>Airway Viewer</b>
-                        <input type="text" class="form-control" id="enter_airway_box" placeholder="Enter Airway Name">
+                        <form id="enter_airway" class="mb-3">
+                            <input type="text" id="enter_airway_box" placeholder="Enter airway name">
+                            <div id="autocomplete_list_airway" class="autocomplete-dropdown"></div>                            
+                        </form>
                         <input type="range" min="0" max="100" value="100" id="fuel_slider"><b>Fuel:</b><b id="fuel_value">100</b>
                         <br>
                     </div>
