@@ -78,7 +78,7 @@ def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_sl
     p9 = refusal.get_refusal_p9(p8, asoper) 
     respo = {
         "uncorrected_max_eff_TO_dist_text": "Uncorrected maximum effort takeoff distance: ",
-        "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(gwt, get_to_factor, perf_calc.data),
+        "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(gwt, get_to_factor),
         "gross_weight_text": round(gwt * 1000),
         "takeoff_factor_text": get_to_factor,
         "rotation_speed_calculated": rotation_calc.get_rotation_speed(gwt, get_to_factor),
@@ -241,6 +241,25 @@ def airfield_autocomplete(entered_text: SendString):
 
     return result
 
+@app.post("/waypoint_autocomplete") # autocomplete waypoint text
+def airfield_autocomplete(entered_text: SendString):
+
+    result = {
+        "autocorrect_data": database_handler.search_waypoint(entered_text.send_str)
+    }
+
+    return result
+
+
+@app.post("/airway_autocomplete") # autocomplete airway text
+def airway_autocomplete(entered_text: SendString):
+
+    result = {
+        "autocorrect_data": database_handler.search_airway(entered_text.send_str)
+    }
+
+    return result
+
 @app.post("/weather_info")
 def weather_info(station_icao: SendString):
     altimeter = weather.get_wx_info(station_icao.send_str, 'altimeter')
@@ -257,7 +276,7 @@ def weather_info(station_icao: SendString):
         "station": station_icao.send_str,
         "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} {altimeter_val}", 
         "temp": f"{weather.get_wx_info(station_icao.send_str, 'temperature')}°C",
-        "humidity": weather.get_wx_info(station_icao.send_str, "humidity"),
+        "humidity": round(weather.get_wx_info(station_icao.send_str, "humidity"), 3),
         "dewpoint": f"{weather.get_wx_info(station_icao.send_str, 'dew_point')}°C", 
         "visibility": f"{weather.get_wx_info(station_icao.send_str, 'visibility')} SM", 
         "clouds": weather.get_wx_info(station_icao.send_str, "clouds"),
@@ -361,10 +380,14 @@ async def signup(username: str = Form(...), password: str = Form(...)):
         raise HTTPException(status_code=400, detail="Username already exists")
 
     hashed_password = db_tools.hash_password(password)
-    signup_date = str(date.today())
-    cursor.execute(
-        "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)",
-        (username, hashed_password, signup_date)
+    #signup_date = str(date.today())
+    # cursor.execute(
+    #     "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)", ## signup date not working on pod persistent volume
+    #     (username, hashed_password, signup_date)
+    # )
+    cursor.execute( 
+        "INSERT INTO users (username, hashed_password) VALUES (?, ?)",
+        (username, hashed_password)
     )
     conn.commit()
     conn.close()

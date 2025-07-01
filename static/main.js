@@ -598,7 +598,7 @@ document.getElementById("enter_airway_box").onchange = function () {
 
         data.airway_info.forEach(point => {
             let waypoint_marker = L.marker([point.lat, point.lng])
-                .bindPopup(`<b>${point.ident}<br> ${point.route_ident}</b>`)
+                .bindPopup(`<b>${point.ident} <br> <button onclick="add_wp_to_route('${point.route_ident}')">Add to Route</button></b>`)
                 .addTo(map);
             let airway_polyline = L.polyline(data.airway_info, {color: 'purple'}).addTo(map)
             let new_view = map.panTo(new L.LatLng(point.lat, point.lng))
@@ -1044,7 +1044,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
             .then(data => {
                 
                 if (data.selected_sid_points.length >= 1) { // only do this when there IS infact a SID
-                    console.log("There is a SID!");
                     data.selected_sid_points.sort((a, b) => a.sequence_number - b.sequence_number);
                     final_sid_point = data.selected_sid_points[data.selected_sid_points.length - 1] // get the final sid point, and as it starts at 0, sub 1
                 };
@@ -1062,9 +1061,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                     
                 });
             })
-            // runway set from dropdown TODO
-            // same for arrival runway and airfield
-            //set_arrival_airfield(data[0].arrival)
             // plot STAR
             if (window.star_waypoints && window.star_waypoints.length > 0) {
                 window.star_waypoints.forEach(marker => map.removeLayer(marker));
@@ -1091,7 +1087,6 @@ document.getElementById("savedRoutesTable").addEventListener("click", function(e
                 if (data.selected_star_data.length > 0){ // only do this when there is STARs
                     data.selected_star_data.sort((a, b) => a.sequence_number - b.sequence_number);
                     star_init_point = data.selected_star_data[0]; // access first STAR point
-                    console.log(star_init_point)
                 }
                 else { // if there is no star data
                     fetch("/return_arrival_airport", {
@@ -1300,3 +1295,95 @@ function drawCircle(center, radiusMiles) {
         .addTo(map);
 }
 
+
+// autocomplete GPS waypoint box
+document.getElementById("enter_waypoint_box").addEventListener("input", function () {
+    clearTimeout(debounceTimer);  // Reset the timer
+    
+    let query = this.value.trim();
+    if (query.length === 0) {
+        document.getElementById("autocomplete_list_wpt").style.display = "none";
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch("/waypoint_autocomplete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ send_str: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let list = document.getElementById("autocomplete_list_wpt");
+            list.innerHTML = "";
+
+            data.autocorrect_data.forEach(airport => {
+                let item = document.createElement("div");
+                item.classList.add("autocomplete-item");
+            
+                item.innerHTML = `<b>${airport.name || "Unknown"}</b>`;
+            
+            item.addEventListener("click", function () {
+                document.getElementById("enter_waypoint_box").value = airport.name;
+                list.style.display = "none";
+            
+                let waypoint_marker = L.marker([airport.lat, airport.lng])
+                    .bindPopup(`<b>${airport.name} <br> <button onclick="add_wp_to_route('${airport.name}')">Add to Route</button></b>`)
+                    .addTo(map)
+            
+                window.waypoint_markers.push(waypoint_marker);
+                map.panTo([airport.lat, airport.lng]);
+
+            });
+
+            
+                list.appendChild(item);
+            });
+            
+            list.style.display = data.autocorrect_data.length > 0 ? "block" : "none";
+        });
+    }, 200);
+});
+
+// autocomplete airway box
+document.getElementById("enter_airway_box").addEventListener("input", function () {
+    clearTimeout(debounceTimer);  // Reset the timer
+    
+    let query = this.value.trim();
+    if (query.length === 0) {
+        document.getElementById("autocomplete_list_airway").style.display = "none";
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch("/airway_autocomplete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ send_str: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let list = document.getElementById("autocomplete_list_airway");
+            list.innerHTML = "";
+
+            data.autocorrect_data.forEach(airport => {
+                let item = document.createElement("div");
+                item.classList.add("autocomplete-item");
+            
+                item.innerHTML = `<b>${airport.name || "Unknown"}</b>`;
+            
+            item.addEventListener("click", function () {
+                document.getElementById("enter_airway_box").value = airport.name;
+                list.style.display = "none";
+            });
+
+            
+                list.appendChild(item);
+            });
+            
+            list.style.display = data.autocorrect_data.length > 0 ? "block" : "none";
+        });
+    }, 200);
+});
+
+//recent update TEST 15/06/25
