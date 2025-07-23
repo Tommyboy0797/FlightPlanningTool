@@ -3,7 +3,7 @@ from Backend import handle_route
 from math import cos, asin, sqrt, pi
 
 
-def get_small_airfields():
+def get_small_airfields(): 
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -48,7 +48,7 @@ def get_large_airfields():
     return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in all_airports] #return airfield info 
 
 
-def get_sids(origin,runway):
+def get_sids(origin,runway): # get all sids at this airfield (origin) on that runway
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -63,7 +63,7 @@ def get_sids(origin,runway):
     return sids
 
 
-def get_runways(origin):
+def get_runways(origin): # get runways at specific airfield (origin)
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -77,7 +77,7 @@ def get_runways(origin):
 
     return rwys
 
-def get_runway_data(origin, runway):
+def get_runway_data(origin, runway): # get runway data such as length, width, heading and surface
 
     database_path = "database/nav_data.db" # path to database
 
@@ -94,7 +94,7 @@ def get_runway_data(origin, runway):
 
     return [{"length": length_ft, "width": width_ft, "hdg": hdg, "surface": surface} for length_ft, width_ft, hdg, surface in rwys]
 
-def send_sid_points(selectedsid,origin,runway):
+def send_sid_points(selectedsid,origin,runway): # return SID points for that SID, airfield, runway
 
     database_path = "database/nav_data.db" # path to database
 
@@ -129,7 +129,7 @@ def send_sid_points(selectedsid,origin,runway):
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_sid]
 
 
-def get_stars(arrival,runway):
+def get_stars(arrival,runway): # get all stars at this airfield
 
     database_path = "database/nav_data.db" # path to database
 
@@ -146,7 +146,7 @@ def get_stars(arrival,runway):
 
 
 
-def send_star_data(procedure, airport, runway):
+def send_star_data(procedure, airport, runway): # get specific star waypoints
 
     database_path = "database/nav_data.db" # path to database
 
@@ -186,7 +186,7 @@ def send_star_data(procedure, airport, runway):
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_star]
 
 
-def waypoint_search(waypointname):
+def waypoint_search(waypointname): # search for waypoint
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -201,7 +201,7 @@ def waypoint_search(waypointname):
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_identifier, "name": waypoint_name, "usage": waypoint_usage, "icao": icao_code, "area": area_code} for latitude, longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code in waypoint_info]
 
 
-def runway_heading(airfield, runway):
+def runway_heading(airfield, runway): # get heading of runway
 
     database_path = "database/nav_data.db" # path to database
 
@@ -219,7 +219,7 @@ def runway_heading(airfield, runway):
     return runway_hdg
 
 
-def get_airways(airway_number):
+def get_airways(airway_number): # get airway from number
     
     database_path = "database/nav_data.db" # path to database
 
@@ -235,7 +235,7 @@ def get_airways(airway_number):
     return [{"lat": waypoint_latitude, "lng": waypoint_longitude, "ident": waypoint_identifier, "ob_course": outbound_course, "ib_course": inbound_course, "ib_dist": inbound_distance, "route_ident": route_identifier, "seqno": seqno} for waypoint_latitude, waypoint_longitude, waypoint_identifier, outbound_course, inbound_course, inbound_distance, route_identifier, seqno in airway_info]
 
 
-def get_spec_airfield(airfield_name):
+def get_spec_airfield(airfield_name): # get location, icao and type of an airfield from a name
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -249,7 +249,7 @@ def get_spec_airfield(airfield_name):
 
     return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in airfield]
 
-def search_airport(partial_name):
+def search_airport(partial_name): # search airfield from a partial name such as "London hea"
     database_path = "database/nav_data.db"
     connect_to_db = sqlite3.connect(database_path)
     cursor = connect_to_db.cursor()
@@ -303,7 +303,7 @@ def search_waypoint(partial_name):
 
 
 
-def nearby_points(point_lat, point_lng):
+def nearby_points(point_lat, point_lng): # find waypoints nearby to point_lat and point_lng
     database_path = "database/nav_data.db"
     connect_to_db = sqlite3.connect(database_path)
     cursor = connect_to_db.cursor()
@@ -325,7 +325,7 @@ def nearby_points(point_lat, point_lng):
         waypoint_id, waypoint_lat, waypoint_lng = waypoint
         dist = distance(point_lat, point_lng, waypoint_lat, waypoint_lng)
         dist = round(dist)
-        if dist < 20:
+        if dist < 20: # get points under 20 miles
             close_wp.append([waypoint_id,waypoint_lat,waypoint_lng, dist])
     
     return [{"name": name, "lat": lat, "lng": lng, "dist": dist} for name, lat, lng, dist in close_wp]

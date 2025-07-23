@@ -6,7 +6,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-var smallAirportIcon = L.icon({
+
+// BASE64'ed images
+var smallAirportIcon = L.icon({ 
     iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAABgUlEQVR4nIWRzStEURjGf2ecGeZeG8zOR/wL7oaSjYXl4N5SIkqJjJ2FnWwUNiwxStlQ5zY+/gBLWZyy8bGRFBnjKyULMcfCjO6Mwbs5nZ7n97xPvWK6h3/Hc7w40AUsKa2Ogpr8HXJjIJqBMDAJtAH7wN8BruPaAjEPDAPlAekDzEGxX0z3gOd4nUAcWAdmgY6gyY7ZROwIT5dPFwbT4ms/k9dCuTcBjAGHpeD6oSS1fStY1VaTQMwE9XzACDAFPAdFq8aifjCJjEgyqXFeH18BPNdxywoClFY3Sqs54PobrrZoGFxDlkvuUgkyZ9+tqwC7uEF+rgCiVdGvzRWS++0Et6e3QU9WINo9x5OlAjZDMkRd/yrhaJiH3QnShTB8nXUP2IaiMxrMRvY923uzNdpZGaskfZoGUwCfAwvAALDzo4Gv/Xeg+yXzsp8+KYA/gJTBtCutlpVWbQaT/NEg1+MNRGPuMwpcGMyxr/3roMvXvikZYEAKWARaDWYlb/xtPgFd9n9MLLgfqAAAAABJRU5ErkJggg==', // Your base64 data here
 });
 
