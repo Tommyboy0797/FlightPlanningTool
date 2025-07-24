@@ -24,6 +24,13 @@ let selected_waypoints = [];
 let waypoint_data_values = [];
 let distance = 0;
 let custom_waypoint_store = []; // stores custom points { name, lat, lng }
+// Store markers for each airport type
+var smallAirportsMarkers = [];
+var mediumAirportsMarkers = [];
+var largeAirportsMarkers = [];
+let arrivalairport = "";
+let star_init_point = "";
+let debounceTimer;
 
 
 document.getElementById('dataForm').addEventListener('submit', function(e) {
@@ -60,196 +67,191 @@ document.getElementById('dataForm').addEventListener('submit', function(e) {
 });
 
 
-// Store markers for each airport type
-var smallAirportsMarkers = [];
-var mediumAirportsMarkers = [];
-var largeAirportsMarkers = [];
-
 function loadAirports(filters) {
 
-const filterParams = new URLSearchParams(filters);
-fetch(`/fetch_airports?${filterParams}`)
-.then(response => response.json())
-.then(data => {
-    // Initialize marker clusters
-    var smallMarkersCluster = L.markerClusterGroup();
-    var mediumMarkersCluster = L.markerClusterGroup();
-    var largeMarkersCluster = L.markerClusterGroup();
+    const filterParams = new URLSearchParams(filters);
+    fetch(`/fetch_airports?${filterParams}`)
+    .then(response => response.json())
+    .then(data => {
+        // Initialize marker clusters
+        var smallMarkersCluster = L.markerClusterGroup();
+        var mediumMarkersCluster = L.markerClusterGroup();
+        var largeMarkersCluster = L.markerClusterGroup();
 
-    // Add small airports with clustering
-    if (filters.small_ap && data.small_airports) {
-        data.small_airports.forEach(airport => {
-            var marker = L.marker([airport.lat, airport.lng], { icon: smallAirportIcon });
-            marker.bindPopup(`
-                <b>${airport.name} (${airport.type})</b> 
-                <br>
-                <b>${airport.length}</b>
-                <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                <br>
-                <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
-                
-            `);
-            smallMarkersCluster.addLayer(marker);
-        });
-    }
+        // Add small airports with clustering
+        if (filters.small_ap && data.small_airports) {
+            data.small_airports.forEach(airport => {
+                var marker = L.marker([airport.lat, airport.lng], { icon: smallAirportIcon });
+                marker.bindPopup(`
+                    <b>${airport.name} (${airport.type})</b> 
+                    <br>
+                    <b>${airport.length}</b>
+                    <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                    <br>
+                    <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
 
-    // Add medium airports with clustering
-    if (filters.medium_ap && data.medium_airports) {
-        data.medium_airports.forEach(airport => {
-            var marker = L.marker([airport.lat, airport.lng], { icon: mediumAirportIcon });
-            marker.bindPopup(`
-                <b>${airport.name}</b> (${airport.type})<br>
-                <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
-                <br>
-                <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
-            `);
-            mediumMarkersCluster.addLayer(marker);
-        });
-    }
-
-    // Add large airports with clustering
-    if (filters.large_ap && data.large_airports) {
-        data.large_airports.forEach(airport => {
-            var marker = L.marker([airport.lat, airport.lng], { icon: largeAirportIcon });
-            marker.bindPopup(`
-                <b>${airport.name}</b> (${airport.type})<br>
-                <button onclick="set_origin_airfield('${airport.name}')">Set as Departure</button>
-                <br>
-                <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
-            `);
-            largeMarkersCluster.addLayer(marker);
-        });
-    }
-
-    // Clear previous marker clusters
-    map.eachLayer(layer => {
-        if (layer instanceof L.MarkerClusterGroup) {
-            map.removeLayer(layer);
+                `);
+                smallMarkersCluster.addLayer(marker);
+            });
         }
-    });
 
-    // Add all clusters to the map
-    map.addLayer(smallMarkersCluster);
-    map.addLayer(mediumMarkersCluster);
-    map.addLayer(largeMarkersCluster);
-})
-.catch(error => console.error('Error fetching airport data:', error));
-}
+        // Add medium airports with clustering
+        if (filters.medium_ap && data.medium_airports) {
+            data.medium_airports.forEach(airport => {
+                var marker = L.marker([airport.lat, airport.lng], { icon: mediumAirportIcon });
+                marker.bindPopup(`
+                    <b>${airport.name}</b> (${airport.type})<br>
+                    <button onclick="set_origin_airfield('${airport.name}')">Set as Origin</button>
+                    <br>
+                    <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
+                `);
+                mediumMarkersCluster.addLayer(marker);
+            });
+        }
 
-// Update map on form submission
-document.getElementById('filterForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    var filters = {
-        small_ap: document.getElementById('small_ap').checked,
-        medium_ap: document.getElementById('medium_ap').checked,
-        large_ap: document.getElementById('large_ap').checked,
-    };
-    loadAirports(filters);
+        // Add large airports with clustering
+        if (filters.large_ap && data.large_airports) {
+            data.large_airports.forEach(airport => {
+                var marker = L.marker([airport.lat, airport.lng], { icon: largeAirportIcon });
+                marker.bindPopup(`
+                    <b>${airport.name}</b> (${airport.type})<br>
+                    <button onclick="set_origin_airfield('${airport.name}')">Set as Departure</button>
+                    <br>
+                    <button onclick="set_arrival_airfield('${airport.name}')">Set as Arrival</button>
+                `);
+                largeMarkersCluster.addLayer(marker);
+            });
+        }
+
+        // Clear previous marker clusters
+        map.eachLayer(layer => {
+            if (layer instanceof L.MarkerClusterGroup) {
+                map.removeLayer(layer);
+            }
+        });
+
+        // Add all clusters to the map
+        map.addLayer(smallMarkersCluster);
+        map.addLayer(mediumMarkersCluster);
+        map.addLayer(largeMarkersCluster);
+    })
+    .catch(error => console.error('Error fetching airport data:', error));
+    }
+
+    // Update map on form submission
+    document.getElementById('filterForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var filters = {
+            small_ap: document.getElementById('small_ap').checked,
+            medium_ap: document.getElementById('medium_ap').checked,
+            large_ap: document.getElementById('large_ap').checked,
+        };
+        loadAirports(filters);
 });
 
 // Load initial airports with default filters
 loadAirports({ small_ap: true, medium_ap: true, large_ap: true, show_sids: true, });
 
-enter_rwy_dropdown = document.getElementById("enterRwy");
-enter_sid_dropdown = document.getElementById("chooseSid");
-enter_arr_runway = document.getElementById("chooseArrRw");
+    enter_rwy_dropdown = document.getElementById("enterRwy");
+    enter_sid_dropdown = document.getElementById("chooseSid");
+    enter_arr_runway = document.getElementById("chooseArrRw");
 
-let dep_ap = "0";
-let final_sid_point = "";
+    let dep_ap = "0";
+    let final_sid_point = "";
 
-function set_origin_airfield(airportname){
-    dep_ap = airportname;
+    function set_origin_airfield(airportname){
+        dep_ap = airportname;
 
-    fetch("/set_origin", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({send_str: airportname}), // send airport name as the body
-    })
-
-    fetch("/weather_info", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({send_str: airportname}), // send airport name as the body
-    })
-
-    .then(response => response.json())
-    .then(data => {
-
-        document.getElementById("rawMetar").innerText = data.raw_metar
-        document.getElementById("metarTime").innerText = data.time
-        document.getElementById("metarRemarks").innerText = data.remarks
-        document.getElementById("metarStation").innerText = data.station
-        document.getElementById("metarAltimeter").innerText = data.altimeter
-        document.getElementById("metarTemp").innerHTML = data.temp
-        document.getElementById("metarHumidity").innerText = data.humidity
-        document.getElementById("metarDewpoint").innerText = data.dewpoint
-        document.getElementById("metarVisibility").innerText = data.visibility
-        document.getElementById("metarClouds").innerText = data.clouds
-        document.getElementById("metarWind").innerText = data.wind
-    })
-
-
-    fetch(`/get_runways`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({send_str: airportname}), // send airport name as the body
-    })
-
-    .then(response => response.json())
-    .then(data => {
-
-        function drawCircle(center, radiusMiles) {
-            let radiusMeters = radiusMiles * 1609.34; // Convert miles to meters
-
-            if (window.originCircle) {
-                map.removeLayer(window.originCircle);
-            }
-        
-            window.originCircle = L.circle([center.lat, center.lng], {
-                color: "black",
-                fillColor: "white",
-                fillOpacity: 0,
-                radius: radiusMeters
-            }).addTo(map);
-        }
-
-
-        let runways_list = data.origin_runways;
-
-        let range = 2440 * (document.getElementById("fuel_slider").value / 100);
-
-        enter_rwy_dropdown.innerHTML = "";
-
-        runways_list.forEach(runway => {
-            enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
+        fetch("/set_origin", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+            body: JSON.stringify({send_str: airportname}), // send airport name as the body
         })
 
-        dep_rwy_change.call(enter_rwy_dropdown); // make sure the function calls straight away so that the user doesnt have to select a runway, then back to their desired to display SIDs
+        fetch("/weather_info", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+            body: JSON.stringify({send_str: airportname}), // send airport name as the body
+        })
 
-        let center = { lat: data.af_latlng[0].lat, lng: data.af_latlng[0].lng };
+        .then(response => response.json())
+        .then(data => {
 
-        document.getElementById("show_rr").onchange = function () {
-            if (this.checked) {
-                let range = 2440 * (document.getElementById("fuel_slider").value / 100);
-                drawCircle(center,range);
-            }
-            else {
+            document.getElementById("rawMetar").innerText = data.raw_metar
+            document.getElementById("metarTime").innerText = data.time
+            document.getElementById("metarRemarks").innerText = data.remarks
+            document.getElementById("metarStation").innerText = data.station
+            document.getElementById("metarAltimeter").innerText = data.altimeter
+            document.getElementById("metarTemp").innerHTML = data.temp
+            document.getElementById("metarHumidity").innerText = data.humidity
+            document.getElementById("metarDewpoint").innerText = data.dewpoint
+            document.getElementById("metarVisibility").innerText = data.visibility
+            document.getElementById("metarClouds").innerText = data.clouds
+            document.getElementById("metarWind").innerText = data.wind
+        })
+
+
+        fetch(`/get_runways`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
+            body: JSON.stringify({send_str: airportname}), // send airport name as the body
+        })
+
+        .then(response => response.json())
+        .then(data => {
+
+            function drawCircle(center, radiusMiles) {
+                let radiusMeters = radiusMiles * 1609.34; // Convert miles to meters
+
                 if (window.originCircle) {
                     map.removeLayer(window.originCircle);
                 }
+            
+                window.originCircle = L.circle([center.lat, center.lng], {
+                    color: "black",
+                    fillColor: "white",
+                    fillOpacity: 0,
+                    radius: radiusMeters
+                }).addTo(map);
             }
-        }
 
-        document.getElementById("fuel_slider").oninput = function(){
-            document.getElementById("fuel_value").innerText = document.getElementById("fuel_slider").value;
+
+            let runways_list = data.origin_runways;
+
             let range = 2440 * (document.getElementById("fuel_slider").value / 100);
-            if (document.getElementById("show_rr").checked) {
-                drawCircle(center,range);
-            }
-        }
 
-    })
-    .catch(error => console.error('Error fetching runway data:', error));
+            enter_rwy_dropdown.innerHTML = "";
+
+            runways_list.forEach(runway => {
+                enter_rwy_dropdown.options[enter_rwy_dropdown.options.length] = new Option(runway, runway);
+            })
+
+            dep_rwy_change.call(enter_rwy_dropdown); // make sure the function calls straight away so that the user doesnt have to select a runway, then back to their desired to display SIDs
+
+            let center = { lat: data.af_latlng[0].lat, lng: data.af_latlng[0].lng };
+
+            document.getElementById("show_rr").onchange = function () {
+                if (this.checked) {
+                    let range = 2440 * (document.getElementById("fuel_slider").value / 100);
+                    drawCircle(center,range);
+                }
+                else {
+                    if (window.originCircle) {
+                        map.removeLayer(window.originCircle);
+                    }
+                }
+            }
+
+            document.getElementById("fuel_slider").oninput = function(){
+                document.getElementById("fuel_value").innerText = document.getElementById("fuel_slider").value;
+                let range = 2440 * (document.getElementById("fuel_slider").value / 100);
+                if (document.getElementById("show_rr").checked) {
+                    drawCircle(center,range);
+                }
+            }
+
+        })
+        .catch(error => console.error('Error fetching runway data:', error));
 };
 
 function dep_rwy_change () {
@@ -328,8 +330,6 @@ document.getElementById("chooseSid").onchange = function () {
     })
 };
 
-let arrivalairport = "";
-let star_init_point = "";
 
 function set_arrival_airfield(arrival_field) {
     arrivalairport = arrival_field
@@ -653,7 +653,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-let debounceTimer;
 document.getElementById("enter_airfield_box").addEventListener("input", function () {
     clearTimeout(debounceTimer);  // Reset the timer
     
@@ -1389,5 +1388,3 @@ document.getElementById("enter_airway_box").addEventListener("input", function (
         });
     }, 200);
 });
-
-//recent update TEST 15/06/25
