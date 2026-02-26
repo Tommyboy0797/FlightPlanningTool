@@ -5,7 +5,7 @@ import numpy as np
 print(os.getcwd())
 from Backend.py_utils import *
 
-def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor, data):
+def try_get_uncorrected_max_eff_field_length(gross_wt, takeoff_factor):
 
     TOP_FOLDER = "Backend/chart_dig/completed-takeoff/min-field-length-for-max-effort-to"
     DIG_FILE_NAME = "amax-eff-uncorr-field-length.dig"
