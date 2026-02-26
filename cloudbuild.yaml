@@ -1,5 +1,5 @@
 steps:
-  # Build image
+  # Build the image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - build
@@ -7,11 +7,9 @@ steps:
       - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
       - -t
       - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:latest'
-      - -f
-      - '${_DOCKERFILE_DIR}/Dockerfile'
-      - '.'
+      - .
 
-  # Push image
+  # Push the image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
@@ -38,10 +36,3 @@ timeout: 1200s
 
 options:
   logging: CLOUD_LOGGING_ONLY
-
-substitutions:
-  _AR_HOSTNAME: "europe-west1-docker.pkg.dev"
-  _AR_REPOSITORY: "cloud-run-source-deploy"
-  _DEPLOY_REGION: "europe-west1"
-  _SERVICE_NAME: "flightplanningtool"
-  _DOCKERFILE_DIR: "."
