@@ -1,40 +1,32 @@
 steps:
-  # Build image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - build
       - -t
-      - '${_AR_HOSTNAME}/${_AR_PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
       - -t
-      - '${_AR_HOSTNAME}/${_AR_PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:latest'
-      - -f
-      - '${_DOCKERFILE_DIR}/Dockerfile'
-      - '.'
-
-  # Push image
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - push
-      - '${_AR_HOSTNAME}/${_AR_PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:latest'
+      - .
 
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
-      - '${_AR_HOSTNAME}/${_AR_PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:latest'
+      - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
 
-  # Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:latest'
+
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - run
       - deploy
       - '${_SERVICE_NAME}'
-      - '--image=${_AR_HOSTNAME}/${_AR_PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '--image=${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
       - '--region=${_DEPLOY_REGION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
-
-substitutions:
-  _DOCKERFILE_DIR: "."
 
 timeout: 1200s
