@@ -26,4 +26,4 @@ COPY ./static /app/static
 ADD server.py ./
 
 # Set default command that should be executed when container starts up
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8080"]
