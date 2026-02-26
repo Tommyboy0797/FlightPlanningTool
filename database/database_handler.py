@@ -4,6 +4,8 @@ from math import cos, asin, sqrt, pi
 
 
 def get_small_airfields(): 
+    """load small airfields from database"""
+
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -19,6 +21,9 @@ def get_small_airfields():
 
 
 def get_medium_airfields():
+    """load medium airfields from database"""
+
+
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -34,6 +39,8 @@ def get_medium_airfields():
 
 
 def get_large_airfields():
+    """load large airfields from database"""
+
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -48,7 +55,9 @@ def get_large_airfields():
     return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in all_airports] #return airfield info 
 
 
-def get_sids(origin,runway): # get all sids at this airfield (origin) on that runway
+def get_sids(origin,runway):
+    """get all sids at this airfield (origin) on that runway"""
+
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -63,7 +72,9 @@ def get_sids(origin,runway): # get all sids at this airfield (origin) on that ru
     return sids
 
 
-def get_runways(origin): # get runways at specific airfield (origin)
+def get_runways(origin):
+    """get runways at specific airfield (origin)"""
+
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -77,7 +88,8 @@ def get_runways(origin): # get runways at specific airfield (origin)
 
     return rwys
 
-def get_runway_data(origin, runway): # get runway data such as length, width, heading and surface
+def get_runway_data(origin, runway): 
+    """get runway data such as length, width, heading and surface"""
 
     database_path = "database/nav_data.db" # path to database
 
@@ -94,7 +106,8 @@ def get_runway_data(origin, runway): # get runway data such as length, width, he
 
     return [{"length": length_ft, "width": width_ft, "hdg": hdg, "surface": surface} for length_ft, width_ft, hdg, surface in rwys]
 
-def send_sid_points(selectedsid,origin,runway): # return SID points for that SID, airfield, runway
+def send_sid_points(selectedsid,origin,runway):
+    """return SID points for that SID, airfield, runway"""
 
     database_path = "database/nav_data.db" # path to database
 
@@ -129,7 +142,8 @@ def send_sid_points(selectedsid,origin,runway): # return SID points for that SID
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_sid]
 
 
-def get_stars(arrival,runway): # get all stars at this airfield
+def get_stars(arrival,runway):
+    """get all stars at this airfield"""
 
     database_path = "database/nav_data.db" # path to database
 
@@ -146,7 +160,8 @@ def get_stars(arrival,runway): # get all stars at this airfield
 
 
 
-def send_star_data(procedure, airport, runway): # get specific star waypoints
+def send_star_data(procedure, airport, runway):
+    """get specific star waypoints"""
 
     database_path = "database/nav_data.db" # path to database
 
@@ -186,7 +201,9 @@ def send_star_data(procedure, airport, runway): # get specific star waypoints
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_ident, "sequence_number": seqno} for latitude, longitude, waypoint_ident, seqno in selected_star]
 
 
-def waypoint_search(waypointname): # search for waypoint
+def waypoint_search(waypointname):
+    """search for waypoint"""
+
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -201,7 +218,8 @@ def waypoint_search(waypointname): # search for waypoint
     return [{"lat": latitude, "lng": longitude, "ident": waypoint_identifier, "name": waypoint_name, "usage": waypoint_usage, "icao": icao_code, "area": area_code} for latitude, longitude, waypoint_identifier, waypoint_name, waypoint_usage, icao_code, area_code in waypoint_info]
 
 
-def runway_heading(airfield, runway): # get heading of runway
+def runway_heading(airfield, runway):
+    """get heading of runway"""
 
     database_path = "database/nav_data.db" # path to database
 
@@ -219,7 +237,8 @@ def runway_heading(airfield, runway): # get heading of runway
     return runway_hdg
 
 
-def get_airways(airway_number): # get airway from number
+def get_airways(airway_number): 
+    """get airway from number"""
     
     database_path = "database/nav_data.db" # path to database
 
@@ -235,7 +254,9 @@ def get_airways(airway_number): # get airway from number
     return [{"lat": waypoint_latitude, "lng": waypoint_longitude, "ident": waypoint_identifier, "ob_course": outbound_course, "ib_course": inbound_course, "ib_dist": inbound_distance, "route_ident": route_identifier, "seqno": seqno} for waypoint_latitude, waypoint_longitude, waypoint_identifier, outbound_course, inbound_course, inbound_distance, route_identifier, seqno in airway_info]
 
 
-def get_spec_airfield(airfield_name): # get location, icao and type of an airfield from a name
+def get_spec_airfield(airfield_name):
+    """get location, icao and type of an airfield from a name"""
+
     database_path = "database/nav_data.db" # path to database
 
     connect_to_db = sqlite3.connect(database_path) # connect to database using mentioned path
@@ -249,7 +270,9 @@ def get_spec_airfield(airfield_name): # get location, icao and type of an airfie
 
     return [{"lat": lat, "lng": lng, "name": icao, "type": type} for lat, lng, icao, type in airfield]
 
-def search_airport(partial_name): # search airfield from a partial name such as "London hea"
+def search_airport(partial_name):
+    """search airfield from a partial name such as 'London hea'"""
+
     database_path = "database/nav_data.db"
     connect_to_db = sqlite3.connect(database_path)
     cursor = connect_to_db.cursor()
@@ -275,8 +298,9 @@ def search_airport(partial_name): # search airfield from a partial name such as 
     return [{"name": name, "icao": icao, "type": type,} for name, icao, type in results]
 
 
-# autocorrect suggestions for gps waypoint box
 def search_waypoint(partial_name):
+    """autocorrect suggestions for gps waypoint box"""
+
     database_path = "database/nav_data.db"
     connect_to_db = sqlite3.connect(database_path)
     cursor = connect_to_db.cursor()
@@ -303,7 +327,9 @@ def search_waypoint(partial_name):
 
 
 
-def nearby_points(point_lat, point_lng): # find waypoints nearby to point_lat and point_lng
+def nearby_points(point_lat, point_lng):
+    """find waypoints nearby to point_lat and point_lng"""
+
     database_path = "database/nav_data.db"
     connect_to_db = sqlite3.connect(database_path)
     cursor = connect_to_db.cursor()

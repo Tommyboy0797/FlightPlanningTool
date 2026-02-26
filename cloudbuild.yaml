@@ -1,4 +1,5 @@
 steps:
+  # Build the image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - build
@@ -8,6 +9,7 @@ steps:
       - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:latest'
       - .
 
+  # Push the image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
@@ -18,6 +20,7 @@ steps:
       - push
       - '${_AR_HOSTNAME}/${PROJECT_ID}/${_AR_REPOSITORY}/${_SERVICE_NAME}:latest'
 
+  # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -30,3 +33,6 @@ steps:
       - '--allow-unauthenticated'
 
 timeout: 1200s
+
+options:
+  logging: CLOUD_LOGGING_ONLY
