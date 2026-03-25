@@ -10,9 +10,9 @@ def calc_winds(runwayhdg,windhdg):
     if not runwayhdg or not runwayhdg[0]:
         runwayhdg = [[0]] # default north if there is not a selected runway yet
         
-    runwayhdg = int(runwayhdg[0][0]) # runwayhdg is a list, we get out a tuple with the first [0], then the value with the second
+    runwayhdg = float(runwayhdg[0][0]) # runwayhdg is a list, we get out a tuple with the first [0], then the value with the second
 
-    windhdg = int(windhdg)
+    windhdg = float(windhdg)
 
     tolerance = 30 # degrees of tolerance
 
