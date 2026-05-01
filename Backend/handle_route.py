@@ -10,7 +10,6 @@ def build_route(origin_airfield, waypoint, selected_runway,selected_sid,selected
             route_parts.append(selected_sid)
 
     if waypoint:
-
         route_parts.extend(waypoint)
 
     if selected_star:

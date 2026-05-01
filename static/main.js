@@ -366,31 +366,31 @@ function display_star () {
     fetch("/handle_stars", {
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
-        body: JSON.stringify({selected_runway: {send_str: this.value},arrival_airfield: {send_str: arrivalairport}}), 
+        body: JSON.stringify({selected_runway: {send_str: this.value},arrival_airfield: {send_str: arrivalairport}}), // send correctly structured JSON
     })
      
-    .then(response => response.json())
-    .then(data => {
+    .then(response => response.json()) // wait for json response
+    .then(data => { // when recieved, use data and:
 
-        chooseArrStar.innerHTML = "";
+        chooseArrStar.innerHTML = ""; //clear box
 
         data.arrival_stars.forEach(star => {
-            chooseArrStar.options[chooseArrStar.options.length] = new Option(star, star);
+            chooseArrStar.options[chooseArrStar.options.length] = new Option(star, star); // populate the dropdown with STARs
         })
 
     })
 }
 
-document.getElementById("chooseArrStar").onchange = function () {
+document.getElementById("chooseArrStar").onchange = function () { // when the user clicks on a STAR from the dropdown:
 
     if (window.star_waypoints && window.star_waypoints.length > 0) {
-        window.star_waypoints.forEach(marker => map.removeLayer(marker));
+        window.star_waypoints.forEach(marker => map.removeLayer(marker)); // remove any old STARs from the map to declutter
     }
     let previousPoint = null;
     // Reset the marker array
     window.star_waypoints = [];
 
-    fetch("/send_star_data", {
+    fetch("/send_star_data", { // fetch data
         method: "POST",
         headers: {"Content-Type": "application/json"}, //tell the server its recieving json data
         body: JSON.stringify({selected_star: {send_str: this.value}, arrival_airfield: {send_str: arrivalairport}, arrival_runway: {send_str: document.getElementById("chooseArrRw").value}}), 
@@ -407,11 +407,11 @@ document.getElementById("chooseArrStar").onchange = function () {
             star_init_point = data.selected_star_data[0]; // access first STAR point
         };
 
-        data.selected_star_data.forEach(point => {
-            let star_waypoint = L.marker([point.lat, point.lng])
-                .bindPopup(`<b>${point.ident}</b>`)
+        data.selected_star_data.forEach(point => { // plot each point on the map
+            let star_waypoint = L.marker([point.lat, point.lng]) // at lat and long retrieved from DB
+                .bindPopup(`<b>${point.ident}</b>`) // add the WP name for each GPS point in the star, when the point is clicked.
                 .addTo(map);
-            let star_lines = L.polyline(data.selected_star_data, { color: "red"}).addTo(map);
+            let star_lines = L.polyline(data.selected_star_data, { color: "red"}).addTo(map); // join up the points with a red line, to aid visualisation
             if (previousPoint) {
                 distance += L.latLng(point.lat, point.lng).distanceTo(L.latLng(previousPoint.lat, previousPoint.lng));
             }

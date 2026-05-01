@@ -143,7 +143,7 @@ def send_sid_points(selectedsid,origin,runway):
 
 
 def get_stars(arrival,runway):
-    """get all stars at this airfield"""
+    """get all stars at this airfield and return to endpoint"""
 
     database_path = "database/nav_data.db" # path to database
 

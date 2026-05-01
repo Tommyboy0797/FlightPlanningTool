@@ -61,32 +61,32 @@ def healthcheck():
 # endpoint to recieve value for gross weight
 @app.get("/get_data") # mailbox (what we are listening on), get is request type -> serving get 
 def handle_data(request: Request,gwt,get_to_factor,get_rwy_available, get_rwy_slope, rsc, rcr, atcsoper, asoper, dragindex, origin, runwy):
-    gwt = float(gwt)
+    gwt = float(gwt) # set gross weight to a float value to allow for not whole values
 
-    rwy_hdg = database_handler.runway_heading(origin, runwy)
-    windspeed = wind_calc.get_wind_speed(origin)
-    tail_or_head = wind_calc.calc_winds(rwy_hdg, wind_calc.get_wind_hdg(origin))
+    rwy_hdg = database_handler.runway_heading(origin, runwy) # get runway heading from the database for the origin airfield and selected runway
+    windspeed = wind_calc.get_wind_speed(origin) # get wind speeds at origin airfield
+    tail_or_head = wind_calc.calc_winds(rwy_hdg, wind_calc.get_wind_hdg(origin)) # calculate if wind is a head or tail wind at origin based off of runway heading
 
-    p1 = refusal.get_refusal_p1(get_to_factor, get_rwy_available)
-    p2 = refusal.get_refusal_p2(p1, gwt)
-    p3 = refusal.get_refusal_p3(p2, get_rwy_slope)
-    p4 = refusal.get_refusal_p4(p3, windspeed, tail_or_head)
-    p5 = refusal.get_refusal_p5(p4, dragindex)
-    p6 = refusal.get_refusal_p6(p5, rcr)
-    p7 = refusal.get_refusal_p7(p6, rsc)
-    p8 = refusal.get_refusal_p8(p7, atcsoper)
-    p9 = refusal.get_refusal_p9(p8, asoper) 
+    p1 = refusal.get_refusal_p1(get_to_factor, get_rwy_available) # refusal speed part 1
+    p2 = refusal.get_refusal_p2(p1, gwt) # refusal speed part 2
+    p3 = refusal.get_refusal_p3(p2, get_rwy_slope) # refusal speed part 3
+    p4 = refusal.get_refusal_p4(p3, windspeed, tail_or_head) # refusal speed part 4
+    p5 = refusal.get_refusal_p5(p4, dragindex) # refusal speed part 5
+    p6 = refusal.get_refusal_p6(p5, rcr) # refusal speed part 6
+    p7 = refusal.get_refusal_p7(p6, rsc) # refusal speed part 7
+    p8 = refusal.get_refusal_p8(p7, atcsoper) # refusal speed part 8
+    p9 = refusal.get_refusal_p9(p8, asoper) # refusal speed part 9 - FULLY CORRECTED HERE
     respo = {
         "uncorrected_max_eff_TO_dist_text": "Uncorrected maximum effort takeoff distance: ",
         "uncorrected_max_eff_TO_dist": perf_calc.try_get_uncorrected_max_eff_field_length(gwt, get_to_factor),
-        "gross_weight_text": round(gwt * 1000),
+        "gross_weight_text": round(gwt * 1000), # grossweight value, multiplied by 1000 in order to display correctly, rather than the 100s number the function takes
         "takeoff_factor_text": get_to_factor,
         "rotation_speed_calculated": rotation_calc.get_rotation_speed(gwt, get_to_factor),
         "runway_avail": get_rwy_available,
         "uncorrected_refusal_test": refusal.get_refusal_p1(get_to_factor, get_rwy_available),
         "uncorrected_refusal_test_p2": refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt),
         "partially_corrected_refusal_p3": refusal.get_refusal_p3(refusal.get_refusal_p2(refusal.get_refusal_p1(get_to_factor, get_rwy_available), gwt), get_rwy_slope),
-        "corrected_refusal_speed": p9,
+        "corrected_refusal_speed": p9, # fully corrected refusal speed.
     }
        
     return respo
@@ -165,20 +165,20 @@ def return_arrival_airport(arrival_airfield: SendString):
 
 
 @app.post("/handle_stars")
-def handle_stars(selected_runway: SendString, arrival_airfield: SendString):
+def handle_stars(selected_runway: SendString, arrival_airfield: SendString): # takes the selected airfield for arrival, and the runway at said airfield
 
     star_data = {
-        "arrival_stars": database_handler.get_stars(arrival_airfield.send_str, selected_runway.send_str),
+        "arrival_stars": database_handler.get_stars(arrival_airfield.send_str, selected_runway.send_str), # passes the airfield and runway into DB function, gets STARs list back in return
     }
 
 
     return star_data
 
 @app.post("/send_star_data")
-def send_star_data(selected_star: SendString, arrival_airfield: SendString, arrival_runway: SendString):
+def send_star_data(selected_star: SendString, arrival_airfield: SendString, arrival_runway: SendString): # takes the STAR name, airfield and runway
 
     star_points = {
-        "selected_star_data": database_handler.send_star_data(selected_star.send_str, arrival_airfield.send_str, arrival_runway.send_str)
+        "selected_star_data": database_handler.send_star_data(selected_star.send_str, arrival_airfield.send_str, arrival_runway.send_str) 
     }
     return star_points
 
@@ -264,7 +264,7 @@ def airway_autocomplete(entered_text: SendString):
 def weather_info(station_icao: SendString):
     altimeter = weather.get_wx_info(station_icao.send_str, 'altimeter')
 
-    if altimeter < 50:
+    if altimeter < 50: # sometimes the value is formatted in inHg rather than hPa, this adjusts the suffix
         altimeter_val = "inHg"
     else:
         altimeter_val = "hPa"
@@ -274,13 +274,13 @@ def weather_info(station_icao: SendString):
         "time": weather.get_wx_info(station_icao.send_str, "time"),
         "remarks": weather.get_wx_info(station_icao.send_str, "remarks"),
         "station": station_icao.send_str,
-        "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} {altimeter_val}", 
-        "temp": f"{weather.get_wx_info(station_icao.send_str, 'temperature')}°C",
-        "humidity": round(weather.get_wx_info(station_icao.send_str, "humidity"), 3),
-        "dewpoint": f"{weather.get_wx_info(station_icao.send_str, 'dew_point')}°C", 
+        "altimeter": f"{weather.get_wx_info(station_icao.send_str, 'altimeter')} {altimeter_val}",  # altimeter value + correct suffix
+        "temp": f"{weather.get_wx_info(station_icao.send_str, 'temperature')}°C", # correct degrees c suffix
+        "humidity": round(weather.get_wx_info(station_icao.send_str, "humidity"), 3), # round to 3dp.
+        "dewpoint": f"{weather.get_wx_info(station_icao.send_str, 'dew_point')}°C", # correct degrees c suffix
         "visibility": f"{weather.get_wx_info(station_icao.send_str, 'visibility')} SM", 
         "clouds": weather.get_wx_info(station_icao.send_str, "clouds"),
-        "wind": f"{wind_calc.get_wind_hdg(station_icao.send_str)} / {wind_calc.get_wind_speed(station_icao.send_str)}"
+        "wind": f"{wind_calc.get_wind_hdg(station_icao.send_str)} / {wind_calc.get_wind_speed(station_icao.send_str)}" # format wind correctly
     }
     return weather_data
 
@@ -371,70 +371,108 @@ def route_data(route: SendString):
 # Signup Route
 @app.post("/signup")
 async def signup(username: str = Form(...), password: str = Form(...)):
+    # Connect to the SQLite database
     conn = sqlite3.connect(db_tools.DB_PATH)
     cursor = conn.cursor()
     
+    # Check if the username already exists in the database
     cursor.execute("SELECT username FROM users WHERE username=?", (username,))
     if cursor.fetchone():
         conn.close()
+        # If user exists, return a 400 error
         raise HTTPException(status_code=400, detail="Username already exists")
 
+    # Hash the user's password before storing it (never store plain text passwords)
     hashed_password = db_tools.hash_password(password)
-    #signup_date = str(date.today())
-    # cursor.execute(
-    #     "INSERT INTO users (username, hashed_password, signup_date) VALUES (?, ?, ?)", ## signup date not working on pod persistent volume
-    #     (username, hashed_password, signup_date)
-    # )
+
+    # Insert the new user into the database
     cursor.execute( 
         "INSERT INTO users (username, hashed_password) VALUES (?, ?)",
         (username, hashed_password)
     )
-    conn.commit()
-    conn.close()
+    conn.commit()  # Save changes
+    conn.close()   # Close the database connection
 
+    # Create an authentication token for the new user
     token = db_tools.create_access_token(username)
+
+    # Get user account info and convert it to JSON
     data = json.dumps(db_tools.get_account_info(username))
+
+    # Create HTTP response with JSON data
     response = Response(content=data, media_type="application/json")
+
+    # Store the token in an HTTP-only cookie (not accessible via JavaScript)
     response.set_cookie(key="token", value=token, httponly=True)
+
     return response
+
 
 # Login Route
 @app.post("/login")
 async def login(username: str = Form(...), password: str = Form(...)):
+    # Connect to the database
     conn = sqlite3.connect(db_tools.DB_PATH)
     cursor = conn.cursor()
 
+    # Retrieve the stored hashed password for the given username
     cursor.execute("SELECT hashed_password FROM users WHERE username=?", (username,))
     row = cursor.fetchone()
     conn.close()
 
+    # If no user is found, return an error
     if not row:
         db_tools.LOGGER.info("No password record found for user")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    # Verify the provided password matches the stored hash
     if not db_tools.verify_password(password, row[0]):
         db_tools.LOGGER.info("Invalid password for user")
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+    # Generate a new access token after successful login
     token = db_tools.create_access_token(username)
+
+    # Fetch user account info and convert to JSON
     data = json.dumps(db_tools.get_account_info(username))
+
+    # Create response and attach token as a secure cookie
     response = Response(content=data, media_type="application/json")
     response.set_cookie(key="token", value=token, httponly=True)
+
     return response
 
-def verify_token(request: Request): # verify that they have a valid token and cant just bypass logging in
+
+# Token verification dependency
+def verify_token(request: Request):
+    # Get token from cookies
     token = request.cookies.get("token")
+
+    # If no token is present, user is not authenticated
     if not token:
         raise HTTPException(status_code=401, detail="Unable - Please log in")
+
     try:
+        # Decode the token to get payload (e.g., username)
         payload = db_tools.decode_token(token)
-        return payload["sub"]  # Return username if valid
+
+        # Return the subject (username) from the token
+        return payload["sub"]
+
+    # Token has expired
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired, please log in again")
+
+    # Token is invalid or tampered with
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+
+# Protected dashboard route
 @app.get("/dashboard", response_class=HTMLResponse)
 def get_dashboard_page(username: str = Depends(verify_token)):
+    # Only accessible if verify_token succeeds (user is authenticated)
+
+    # Load and return the dashboard HTML page
     with open("Frontend/index.html", "r") as file:
         return HTMLResponse(content=file.read())
